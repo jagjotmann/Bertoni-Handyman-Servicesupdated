@@ -2,29 +2,28 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import PageLayout from "./layouts/PageLayout";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Services from "./components/Services";
-import Testimonials from "./components/Testimonials";
-import CTA from "./components/CTA";
-import Contact from "./components/Contact";
 import Footer from "./components/Footer";
+import Home from "./pages/Home";
 
 /*Root component*/
 
 function App() {
   return (
-    <>
-      <PageLayout>
+    <Router>
+      <div>
         <Navbar />
-        <Hero />
-        <Services />
-        <Testimonials />
-        <CTA />
-        <Contact />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/get-a-quote" element={<h1>Get a quote page</h1>} />
+          <Route path="/contact" element={<h1>Contact page</h1>} />
+          <Route path="/signin" element={<h1>Sign in page</h1>} />
+        </Routes>
         <Footer />
-      </PageLayout>
-    </>
+      </div>
+    </Router>
   );
 }
 
