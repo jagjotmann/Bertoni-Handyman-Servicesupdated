@@ -4,11 +4,13 @@ import FullSectionLayout from "../layouts/FullSectionLayout";
 const Footer = () => {
   return (
     <FullSectionLayout>
-      <div className="font-inter text-20 text-gray-400 leading-24 tracking-0">
-      &copy; 2023 Bertoni Handyman Services. All rights reserved.
-      </div>
-      </FullSectionLayout>
+      <footer className="py-4 text-center bg-gray-100">
+        <div className="text-gray-800 font-inter">
+          &copy; 2023 Bertoni Handyman Services. All rights reserved.
+        </div>
+      </footer>
+    </FullSectionLayout>
   );
-}
+};
 
 export default Footer;
