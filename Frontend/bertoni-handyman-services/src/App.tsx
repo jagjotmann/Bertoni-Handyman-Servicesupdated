@@ -7,7 +7,9 @@ import { NextUIProvider } from "@nextui-org/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
+import GetAQuote from "./pages/GetAQuote";
 import Signin from "./pages/Signin";
+
 /*Root component*/
 
 function App() {
@@ -18,7 +20,7 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/get-a-quote" element={<h1>Get a quote page</h1>} />
+            <Route path="/get-a-quote" element={<GetAQuote />} />
             <Route path="/contact" element={<h1>Contact page</h1>} />
             <Route path="/signin" element={<Signin />} />
           </Routes>
