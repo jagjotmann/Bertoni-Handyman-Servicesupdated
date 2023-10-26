@@ -69,10 +69,10 @@ const Signin = () => {
             onConfirm={errorHandler}
           />
         )}
-        <section className="flex justify-center text-center flex-col items-center">
-          <h1 className="font-bold text-4xl">Sign in</h1>
+        <section className="flex flex-col items-center justify-center text-center">
+          <h1 className="text-4xl font-bold">Sign in</h1>
           <br />
-          <p className="text-xl max-w-md">
+          <p className="max-w-md text-xl">
             If you have an account with us, you can sign in with your email or
             quote number.
           </p>
@@ -113,7 +113,7 @@ const Signin = () => {
                 Create Account
               </button>
             </div>
-            <div className="flex justify-center items-center w-full gap-6">
+            <div className="flex items-center justify-center w-full gap-6">
               <span className="bg-[#2D333A] h-[1px] flex-grow rounded-full"></span>
               <span className="font-medium">or</span>
               <span className="bg-[#2D333A] h-[1px] flex-grow rounded-full"></span>

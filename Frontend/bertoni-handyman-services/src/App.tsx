@@ -9,6 +9,8 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import GetAQuote from "./pages/GetAQuote";
 import Signin from "./pages/Signin";
+import ContactPage from "./pages/ContactPage";
+import ThankYou from "./pages/ThankYou";
 
 /*Root component*/
 
@@ -21,7 +23,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/get-a-quote" element={<GetAQuote />} />
-            <Route path="/contact" element={<h1>Contact page</h1>} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/ThankYou" element={<ThankYou />} />
             <Route path="/signin" element={<Signin />} />
           </Routes>
           <Footer />
