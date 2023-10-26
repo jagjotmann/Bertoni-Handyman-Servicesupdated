@@ -14,21 +14,21 @@ const Testimonials = () => {
     <PaddingSectionLayout>
       {/* Heading for the Testimonials section */}
       <h2
-        className="text-center text-5xl pt-7 pb-16 font-bold"
+        className="pb-16 text-5xl font-bold text-center "
         aria-label="Client Testimonials"
       >
         Client Testimonials
       </h2>
       {/* Grid layout to display the testimonials */}
-      <div className="grid grid-cols-1 md:grid-cols-3 sm:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3 sm:grid-cols-2">
         {testimonialData.map((testimonial, index) => (
           <div
             key={index}
-            className="bg-white p-6 rounded-lg shadow-md flex flex-col justify-between"
+            className="flex flex-col justify-between p-6 bg-gray-100 rounded-lg shadow-md"
           >
             <div className="flex items-center pb-4">
               {/* Placeholder for the client's image/picture */}
-              <div className="w-16 h-16 bg-gray-300 rounded-full mr-4"></div>
+              <div className="w-16 h-16 mr-4 bg-gray-300 rounded-full"></div>
               {/* Client's name */}
               <h3>{testimonial.name}</h3>
             </div>
@@ -40,7 +40,7 @@ const Testimonials = () => {
               aria-label={`${testimonial.stars} star review`}
             >
               {[...Array(testimonial.stars)].map((_, i) => (
-                <span key={i} className="text-yellow-500 w-6 h-6 inline-block">
+                <span key={i} className="inline-block w-6 h-6 text-yellow-500">
                   <FaStar aria-hidden="true" />
                 </span>
               ))}
