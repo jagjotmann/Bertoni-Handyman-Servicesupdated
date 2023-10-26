@@ -16,7 +16,7 @@ const Contact = () => {
       <h2 className="text-4xl font-extrabold text-center text-gray-900 py-9">
         Contact
       </h2>
-      <div className="p-6 bg-gray-200 ">
+      <div className="p-6 bg-gray-200 rounded-md ">
         <form action="#" onSubmit={handleFormSubmit}>
           <div className="flex flex-wrap -mx-2">
             <div className="w-full px-2 md:w-1/2">
@@ -114,7 +114,7 @@ const Contact = () => {
           {/* Submit button for the form */}
           <button
             type="submit"
-            className="p-2 px-10 my-4 text-white bg-orange-500 rounded-md hover:scale-105"
+            className="p-2 px-10 my-4 font-bold text-white transition-transform transform bg-orange-500 rounded-md hover:scale-105"
           >
             Send
           </button>
