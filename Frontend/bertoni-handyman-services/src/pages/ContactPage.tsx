@@ -11,9 +11,9 @@ const Contact = () => {
   };
 
   return (
-    <div className="h-screen max-w-screen-md p-6 py-2 pt-10 mx-auto">
+    <div className="h-screen max-w-screen-md p-6 py-2 mx-auto">
       {/* Heading for the contact form */}
-      <h2 className="text-4xl font-extrabold text-center text-gray-900 py-9">
+      <h2 className="pt-10 text-4xl font-extrabold text-center text-gray-900 py-9">
         Contact
       </h2>
       <div className="p-6 bg-gray-200 rounded-md ">
