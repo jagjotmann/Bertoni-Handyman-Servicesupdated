@@ -27,7 +27,7 @@ const Hero = () => {
             <Link to="/get-a-quote">
               <button 
                 aria-label="Get a quote for Bertoni's Handyman services"
-                className="bg-orange-500 text-black text-xl sm:text-2xl md:text-2xl lg:text-3xl px-4 sm:px-5 md:px-6 lg:px-7 py-3 sm:py-3 md:py-4 lg:py-5 font-bold mr-4 sm:mr-6 md:mr-8 lg:mr-10 focus:outline-none focus:ring-2 focus:ring-orange-400 hover:scale-105"
+                className="bg-orange-500 text-black text-xl sm:text-2xl md:text-2xl lg:text-3xl px-4 sm:px-5 md:px-6 lg:px-7 py-3 sm:py-3 md:py-4 lg:py-5 font-bold mr-4 sm:mr-6 md:mr-8 lg:mr-10 focus:outline-none focus:ring-2 focus:ring-orange-400 hover:scale-105 shadow-custom-shadow transition-transform"
               >
                 Get a Quote
               </button>
@@ -36,7 +36,7 @@ const Hero = () => {
             <Link to="/contact">
               <button 
                 aria-label="Contact Bertoni's Handyman services"
-                className="bg-white text-black text-xl sm:text-2xl md:text-2xl lg:text-3xl px-6 sm:px-7 md:px-8 lg:px-11 py-3 sm:py-3 md:py-4 lg:py-5 font-bold focus:outline-none focus:ring-2 focus:ring-black hover:scale-105"
+                className="bg-white text-black text-xl sm:text-2xl md:text-2xl lg:text-3xl px-6 sm:px-7 md:px-8 lg:px-11 py-3 sm:py-3 md:py-4 lg:py-5 font-bold focus:outline-none focus:ring-2 focus:ring-black hover:scale-105 shadow-custom-shadow transition-transform"
               >
                 Contact
               </button>
