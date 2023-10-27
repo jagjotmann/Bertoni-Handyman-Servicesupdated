@@ -6,11 +6,13 @@ import Services from "../components/Services";
 import Testimonials from "../components/Testimonials";
 import CTA from "../components/CTA";
 import Contact from "../components/Contact";
+import InfoCards from "../components/InfoCards";
 
 const Home = () => {
   return (
     <PageLayout>
       <Hero />
+      <InfoCards />
       <Services />
       <Testimonials />
       <CTA />
