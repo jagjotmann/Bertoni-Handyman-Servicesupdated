@@ -226,7 +226,7 @@ function AdminPage() {
         </Disclosure>
       </aside>
       {/* Main content area */}
-      <main className="flex-1 w-full mt-20 overflow-x-hidden text-4xl font-extrabold text-center align-middle md:pl-60">
+      <main className="flex-1 w-full overflow-x-hidden md:pl-60">
         {/* Conditional rendering of components based on the selected tab */}
         {renderContent()}
       </main>
