@@ -11,6 +11,7 @@ import GetAQuote from "./pages/GetAQuote";
 import Signin from "./pages/Signin";
 import ContactPage from "./pages/ContactPage";
 import ThankYou from "./pages/ThankYou";
+import CreateAccount from './pages/CreateAccount';
 
 /*Root component*/
 
@@ -26,6 +27,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/ThankYou" element={<ThankYou />} />
             <Route path="/signin" element={<Signin />} />
+            <Route path="/create-account" element={<CreateAccount />} />
           </Routes>
           <Footer />
         </div>
