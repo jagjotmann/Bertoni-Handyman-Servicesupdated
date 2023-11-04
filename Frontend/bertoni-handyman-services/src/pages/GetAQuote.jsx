@@ -9,7 +9,7 @@ const QuoteForm = () => {
   const [errors, setErrors] = useState({});
   const [specifications, setSpecifications] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [setIsSubmitted] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const validateForm = () => {
     const newErrors = {};
@@ -78,6 +78,7 @@ const QuoteForm = () => {
     title: {
       fontSize: "32px",
       marginBottom: "20px",
+      fontweight: "bold",
     },
     form: {
       width: "100%",
@@ -261,21 +262,49 @@ const QuoteForm = () => {
 
   return (
     <div style={styles.container}>
-      {isSubmitting ? (
+      {isSubmitted ? (
         // Show success message after form submission
         <div style={styles.sentContainer}>
-          <h2 class="title">Sent!</h2>
+          <h2 style={styles.title}>Sent!</h2>
           <p style={{ color: "orange", fontSize: "16px" }}>
             Thanks for submitting a Quote Request!
+            <br />
           </p>
-          <p>We have sent you an email with your Quote Number.</p>
-          <p>
+          <p
+            style={{
+              ...styles.row,
+              fontSize: "16px",
+              fontWeight: "normal",
+              textAlign: "center",
+            }}
+          >
+            We have sent you an email with your{" "}
+            <strong>&nbsp; Quote Number</strong>.
+          </p>
+          <p
+            style={{
+              ...styles.row,
+              fontSize: "16px",
+              fontWeight: "normal",
+              textAlign: "center",
+            }}
+          >
             You can use your Quote Number to sign into your account to view your
             Quote's status.
           </p>
-          <a href="/signin" style={styles.signInLink}>
+
+          <button
+            onClick={() => (window.location.href = "/signin")}
+            style={{
+              ...styles.button,
+              textDecoration: "none",
+              display: "block",
+              width: "fit-content",
+              marginTop: "20px",
+            }}
+          >
             Sign in
-          </a>
+          </button>
         </div>
       ) : (
         // Show form
