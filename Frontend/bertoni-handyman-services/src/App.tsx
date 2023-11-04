@@ -13,6 +13,7 @@ import ContactPage from "./pages/ContactPage";
 import ThankYou from "./pages/ThankYou";
 import CreateAccount from './pages/CreateAccount';
 import CreateAccountSuccess from './pages/CreateAccountSuccess'
+import AdminPage from "./pages/AdminPage";
 
 /*Root component*/
 
@@ -30,6 +31,7 @@ function App() {
             <Route path="/signin" element={<Signin />} />
             <Route path="/create-account" element={<CreateAccount />} />
             <Route path="/create-account-success" element={<CreateAccountSuccess />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Routes>
           <Footer />
         </div>
