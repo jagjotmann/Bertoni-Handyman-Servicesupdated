@@ -1,33 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
+import { IoIosHome } from "react-icons/io";
 
 const Navbar = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    handleResize();
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const navLinks = [
     {
       href: "/",
       label: "Home",
       className:
-        "text-xl hover:text-blue-600 transition duration-300 transition-transform transform hover:scale-110",
+        "text-xl sm:text-lg hover:text-blue-600 transition duration-300 transition-transform transform hover:scale-110",
     },
     {
-      href: "/services",
+      href: "/#services-section",
       label: "Services",
       className:
-        "text-xl hover:text-blue-600 transition duration-300 transition-transform transform hover:scale-110",
+        "text-xl sm:text-lg hover:text-blue-600 transition duration-300 transition-transform transform hover:scale-110",
     },
     {
-      href: "/about",
-      label: "About",
-      className:
-        "text-xl hover:text-blue-600 transition duration-300 transition-transform transform hover:scale-110",
-    },
-    {
-      href: "/testimonials",
+      href: "/#testimonials-section",
       label: "Testimonials",
       className:
-        "text-xl hover:text-blue-600 transition duration-300 transition-transform transform hover:scale-110",
+        "text-xl sm:text-lg hover:text-blue-600 transition duration-300 transition-transform transform hover:scale-110",
     },
   ];
 
@@ -36,24 +43,45 @@ const Navbar = () => {
       href: "/get-a-quote",
       label: "Get A Quote",
       className:
-        "bg-orange-500 text-black shadow-custom-shadow text-2xl px-6 py-3 font-bold transition-transform transform hover:scale-105",
+        "bg-orange-500 text-black shadow-custom-shadow text-2xl sm:text-xl px-6 sm:px-4 py-3 sm:py-2 font-bold transition-transform transform hover:scale-105",
     },
     {
       href: "/contact",
       label: "Contact",
       className:
-        "bg-white text-black shadow-custom-shadow text-2xl px-6 py-3 font-bold transition-transform transform hover:scale-105",
+        "bg-white text-black shadow-custom-shadow text-2xl sm:text-xl px-6 sm:px-4 py-3 sm:py-2 font-bold transition-transform transform hover:scale-105",
     },
     {
       href: "/signin",
       label: "Sign In",
       className:
-        "bg-custom-gray text-white shadow-custom-shadow text-2xl px-6 py-3 font-bold transition-transform transform hover:scale-105",
+        "bg-custom-gray text-white shadow-custom-shadow text-2xl sm:text-xl px-6 sm:px-4 py-3 sm:py-2 font-bold transition-transform transform hover:scale-105",
     },
   ];
 
-  return (
-    <FullSectionLayout>
+  const mobileNavButtons = [
+    {
+      href: "/get-a-quote",
+      label: "Get A Quote",
+      className:
+        "bg-orange-500 text-black shadow-custom-shadow text-xs px-6 py-3 font-bold transition-transform transform hover:scale-105",
+    },
+    {
+      href: "/contact",
+      label: "Contact",
+      className:
+        "bg-white text-black shadow-custom-shadow text-xs px-6 py-3 font-bold transition-transform transform hover:scale-105",
+    },
+    {
+      href: "/signin",
+      label: "Sign In",
+      className:
+        "bg-custom-gray text-white shadow-custom-shadow text-xs px-6 py-3 font-bold transition-transform transform hover:scale-105",
+    },
+  ];
+
+  const DefaultNavbar = () => {
+    return (
       <div className="bg-custom-gray">
         <div className="container mx-auto p-5 flex justify-between text-white items-center">
           {navLinks.map((link) => (
@@ -73,6 +101,36 @@ const Navbar = () => {
           ))}
         </div>
       </div>
+    );
+  };
+
+  const MobileNavbar = () => {
+    return (
+      <div className="bg-custom-gray">
+        <div className="container mx-auto p-5 flex justify-between text-white items-center">
+          <a
+            href="/"
+            className="hover:text-blue-600 transition duration-300 transition-transform transform hover:scale-110"
+          >
+            <IoIosHome style={{ fontSize: "30px" }} />
+          </a>
+          {mobileNavButtons.map((button) => (
+            <a
+              key={button.href}
+              href={button.href}
+              className={button.className}
+            >
+              {button.label}
+            </a>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <FullSectionLayout>
+      {isMobile ? <MobileNavbar /> : <DefaultNavbar />}
     </FullSectionLayout>
   );
 };

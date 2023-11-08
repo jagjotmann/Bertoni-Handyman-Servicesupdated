@@ -1,9 +1,11 @@
 import React from "react";
 
-const PaddingSectionLayout = ({ children }) => {
+const PaddingSectionLayout = ({ id = "default", children }) => {
   return (
     <>
-      <section className="w-full p-8 md:p-20">{children}</section>
+      <section id={id} className="w-full p-8 md:px-20 md:py-10">
+        {children}
+      </section>
     </>
   );
 };
