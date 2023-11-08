@@ -12,6 +12,11 @@ import Signin from "./pages/Signin";
 import ContactPage from "./pages/ContactPage";
 import ThankYou from "./pages/ThankYou";
 import Chat from "./pages/Chat";
+import QuoteLogin from "./pages/QuoteLogin";
+import CreateAccount from './pages/CreateAccount';
+import CreateAccountSuccess from './pages/CreateAccountSuccess'
+import AdminPage from "./pages/AdminPage";
+
 
 /*Root component*/
 
@@ -28,6 +33,10 @@ function App() {
             <Route path="/ThankYou" element={<ThankYou />} />
             <Route path="/signin" element={<Signin />} />
             <Route path="/chat" element={<Chat />} />
+            <Route path="/QuoteLogin" element={<QuoteLogin />} />
+            <Route path="/create-account" element={<CreateAccount />} />
+            <Route path="/create-account-success" element={<CreateAccountSuccess />} />
+            <Route path="/admin" element={<AdminPage />} />
           </Routes>
           <Footer />
         </div>

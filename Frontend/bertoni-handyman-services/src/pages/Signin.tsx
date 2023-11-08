@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import PaddingSectionLayout from "../layouts/PaddingSectionLayout";
 import PageLayout from "../layouts/PageLayout";
 import Modal from "../components/UI/Modal";
+import { useNavigate } from 'react-router-dom';
 
 interface ModalProps {
   title?: string;
@@ -15,6 +16,7 @@ const Signin = () => {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [quoteNumberError, setQuoteNumberError] = useState(false);
+  const navigate = useNavigate();
 
   const [modal, setModal] = useState<any>();
 
@@ -38,7 +40,7 @@ const Signin = () => {
   };
 
   const handleCreateAccount = () => {
-    console.log("redirect to create account");
+    navigate('/create-account'); // redirects to Create Account
   };
 
   const handleQuoteNumberSubmit = () => {
@@ -48,11 +50,7 @@ const Signin = () => {
       //do not submit, there was error
       return;
     }
-    console.log(quoteNumber);
-    setModal({
-      content:
-        "Sorry, we couldn’t find an account with that quote number. Please try again.",
-    });
+    window.location.href = `/QuoteLogin`;
   };
 
   const errorHandler = () => {
