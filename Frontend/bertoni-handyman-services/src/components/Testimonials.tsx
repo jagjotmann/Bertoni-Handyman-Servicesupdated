@@ -11,7 +11,7 @@ const testimonialData = [
 
 const Testimonials = () => {
   return (
-    <PaddingSectionLayout>
+    <PaddingSectionLayout id="testimonials-section">
       {/* Heading for the Testimonials section */}
       <h2
         className="pb-16 text-5xl font-bold text-center "
