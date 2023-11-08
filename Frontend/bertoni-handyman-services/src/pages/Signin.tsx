@@ -50,11 +50,7 @@ const Signin = () => {
       //do not submit, there was error
       return;
     }
-    console.log(quoteNumber);
-    setModal({
-      content:
-        "Sorry, we couldn’t find an account with that quote number. Please try again.",
-    });
+    window.location.href = `/QuoteLogin`;
   };
 
   const errorHandler = () => {
