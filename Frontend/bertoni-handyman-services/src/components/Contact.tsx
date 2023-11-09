@@ -49,16 +49,16 @@ const Contact = () => {
             textAlign: 'left', // Align text to the left
           }}
         >
-          Proudly Serving
+          Proudly Serving Sacramento and Surrounding Counties
         </h3>
         <h3 
           style={{ 
             fontSize: '20px', // Adjust font size as needed
             color: '#555', // Adjust the color to match your mockup
-            textAlign: 'left', // Align text to the left
+            textAlign: 'right', // Align text to the left
           }}
-        >
-          Sacramento and Surrounding Counties
+      
+          >
         </h3>
       </div>
     </PaddingSectionLayout>
