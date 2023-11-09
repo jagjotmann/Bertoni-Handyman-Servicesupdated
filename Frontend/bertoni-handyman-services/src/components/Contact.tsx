@@ -5,7 +5,7 @@ const Contact = () => {
   return (
     <PaddingSectionLayout>
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center" style={{ maxWidth: '1024px' }}> {/* Adjust this width to match your mockup's width */}
+        <div className="flex justify-between items-center" style={{ maxWidth: '1024px' }}>
           <div>
             <h2 style={{ fontSize: '24px', fontWeight: '600', color: '#333' }}>
               Feel free to contact at:
