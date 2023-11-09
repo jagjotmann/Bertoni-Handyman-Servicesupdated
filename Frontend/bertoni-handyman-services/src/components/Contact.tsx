@@ -20,10 +20,11 @@ const Contact = () => {
           <div className="text-right">
             <h3 style={{ fontSize: '20px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#333' }}>
               Proudly Serving 
-              Sacramento and 
-              Surrounding Counties
             </h3>
-            
+            <div className="text-right">
+            <h3 style={{ fontSize: '20px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#333' }}>
+              Sacramento and 
+            </h3>
           </div>
         </div>
       </div>
