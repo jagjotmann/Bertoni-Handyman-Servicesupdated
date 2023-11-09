@@ -4,7 +4,7 @@ import PaddingSectionLayout from "../layouts/PaddingSectionLayout";
 const Contact = () => {
   return (
     <PaddingSectionLayout>
-      <div className="">Contact Section</div>
+      <div className="">hello</div>
     </PaddingSectionLayout>
   );
 };
