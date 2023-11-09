@@ -18,13 +18,13 @@ const Contact = () => {
             </p>
           </div>
           <div className="text-right">
-            <h3 style={{ fontSize: '20px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#333' }}>
+            <h3 style={{ fontSize: '24px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#333' }}>
               Proudly Serving
             </h3>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#333' }}>
+            <h3 style={{ fontSize: '24px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#333' }}>
               Sacramento and
             </h3>
-            <h3 style={{ fontSize: '20px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#333' }}>
+            <h3 style={{ fontSize: '24px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#333' }}>
               Surrounding Counties
             </h3>
           </div>
