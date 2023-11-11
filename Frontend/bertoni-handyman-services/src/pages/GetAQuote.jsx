@@ -78,7 +78,7 @@ const QuoteForm = () => {
     title: {
       fontSize: "32px",
       marginBottom: "20px",
-      fontweight: "bold",
+      fontWeight: "bold",
     },
     form: {
       width: "100%",
@@ -138,11 +138,11 @@ const QuoteForm = () => {
     <>
       <div style={styles.title}>Get a Quote</div>
       <div style={{ marginBottom: "20px" }}>
-        Already have an account?{" "}
+        Already have an account?
         <a href="/signin" style={{ textDecoration: "underline" }}>
           Sign In
-        </a>
-        &nbsp; here.
+        </a>{" "}
+        here.
       </div>
       <form style={styles.form} onSubmit={handleSubmit}>
         <div style={styles.row}>
