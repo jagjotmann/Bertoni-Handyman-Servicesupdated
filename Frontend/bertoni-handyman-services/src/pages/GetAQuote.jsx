@@ -81,21 +81,6 @@ const QuoteForm = () => {
     });
   };
 
-  const handleDataChange = (e) => {
-    const input = e.target.value.replace(/[^0-9]/g, "");
-    let formattedInput = "";
-
-    if (input.length <= 2) {
-      formattedInput = input;
-    } else if (input.length <= 4) {
-      formattedInput = "${input.slice(0,2)} - ${input.slice(2)}";
-    } else {
-      formattedInput =
-        "${input.slice(0,2)} - ${input.slice(2,4)} - ${input.slice(4,8)}";
-    }
-
-    setPreferredFinishDate(formattedInput);
-  };
   const styles = {
     container: {
       display: "flex",
@@ -151,7 +136,6 @@ const QuoteForm = () => {
         "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)", // Example for shadow-custom-shadow, adjust your actual shadow
       transition: "transform 0.2s",
     },
-
     sentContainer: {
       display: "flex",
       flexDirection: "column",
@@ -169,6 +153,11 @@ const QuoteForm = () => {
     },
     dateInputNotEmpty: {
       color: "black",
+    },
+    thankYouMessage: {
+      color: "orange",
+      fontSize: "16px",
+      marginBottom: "20px",
     },
   };
 
@@ -302,29 +291,14 @@ const QuoteForm = () => {
         // Show success message after form submission
         <div style={styles.sentContainer}>
           <h2 style={styles.title}>Sent!</h2>
-          <p style={{ color: "orange", fontSize: "16px" }}>
+          <p style={styles.thankYouMessage}>
             Thanks for submitting a Quote Request!
-            <br />
           </p>
-          <p
-            style={{
-              ...styles.row,
-              fontSize: "16px",
-              fontWeight: "normal",
-              textAlign: "center",
-            }}
-          >
-            We have sent you an email with your{" "}
-            <strong>&nbsp; Quote Number</strong>.
+          <div style={{ height: "20px" }}></div>
+          <p>
+            We have sent you an email with your <strong>Quote Number</strong>.
           </p>
-          <p
-            style={{
-              ...styles.row,
-              fontSize: "16px",
-              fontWeight: "normal",
-              textAlign: "center",
-            }}
-          >
+          <p style={{ textAlign: "center" }}>
             You can use your Quote Number to sign into your account to view your
             Quote's status.
           </p>
@@ -333,6 +307,9 @@ const QuoteForm = () => {
             onClick={() => (window.location.href = "/signin")}
             style={{
               ...styles.button,
+              backgroundColor: "black",
+              color: "white",
+              borderRadius: "0px",
               textDecoration: "none",
               display: "block",
               width: "fit-content",
