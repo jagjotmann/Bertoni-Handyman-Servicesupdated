@@ -1,16 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const QuoteForm = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [preferredFinishDate, setPreferredFinishDate] = useState("");
+  const [preferredFinishDate, setPreferredFinishDate] = useState(null);
   const [errors, setErrors] = useState({});
   const [specifications, setSpecifications] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  const CustomInput = forwardRef(({ value, onClick, placeholder }, ref) => (
+    <button
+      onClick={onClick}
+      ref={ref}
+      style={{
+        ...styles.input,
+        width: "100%",
+      }}
+    >
+      {value || placeholder}
+    </button>
+  ));
+  CustomInput.displayName = "CustomInput";
   const validateForm = () => {
     const newErrors = {};
     if (!firstName.trim()) newErrors.firstName = "First Name cannot be empty";
@@ -66,6 +81,21 @@ const QuoteForm = () => {
     });
   };
 
+  const handleDataChange = (e) => {
+    const input = e.target.value.replace(/[^0-9]/g, "");
+    let formattedInput = "";
+
+    if (input.length <= 2) {
+      formattedInput = input;
+    } else if (input.length <= 4) {
+      formattedInput = "${input.slice(0,2)} - ${input.slice(2)}";
+    } else {
+      formattedInput =
+        "${input.slice(0,2)} - ${input.slice(2,4)} - ${input.slice(4,8)}";
+    }
+
+    setPreferredFinishDate(formattedInput);
+  };
   const styles = {
     container: {
       display: "flex",
@@ -90,13 +120,15 @@ const QuoteForm = () => {
       display: "flex",
       justifyContent: "space-between",
       marginBottom: "20px",
+      gap: "16px",
     },
     input: {
-      width: "48%",
-      padding: "10px",
+      width: "50%",
+      padding: "15px",
       fontSize: "16px",
       borderRadius: "5px",
       border: "1px solid #ccc",
+      marginBottom: "1rem",
     },
     textArea: {
       width: "100%",
@@ -110,8 +142,8 @@ const QuoteForm = () => {
       padding: "12px 20px",
       fontSize: "16px",
       borderRadius: "10px",
-      backgroundColor: "#ffa500",
-      color: "#fff",
+      backgroundColor: "#f97316",
+      color: "#000",
       fontWeight: "bold",
       marginRight: "4px",
       outline: "none",
@@ -131,6 +163,12 @@ const QuoteForm = () => {
     signInLink: {
       textDecoration: "underline",
       color: "#ffa500",
+    },
+    dateInput: {
+      color: "#ccc",
+    },
+    dateInputNotEmpty: {
+      color: "black",
     },
   };
 
@@ -229,25 +267,23 @@ const QuoteForm = () => {
                 ...errors,
                 specifications: specifications.trim()
                   ? ""
-                  : "Specifications and Requirements cannot be empty",
+                  : "General/Technical Specifications and Requirements cannot be empty",
               })
             }
           ></textarea>
         </div>
+        <div style={{ height: "20px" }}></div>
         <div>
-          <input
-            type="date"
-            placeholder="Preferred Finish Date (optional)"
-            style={{
-              ...styles.input,
-              marginTop: "10px",
-              marginBottom: "10px",
-              width: "100%",
-            }}
-            value={preferredFinishDate}
-            onChange={(e) => setPreferredFinishDate(e.target.value)}
+          <DatePicker
+            showIcon
+            selected={preferredFinishDate}
+            onChange={(date) => setPreferredFinishDate(date)}
+            dateFormat="MM/dd/yyyy"
+            placeholderText=" Preferred Finish Date (optional) "
+            CustomInput={<CustomInput />}
           />
         </div>
+        <div style={{ height: "20px" }}></div>
         <button
           type="submit"
           disabled={isSubmitting} // Disable button during form submission
