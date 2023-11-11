@@ -286,43 +286,45 @@ const QuoteForm = () => {
   );
 
   return (
-    <div style={styles.container}>
-      {isSubmitted ? (
-        // Show success message after form submission
-        <div style={styles.sentContainer}>
-          <h2 style={styles.title}>Sent!</h2>
-          <p style={styles.thankYouMessage}>
-            Thanks for submitting a Quote Request!
-          </p>
-          <div style={{ height: "20px" }}></div>
-          <p>
-            We have sent you an email with your <strong>Quote Number</strong>.
-          </p>
-          <p style={{ textAlign: "center" }}>
-            You can use your Quote Number to sign into your account to view your
-            Quote's status.
-          </p>
+    <div className="h-screen max-w-screen-md p-6 py-2 mx-auto">
+      <div style={styles.container}>
+        {isSubmitted ? (
+          // Show success message after form submission
+          <div style={styles.sentContainer}>
+            <h2 style={styles.title}>Sent!</h2>
+            <p style={styles.thankYouMessage}>
+              Thanks for submitting a Quote Request!
+            </p>
+            <div style={{ height: "20px" }}></div>
+            <p>
+              We have sent you an email with your <strong>Quote Number</strong>.
+            </p>
+            <p style={{ textAlign: "center" }}>
+              You can use your Quote Number to sign into your account to view
+              your Quote's status.
+            </p>
 
-          <button
-            onClick={() => (window.location.href = "/signin")}
-            style={{
-              ...styles.button,
-              backgroundColor: "black",
-              color: "white",
-              borderRadius: "0px",
-              textDecoration: "none",
-              display: "block",
-              width: "fit-content",
-              marginTop: "20px",
-            }}
-          >
-            Sign in
-          </button>
-        </div>
-      ) : (
-        // Show form
-        renderForm()
-      )}
+            <button
+              onClick={() => (window.location.href = "/signin")}
+              style={{
+                ...styles.button,
+                backgroundColor: "black",
+                color: "white",
+                borderRadius: "0px",
+                textDecoration: "none",
+                display: "block",
+                width: "fit-content",
+                marginTop: "20px",
+              }}
+            >
+              Sign in
+            </button>
+          </div>
+        ) : (
+          // Show form
+          renderForm()
+        )}
+      </div>
     </div>
   );
 };
