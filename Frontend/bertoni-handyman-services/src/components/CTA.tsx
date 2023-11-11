@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 const CTA = () => {
   const ctaStyle = {
     backgroundImage: `url(${ctaBackgroundImage})`,
-    height: "41vh",
+    height: "90vh",
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -21,9 +21,9 @@ const CTA = () => {
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="content-container z-10 text-center">
-          <h5 className="text-white text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-bold">
+          <h1 className="text-white text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-bold">
             Don't wait, get an estimate now!
-          </h5>
+          </h1>
           <br />
           <br />
           <div className="button-container">
