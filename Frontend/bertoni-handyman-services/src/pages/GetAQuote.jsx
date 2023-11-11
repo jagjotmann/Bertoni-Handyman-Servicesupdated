@@ -138,7 +138,7 @@ const QuoteForm = () => {
     <>
       <div style={styles.title}>Get a Quote</div>
       <div style={{ marginBottom: "20px" }}>
-        Already have an account?
+        Already have an account?{" "}
         <a href="/signin" style={{ textDecoration: "underline" }}>
           Sign In
         </a>{" "}
