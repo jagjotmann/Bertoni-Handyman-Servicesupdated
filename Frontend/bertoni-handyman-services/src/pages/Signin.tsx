@@ -4,6 +4,7 @@ import PageLayout from "../layouts/PageLayout";
 import Modal from "../components/UI/Modal";
 import EmailDashboard from "../components/EmailDashboard";
 import QuoteDashboard from "../components/QuoteDashboard";
+import { useNavigate } from 'react-router-dom';
 
 interface ModalProps {
   title?: string;
@@ -17,6 +18,7 @@ const Signin = () => {
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
   const [quoteNumberError, setQuoteNumberError] = useState(false);
+  const navigate = useNavigate();
 
   const [modal, setModal] = useState<ModalProps | null>(null);
   const [isSignedIn, setIsSignedIn] = useState(false);
@@ -48,7 +50,17 @@ const Signin = () => {
   };
 
   const handleCreateAccount = () => {
-    console.log("redirect to create account");
+    navigate('/create-account'); // redirects to Create Account
+  };
+
+  const handleQuoteNumberSubmit = () => {
+    setQuoteNumberError(false);
+    if (!quoteNumber.trim()) {
+      setQuoteNumberError(true);
+      //do not submit, there was error
+      return;
+    }
+    window.location.href = `/QuoteLogin`;
   };
 
   const errorHandler = () => {
