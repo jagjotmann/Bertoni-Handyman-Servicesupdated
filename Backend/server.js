@@ -1,12 +1,24 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const userRoutes = require("./dist/routes/userRoutes.js");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
+app.use(express.json());
+app.use(cors());
+app.use("/users", userRoutes);
+
+const environment = process.env.NODE_ENV || "development";
+const mongoDBURi =
+  environment === "production"
+    ? process.env.PROD_MONGODB_URI
+    : process.env.DEV_MONGODB_URI;
 
 // Connect to MongoDB
 mongoose
-  .connect("mongodb://localhost:27017/mydatabase", {
+  .connect(mongoDBURi, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -18,5 +30,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

@@ -31,7 +31,6 @@ export interface User extends Document {
 const UserSchema: Schema = new Schema({
   username: {
     type: String,
-    required: true,
     minlength: 4,
     maxlength: 25,
     unique: true,
@@ -40,24 +39,20 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true,
     minlength: 8,
-    maxlength: 50,
   },
   name: {
     firstName: {
       type: String,
-      required: true,
       maxlength: 100,
     },
     lastName: {
       type: String,
-      required: true,
       maxlength: 100,
     },
   },
   contactInfo: {
     phoneNumber: {
       type: String,
-      required: true,
     },
     email: {
       type: String,
