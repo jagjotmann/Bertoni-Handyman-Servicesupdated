@@ -1,5 +1,7 @@
 // AdminPage.tsx
 import React from "react";
+import QuoteRequests from './QuoteRequests';
+import Management from './Management';
 import { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Disclosure } from "@headlessui/react";
@@ -30,11 +32,11 @@ function AdminPage() {
     } else if (selectedTab === "Calendar") {
       return <h1>Calendar</h1>;
     } else if (selectedTab === "Quote Requests") {
-      return <h1>Quote Requests</h1>;
+      return <QuoteRequests />;
     } else if (selectedTab === "Settings") {
       return <h1>Settings</h1>;
     } else if (selectedTab === "Management") {
-      return <h1>Management</h1>;
+      return <Management />;
     } else {
       return null;
     }
