@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import PaddingSectionLayout from "../layouts/PaddingSectionLayout";
 import PageLayout from "../layouts/PageLayout";
 import Modal from "../components/UI/Modal";
+import EmailDashboard from "../components/EmailDashboard";
+import QuoteDashboard from "../components/QuoteDashboard";
 import { useNavigate } from 'react-router-dom';
 
 interface ModalProps {
@@ -18,25 +20,33 @@ const Signin = () => {
   const [quoteNumberError, setQuoteNumberError] = useState(false);
   const navigate = useNavigate();
 
-  const [modal, setModal] = useState<any>();
+  const [modal, setModal] = useState<ModalProps | null>(null);
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [signInMethod, setSignInMethod] = useState("");
 
-  const handleSignIn = () => {
-    setEmailError(false);
-    setPasswordError(false);
-    if (!email.trim()) {
-      setEmailError(true);
+  const handleSignInWithEmail = () => {
+    setEmailError(!email.trim());
+    setPasswordError(!password.trim());
+    if (!email.trim() || !password.trim()) {
+      setModal({
+        content: "Please enter both your email and password.",
+      });
+    } else {
+      setIsSignedIn(true);
+      setSignInMethod("email");
     }
-    if (!password.trim()) {
-      setPasswordError(true);
+  };
+
+  const handleSignInWithQuoteNumber = () => {
+    setQuoteNumberError(!quoteNumber.trim());
+    if (!quoteNumber.trim()) {
+      setModal({
+        content: "Please enter your quote number.",
+      });
+    } else {
+      setIsSignedIn(true);
+      setSignInMethod("quote");
     }
-    if (emailError || passwordError) {
-      //do not sign in, there was an error
-      return;
-    }
-    setModal({
-      content:
-        "Sorry, we couldn’t find an account with that email and password. Please try again.",
-    });
   };
 
   const handleCreateAccount = () => {
@@ -56,6 +66,18 @@ const Signin = () => {
   const errorHandler = () => {
     setModal(null);
   };
+
+  if (isSignedIn) {
+    switch (signInMethod) {
+      case "email":
+        return <EmailDashboard email={email} />;
+      case "quote":
+        return <QuoteDashboard quoteNumber={quoteNumber} />;
+      default:
+        // You could also implement a redirect to a default page here
+        return <div>Error: Unknown sign-in method.</div>;
+    }
+  }
 
   return (
     <PageLayout>
@@ -78,6 +100,7 @@ const Signin = () => {
           <div className="w-full md:max-w-lg flex flex-col gap-4 bg-[#F2F2F4] p-4 md:p-12 text-left">
             <h3 className="font-bold md:text-xl">Email Sign-in</h3>
             <input
+              type="email"
               placeholder="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -88,6 +111,7 @@ const Signin = () => {
               } p-1 md:p-2 bg-[#F2F2F4] rounded-xl`}
             />
             <input
+              type="password"
               placeholder="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -100,9 +124,9 @@ const Signin = () => {
             <div className="flex flex-wrap gap-4">
               <button
                 className="bg-[#2D333A] text-white font-medium text-xs md:text-lg py-2 px-5 rounded-xl shadow-md"
-                onClick={handleSignIn}
+                onClick={handleSignInWithEmail}
               >
-                Sign in
+                Sign in with Email
               </button>
               <button
                 className="text-[#FEA33F] bg-white font-medium text-xs md:text-lg py-2 px-5 rounded-xl border border-[#FEA33F] shadow-md"
@@ -130,7 +154,7 @@ const Signin = () => {
             />
             <button
               className="bg-[#F69327] text-[#2D333A] font-medium text-xs md:text-lg py-2 px-5 rounded-xl shadow-md"
-              onClick={handleQuoteNumberSubmit}
+              onClick={handleSignInWithQuoteNumber}
             >
               Sign in with Quote Number
             </button>
