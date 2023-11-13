@@ -16,6 +16,8 @@ import QuoteLogin from "./pages/QuoteLogin";
 import CreateAccount from './pages/CreateAccount';
 import CreateAccountSuccess from './pages/CreateAccountSuccess'
 import AdminPage from "./pages/AdminPage";
+import CreateQuote from "./pages/CreateQuote"
+import QuoteForm from "./pages/CreateQuote";
 
 
 /*Root component*/
@@ -37,6 +39,7 @@ function App() {
             <Route path="/create-account" element={<CreateAccount />} />
             <Route path="/create-account-success" element={<CreateAccountSuccess />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/create-a-quote" element={<CreateQuote />} />
           </Routes>
           <Footer />
         </div>
