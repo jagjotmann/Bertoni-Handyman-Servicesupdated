@@ -16,6 +16,8 @@ import QuoteLogin from "./pages/QuoteLogin";
 import CreateAccount from './pages/CreateAccount';
 import CreateAccountSuccess from './pages/CreateAccountSuccess'
 import AdminPage from "./pages/AdminPage";
+import AdminClientProfile from './pages/AdminClientProfile';
+import ClientProfileAlternateView from './pages/ClientProfileAlternateView';
 import CreateQuote from "./pages/CreateQuote"
 import QuoteForm from "./pages/CreateQuote";
 
@@ -39,6 +41,8 @@ function App() {
             <Route path="/create-account" element={<CreateAccount />} />
             <Route path="/create-account-success" element={<CreateAccountSuccess />} />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/admin-client-profile" element={<AdminClientProfile />} />
+            <Route path="/client-profile-Alternate-View" element={<ClientProfileAlternateView />} />
             <Route path="/create-a-quote" element={<CreateQuote />} />
           </Routes>
           <Footer />
