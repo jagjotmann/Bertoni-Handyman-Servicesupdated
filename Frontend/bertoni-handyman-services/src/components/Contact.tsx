@@ -25,7 +25,7 @@ const Contact = () => {
               Sacramento and
             </h3>
             <h3 style={{ fontSize: '24px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#333' }}>
-              Surrounding Counties.
+              Surrounding Counties
             </h3>
           </div>
         </div>
