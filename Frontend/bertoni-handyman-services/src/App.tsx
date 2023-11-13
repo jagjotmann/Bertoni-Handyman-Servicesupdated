@@ -17,6 +17,7 @@ import CreateAccount from './pages/CreateAccount';
 import CreateAccountSuccess from './pages/CreateAccountSuccess'
 import AdminPage from "./pages/AdminPage";
 import CreateQuote from "./pages/CreateQuote"
+import QuoteForm from "./pages/CreateQuote";
 
 
 /*Root component*/
