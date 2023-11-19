@@ -11,7 +11,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="h-screen max-w-screen-md p-6 py-2 mx-auto">
+    <div className="min-h-screen max-w-screen-md p-6 py-2 mx-auto">
       {/* Heading for the contact form */}
       <h2 className="pt-10 text-4xl font-extrabold text-center text-gray-900 py-9">
         Contact
