@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./dist/routes/userRoutes.js");
+const quoteRoutes = require("./dist/routes/quoteRoutes.js");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -9,6 +10,7 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(cors());
 app.use("/users", userRoutes);
+app.use("/quotes", quoteRoutes)
 
 const environment = process.env.NODE_ENV || "development";
 const mongoDBURi =
