@@ -17,11 +17,16 @@ const router = express.Router();
 const userModel_js_1 = __importDefault(require("../models/userModel.js"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 router.post("/adduser", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
+    const { email, firstName, lastName, password } = req.body;
     const saltRounds = 10;
     const hashedPassword = yield bcrypt_1.default.hash(password, saltRounds);
     try {
         const newUser = new userModel_js_1.default({
+            username: email,
+            name: {
+                firstName: firstName,
+                lastName: lastName,
+            },
             contactInfo: {
                 email,
             },

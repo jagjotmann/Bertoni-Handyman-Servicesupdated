@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./dist/routes/userRoutes.js");
+const testimonialRoutes = require("./dist/routes/testimonialRoutes.js");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -9,6 +10,7 @@ const PORT = process.env.PORT || 3001;
 app.use(express.json());
 app.use(cors());
 app.use("/users", userRoutes);
+app.use("/testimonials", testimonialRoutes);
 app.use("/emails", emailRoutes);
 
 const environment = process.env.NODE_ENV || "development";
