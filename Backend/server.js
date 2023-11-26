@@ -11,6 +11,7 @@ app.use(express.json());
 app.use(cors());
 app.use("/users", userRoutes);
 app.use("/testimonials", testimonialRoutes);
+app.use("/emails", emailRoutes);
 
 const environment = process.env.NODE_ENV || "development";
 const mongoDBURi =
