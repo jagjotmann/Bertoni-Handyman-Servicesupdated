@@ -22,12 +22,13 @@ const Testimonials = () => {
     async function FetchTestimonials() {
       try {
         const response = await fetch(
-          "http://localhost:3001/testimonials/allTestimonials",
+          "http://localhost:3001/testimonials/getTestimonials",
           {
-            method: "GET",
+            method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            body: JSON.stringify({ amount: 3 }),
           }
         );
 
