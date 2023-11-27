@@ -5,13 +5,18 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
 router.post("/adduser", async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { email, firstName, lastName, password } = req.body;
 
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   try {
     const newUser = new User({
+      username: email,
+      name: {
+        firstName: firstName,
+        lastName: lastName,
+      },
       contactInfo: {
         email,
       },

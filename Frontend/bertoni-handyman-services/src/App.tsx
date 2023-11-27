@@ -20,6 +20,8 @@ import AdminClientProfile from "./pages/AdminClientProfile";
 import ClientProfileAlternateView from "./pages/ClientProfileAlternateView";
 import CreateQuote from "./pages/CreateQuote";
 import QuoteForm from "./pages/CreateQuote";
+import AddTestimonial from "./pages/AddTestimonial";
+
 
 /*Root component*/
 
@@ -52,6 +54,7 @@ function App() {
               element={<ClientProfileAlternateView />}
             />
             <Route path="/create-a-quote" element={<CreateQuote />} />
+            <Route path="/add-testimonial" element={<AddTestimonial />} />
           </Routes>
           <Footer />
         </div>

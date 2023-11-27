@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
 import ctaBackgroundImage from "../images/cta_bg.jpeg";
 import { Link } from "react-router-dom";
@@ -6,11 +6,11 @@ import { Link } from "react-router-dom";
 const CTA = () => {
   const ctaStyle = {
     backgroundImage: `url(${ctaBackgroundImage})`,
-    height: "90vh",
+    height: "60vh",
     backgroundSize: "cover",
     backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
   };
+
   return (
     <FullSectionLayout>
       <div
@@ -21,9 +21,9 @@ const CTA = () => {
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="content-container z-10 text-center">
-          <h1 className="text-white text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-bold">
+          <h3 className="text-white text-4xl sm:text-5xl md:text-5xl lg:text-7xl font-bold">
             Don't wait, get an estimate now!
-          </h1>
+          </h3>
           <br />
           <br />
           <div className="button-container">
