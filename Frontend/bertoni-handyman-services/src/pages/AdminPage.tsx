@@ -1,7 +1,7 @@
 // AdminPage.tsx
 import React from "react";
-import QuoteRequests from './QuoteRequests';
-import Management from './Management';
+import QuoteRequests from "./QuoteRequests";
+import Management from "./Management";
 import { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Disclosure } from "@headlessui/react";
@@ -14,6 +14,7 @@ import {
   FaBuilding,
   FaChartBar,
 } from "react-icons/fa";
+import CreateQuote from "./CreateQuote";
 
 function AdminPage() {
   // State to track which tab is currently selected
@@ -28,7 +29,7 @@ function AdminPage() {
     if (selectedTab === "Dashboard") {
       return <h1>Dashboard</h1>;
     } else if (selectedTab === "Clients") {
-      return <h1>Clients</h1>;
+      return <CreateQuote />;
     } else if (selectedTab === "Calendar") {
       return <h1>Calendar</h1>;
     } else if (selectedTab === "Quote Requests") {
@@ -131,7 +132,7 @@ function AdminPage() {
                         getTabStyle("Clients").text
                       }`}
                     >
-                      Clients
+                      Create A Quote
                     </h3>
                   </div>
 

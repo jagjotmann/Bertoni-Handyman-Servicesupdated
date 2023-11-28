@@ -21,6 +21,7 @@ import ClientProfileAlternateView from "./pages/ClientProfileAlternateView";
 import CreateQuote from "./pages/CreateQuote";
 import QuoteForm from "./pages/CreateQuote";
 import AddTestimonial from "./pages/AddTestimonial";
+import NavbarWrapper from "./components/NavbarWrapper";
 
 /*Root component*/
 
@@ -29,7 +30,7 @@ function App() {
     <NextUIProvider>
       <Router>
         <div>
-          <Navbar />
+          <NavbarWrapper />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/get-a-quote" element={<GetAQuote />} />
