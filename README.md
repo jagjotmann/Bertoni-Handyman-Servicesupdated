@@ -1,20 +1,22 @@
-﻿<div style="display: flex; flex-direction: column; text-align: center; justify-content: center; align-items: center"><img src="BHS%20Logo.svg"/>
-<em>A web application for a construction contractor business that includes quote, job, and employee management.
-</em>
-</div>
+﻿<center><img src="BHS%20Logo.svg"/>
+</center>
+<center><em>A web application for a construction contractor business that includes quote, job, and employee management.
+</em></center>
+<br/>
 
-<div style="margin: 1rem; text-align: center;">
+<center>
     <span style="padding: 2px 5px; text-align: center; background-color: #087FD2; color: white; height: 20px;">Typescript</span>
     <span style="padding: 2px 5px; text-align: center; background-color: #61DBFB; color: black; height: 20px;">React</span>
     <span style="padding: 2px 5px; text-align: center; background-color: #83CD29; color: black; height: 20px;">Nodejs</span>
     <span style="padding: 2px 5px; text-align: center; background-color: #55AD47; color: white; height: 20px;">MongoDB</span>
     <span style="padding: 2px 5px; text-align: center; background-color: black; color: white; height: 20px;">Vercel</span>
-  </div>
-
-  <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: center">
+  </center>
+<br/>
+  <center>
   <img src="homepage-mockup.png" style="width: 300px"/>
   <img src="admin-mockup.png" style="width: 300px"/>
-  </div>
+  </center>
+<br/>
 
 ## Project Synopsis
 
