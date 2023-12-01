@@ -5,7 +5,7 @@ import { CiBadgeDollar } from "react-icons/ci";
 
 const AdminDashboard = () => {
   return (
-    <main className="flex-1 w-full overflow-x-hidden md:pl-60">
+    <main className="flex-1 w-full overflow-x-hidden">
       <p className="text-2xl text-black-600 mt-2 font-bold p-5">Dashboard</p>
       <div className="flex gap-4 p-6">
         <div className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 ">
