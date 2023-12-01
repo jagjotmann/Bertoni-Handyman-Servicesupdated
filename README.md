@@ -65,7 +65,74 @@ Bertoni Handyman Services specializes in a range of home repair and improvement 
 
 ## Deployment
 
-- Steps and requirements for deploying the application
+These steps outline how to deploy the Bertoni Handyman Services application to a production environment. Before deploying, make sure you have completed the necessary setup and configuration, including setting up your MongoDB database, configuring environment variables, and ensuring all dependencies are installed.
+
+### Prerequisites
+
+Before deploying the application, ensure you have the following prerequisites:
+
+- Node.js and npm installed on your production server.
+- A MongoDB database instance set up and accessible from your production environment.
+- Properly configured environment variables (e.g., database connection details) in your `.env` file.
+- A domain or server where you intend to host your application.
+
+### Deployment Steps
+
+Follow these steps to deploy the application:
+
+1.  **Clone the Repository**:
+
+    Use the following command to clone the project repository to your production server:
+
+```
+git clone https://github.com/seanthecod3r/Bertoni-Handyman-Services
+```
+
+2. **Frontend Deployment**:
+
+   Navigate to the project directory and then to the frontend directory:
+
+   ```
+   cd Bertoni-Handyman-Services
+   cd Frontend/bertoni-handyman-services/
+   ```
+
+   Install frontend dependencies:
+
+   ```
+    npm install
+   ```
+
+   Build the frontend for production:
+
+   ```
+   npm run build
+   ```
+
+3. **Backend Deployment**:
+
+   Navigate to the project directory and then to the backend directory:
+
+   ```
+   cd Bertoni-Handyman-Services
+   cd Backend/
+   ```
+
+   Install backend dependencies:
+
+   ```
+   npm install
+   ```
+
+4. **Start the Application**:
+
+   Start the backend server:
+
+   ```
+   node server.js
+   ```
+
+It will typically run on http://localhost:3001.
 
 ## Developer Instructions
 
