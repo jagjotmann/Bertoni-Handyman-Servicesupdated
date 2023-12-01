@@ -4,7 +4,7 @@ import PageLayout from "../layouts/PageLayout";
 import Modal from "../components/UI/Modal";
 import EmailDashboard from "../components/EmailDashboard";
 import QuoteDashboard from "../components/QuoteDashboard";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 interface ModalProps {
   title?: string;
@@ -25,16 +25,17 @@ const Signin = () => {
   const [signInMethod, setSignInMethod] = useState("");
 
   const handleSignInWithEmail = () => {
-    setEmailError(!email.trim());
-    setPasswordError(!password.trim());
-    if (!email.trim() || !password.trim()) {
-      setModal({
-        content: "Please enter both your email and password.",
-      });
-    } else {
-      setIsSignedIn(true);
-      setSignInMethod("email");
-    }
+    // setEmailError(!email.trim());
+    // setPasswordError(!password.trim());
+    // if (!email.trim() || !password.trim()) {
+    //   setModal({
+    //     content: "Please enter both your email and password.",
+    //   });
+    // } else {
+    //   setIsSignedIn(true);
+    //   setSignInMethod("email");
+    // }
+    window.location.href = `/admin`;
   };
 
   const handleSignInWithQuoteNumber = () => {
@@ -50,7 +51,7 @@ const Signin = () => {
   };
 
   const handleCreateAccount = () => {
-    navigate('/create-account'); // redirects to Create Account
+    navigate("/create-account"); // redirects to Create Account
   };
 
   const handleQuoteNumberSubmit = () => {
