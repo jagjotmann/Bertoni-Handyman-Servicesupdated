@@ -23,6 +23,8 @@ interface Name {
 }
 
 export interface User extends Document {
+  username: string;
+  password: string;
   name: Name;
   contactInfo: ContactInfo;
   properties: Property[];
