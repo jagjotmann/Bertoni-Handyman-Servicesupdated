@@ -21,6 +21,8 @@ import ClientProfileAlternateView from "./pages/ClientProfileAlternateView";
 import CreateQuote from "./pages/CreateQuote";
 import QuoteForm from "./pages/CreateQuote";
 import AddTestimonial from "./pages/AddTestimonial";
+import QuoteStatus from "./pages/QuoteStatus";
+import ForgotPassword from "./pages/forgotPassword";
 import NavbarWrapper from "./components/NavbarWrapper";
 
 /*Root component*/
@@ -37,9 +39,11 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/ThankYou" element={<ThankYou />} />
             <Route path="/signin" element={<Signin />} />
+            <Route path="/QuoteStatus" element={<QuoteStatus />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/QuoteLogin" element={<QuoteLogin />} />
             <Route path="/create-account" element={<CreateAccount />} />
+            <Route path="/forgotPassword" element={<ForgotPassword />} />
             <Route
               path="/create-account-success"
               element={<CreateAccountSuccess />}
