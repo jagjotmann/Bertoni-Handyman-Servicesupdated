@@ -7,7 +7,7 @@ const ThankYouPage: React.FC = () => {
     <div
       role="alert"
       aria-live="polite"
-      className="flex flex-col justify-start flex-grow h-screen px-4 pt-16"
+      className="flex flex-col justify-start flex-grow min-h-screen px-4 pt-16"
     >
       <div className="pt-6 m-6 text-center">
         <span className="text-5xl font-bold text-gray-700">Sent!</span>

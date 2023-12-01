@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./dist/routes/userRoutes.js");
 const quoteRoutes = require("./dist/routes/quoteRoutes.js");
+const testimonialRoutes = require("./dist/routes/testimonialRoutes.js");
+const emailRoutes = require("./dist/routes/emailRoutes.js");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -11,6 +13,8 @@ app.use(express.json());
 app.use(cors());
 app.use("/users", userRoutes);
 app.use("/quotes", quoteRoutes)
+app.use("/testimonials", testimonialRoutes);
+app.use("/emails", emailRoutes);
 
 const environment = process.env.NODE_ENV || "development";
 const mongoDBURi =
