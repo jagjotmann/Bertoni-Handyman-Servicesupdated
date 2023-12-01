@@ -10,6 +10,8 @@ A web application for a construction contractor business that allows for quote, 
 
 ![Animated Gif](GAQ.gif) 
 
+![Animated Gif](Mobile.gif)
+
 ## Run Locally
 
 Clone the project
