@@ -1,7 +1,8 @@
 // AdminPage.tsx
 import React from "react";
-import QuoteRequests from './QuoteRequests';
-import Management from './Management';
+import QuoteRequests from "./QuoteRequests";
+import Management from "./Management";
+import AdminDashboard from "../components/AdminDashboard";
 import { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Disclosure } from "@headlessui/react";
@@ -26,7 +27,7 @@ function AdminPage() {
   // Function to render content based on the selected tab
   const renderContent = (): JSX.Element | null => {
     if (selectedTab === "Dashboard") {
-      return <h1>Dashboard</h1>;
+      return <AdminDashboard />;
     } else if (selectedTab === "Clients") {
       return <h1>Clients</h1>;
     } else if (selectedTab === "Calendar") {
@@ -228,10 +229,6 @@ function AdminPage() {
         </Disclosure>
       </aside>
       {/* Main content area */}
-      <main className="flex-1 w-full overflow-x-hidden md:pl-60">
-        {/* Conditional rendering of components based on the selected tab */}
-        {renderContent()}
-      </main>
     </div>
   );
 }
