@@ -138,7 +138,7 @@ const Signin = () => {
                 <button
                   type="submit"
                   onClick={handleSignInWithEmail}
-                  className="mt-2 transform rounded-md bg-orange-500 p-2 px-10 font-bold text-white transition-transform hover:scale-105"
+                  className=" transform rounded-md bg-orange-500 p-2 px-10 font-bold text-white transition-transform hover:scale-105"
                 >
                   Sign in
                 </button>

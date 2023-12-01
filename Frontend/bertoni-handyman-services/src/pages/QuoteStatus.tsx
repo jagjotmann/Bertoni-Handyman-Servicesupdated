@@ -73,10 +73,10 @@ const QuoteStatus = () => {
               <div className="flex justify-center border-b-2 border-black border-divider pb-4">
                 {/* Button to submit the quote number */}
                 <button
-                  className="rounded-xl bg-[#F69327] px-5 py-2 text-xs font-medium text-[#2D333A] shadow-md md:text-lg "
+                  className="rounded-xl bg-[#F69327] px-5 py-2 text-xs font-medium text-[#2D333A] shadow-md transition-transform hover:scale-105 md:text-lg "
                   onClick={handleSignInWithQuoteNumber}
                 >
-                  Check your Quote Status
+                  Check Quote Status
                 </button>
               </div>
               <div className="flex justify-center">
