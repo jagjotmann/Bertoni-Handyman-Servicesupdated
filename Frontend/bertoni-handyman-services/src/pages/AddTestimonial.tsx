@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
-import Testimonials from "../components/Testimonials";
 
 const AddTestimonial = () => {
   const navigate = useNavigate();
@@ -110,7 +109,7 @@ const AddTestimonial = () => {
   };
 
   return (
-    <div className="min-h-screen max-w-screen-md p-6 py-2 mx-auto">
+    <div className="min-h-screen max-w-screen-md p-6 py-2 mx-auto mb-8">
       {/* Heading for the contact form */}
       <h2 className="pt-10 text-4xl font-extrabold text-center text-gray-900 py-9">
         Add Testimonial
@@ -186,9 +185,6 @@ const AddTestimonial = () => {
             Send
           </button>
         </form>
-      </div>
-      <div className="mb-10">
-        <Testimonials />
       </div>
     </div>
   );

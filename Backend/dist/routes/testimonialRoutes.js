@@ -16,9 +16,11 @@ const express = require("express");
 const router = express.Router();
 const testimonialModel_js_1 = __importDefault(require("../models/testimonialModel.js"));
 const userModel_js_1 = __importDefault(require("../models/userModel.js"));
-router.get("/allTestimonials", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/getTestimonials", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const tests = yield testimonialModel_js_1.default.find().populate('author');
+        const { amount } = req.body;
+        const tests = yield testimonialModel_js_1.default.find().populate('author').sort({ date: -1 }).limit(amount);
+        ;
         const formattedTests = tests.map(blog => {
             return {
                 _id: blog._id,
