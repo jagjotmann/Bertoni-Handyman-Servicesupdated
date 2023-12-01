@@ -69,4 +69,4 @@ router.post("/changePassword", (req, res) => __awaiter(void 0, void 0, void 0, f
         res.status(500).json({ error: errorMsg });
     }
 }));
-exports.default = router;
+module.exports = router;

@@ -64,4 +64,4 @@ router.post("/changePassword", async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;

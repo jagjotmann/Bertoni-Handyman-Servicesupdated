@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./dist/routes/userRoutes.js");
 const testimonialRoutes = require("./dist/routes/testimonialRoutes.js");
+const emailRoutes = require("./dist/routes/emailRoutes.js");
 const LoginRoutes = require("./dist/routes/LoginRoutes.js");
 
 const cors = require("cors");
@@ -17,7 +18,8 @@ app.use(cors()); // Enable CORS for all routes
 // Route middlewares
 app.use("/users", userRoutes);
 app.use("/testimonials", testimonialRoutes);
-app.use("/login", loginRoutes);
+app.use("/login", LoginRoutes);
+app.use("/email", emailRoutes);
 
 // Set MongoDB URI based on the environment
 const environment = process.env.NODE_ENV || "development";
