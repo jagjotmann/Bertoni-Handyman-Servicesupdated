@@ -1,10 +1,24 @@
-﻿# Bertoni Handyman Services
+﻿<div style="display: flex; flex-direction: column; text-align: center; justify-content: center; align-items: center"><img src="BHS%20Logo.svg"/>
+<em>A web application for a construction contractor business that includes quote, job, and employee management.
+</em>
+</div>
+
+<div style="margin: 1rem; text-align: center;">
+    <span style="padding: 2px 5px; text-align: center; background-color: #087FD2; color: white; height: 20px;">Typescript</span>
+    <span style="padding: 2px 5px; text-align: center; background-color: #61DBFB; color: black; height: 20px;">React</span>
+    <span style="padding: 2px 5px; text-align: center; background-color: #83CD29; color: black; height: 20px;">Nodejs</span>
+    <span style="padding: 2px 5px; text-align: center; background-color: #55AD47; color: white; height: 20px;">MongoDB</span>
+    <span style="padding: 2px 5px; text-align: center; background-color: black; color: white; height: 20px;">Vercel</span>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: center">
+  <img src="homepage-mockup.png" style="width: 300px"/>
+  <img src="admin-mockup.png" style="width: 300px"/>
+  </div>
 
 ## Project Synopsis
 
 Bertoni Handyman Services specializes in a range of home repair and improvement projects. This project involves the development of a comprehensive website that serves as a platform for clients to request quotes and schedule appointments, and for admins to manage these requests efficiently.
-
-![Software Logo and Creative Images](path/to/logo_and_images)
 
 ## Table of Contents
 
@@ -40,13 +54,30 @@ Bertoni Handyman Services specializes in a range of home repair and improvement 
 
 - General information about the company
 - Vouchers and reviews section
-- Appointment scheduling functionality
+- Quote Request functionality
+
+<p style="display:flex; flex-direction: column;">
+    <img width="50%" src="general_info.png" alt="apis"/>
+&nbsp;
+</p>
+
+![Animated Gif](GAQ.gif)
+
+Mobile Application View
+
+![Animated Gif](Mobile.gif)
 
 ### Admin Portal
 
 - Management of quote requests and user data
 - Quote builder tool
 - Chat functionality for client interactions
+
+<p style="display:flex; flex-direction: column;">
+    <img width="70%" src="manage_quotes.png" alt="apis"/>
+&nbsp;
+    <img width="70%" src="build_quote.png" alt="data-models"/>
+</p>
 
 ### Quote From Scratch
 
