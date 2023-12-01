@@ -1,4 +1,4 @@
-﻿<p align="center"><img src="BHS%20Logo.png"/></p>
+﻿<p align="center"><img src="BHS%20Logo.png" style="width: 400px" alt="Bertoni Handyman Services Logo"/></p>
 <p align="center"><em>A web application for a construction contractor business that includes quote, job, and employee management.
 </em></p>
 
