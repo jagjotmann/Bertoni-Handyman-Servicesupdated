@@ -6,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import EmailDashboard from "../components/EmailDashboard";
 import QuoteDashboard from "../components/QuoteDashboard";
-import { useNavigate } from "react-router-dom";
 
 // Interface for modal properties
 interface ModalProps {
@@ -30,21 +29,22 @@ const Signin = () => {
   const validateEmail = (email: string) => {
     const re = /\S+@\S+\.\S+/;
     return re.test(email);
-
-  const handleSignInWithEmail = () => {
-    // setEmailError(!email.trim());
-    // setPasswordError(!password.trim());
-    // if (!email.trim() || !password.trim()) {
-    //   setModal({
-    //     content: "Please enter both your email and password.",
-    //   });
-    // } else {
-    //   setIsSignedIn(true);
-    //   setSignInMethod("email");
-    // }
-    window.location.href = `/admin`;
   };
 
+  // Function to handle sign-in logic
+  const handleSignInWithEmail = async () => {
+    let hasError = false;
+
+    // Validate email input
+    if (!email.trim()) {
+      setEmailError("Email is required.");
+      hasError = true;
+    } else if (!validateEmail(email)) {
+      setEmailError("Please enter a valid email.");
+      hasError = true;
+    } else {
+      setEmailError("");
+    }
 
     // Validate password input
     if (!password.trim()) {
@@ -54,14 +54,9 @@ const Signin = () => {
       setPasswordError("");
     }
 
-  const handleCreateAccount = () => {
-    navigate("/create-account"); // redirects to Create Account
-  };
-
     if (hasError) {
       return;
     }
-
     try {
       // Attempt to log in the user
       await axios.post("http://localhost:3001/login", {
