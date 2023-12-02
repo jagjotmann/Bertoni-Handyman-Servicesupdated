@@ -18,30 +18,16 @@ Bertoni Handyman Services specializes in a range of home repair and improvement 
 ## Table of Contents
 
 1. [Project Synopsis](#project-synopsis)
-2. [Software Requirements](#software-requirements)
-3. [Features and User Guide](#features-and-user-guide)
+2. [Features and User Guide](#features-and-user-guide)
    - [Frontend](#frontend)
    - [Admin Portal](#admin-portal)
    - [Quote From Scratch](#quote-from-scratch)
-4. [Database Structure](#database-structure)
-5. [Testing](#testing)
-6. [Deployment](#deployment)
-7. [Developer Instructions](#developer-instructions)
-8. [Timeline and Milestones](#timeline-and-milestones)
-9. [Contact Information](#contact-information)
-
-## Software Requirements
-
-### Login Requirements
-
-- Password and username complexity standards
-- Hashing and 3rd party authentication mechanisms
-
-### Database Requirements
-
-- Data storage: Images, passwords, PII, sales, inventory, admin and user data
-- Data removal policies
-- ERD and other relevant diagrams
+3. [Database Structure](#database-structure)
+4. [Testing](#testing)
+5. [Deployment](#deployment)
+6. [Developer Instructions](#developer-instructions)
+7. [Timeline and Milestones](#timeline-and-milestones)
+8. [Contact Information](#contact-information)
 
 ## Features and User Guide
 
