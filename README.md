@@ -97,7 +97,7 @@ These steps outline how to deploy the Bertoni Handyman Services application to a
 
 Before deploying the application, ensure you have the following prerequisites:
 
-- Node.js and npm installed on your production server.
+- Node.js (v21.1.0) and npm (10.2.0) installed on your production server.
 - A MongoDB database instance set up and accessible from your production environment.
 - Properly configured environment variables (e.g., database connection details) in your `.env` file.
 - A domain or server where you intend to host your application.
