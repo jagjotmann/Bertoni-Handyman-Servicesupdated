@@ -30,19 +30,6 @@ Bertoni Handyman Services specializes in a range of home repair and improvement 
 8. [Timeline and Milestones](#timeline-and-milestones)
 9. [Contact Information](#contact-information)
 
-## Software Requirements
-
-### Login Requirements
-
-- Password and username complexity standards
-- Hashing and 3rd party authentication mechanisms
-
-### Database Requirements
-
-- Data storage: Images, passwords, PII, sales, inventory, admin and user data
-- Data removal policies
-- ERD and other relevant diagrams
-
 ## Features and User Guide
 
 ### Frontend
