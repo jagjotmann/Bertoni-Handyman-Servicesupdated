@@ -22,11 +22,12 @@ Bertoni Handyman Services specializes in a range of home repair and improvement 
    - [Frontend](#frontend)
    - [Admin Portal](#admin-portal)
    - [Quote From Scratch](#quote-from-scratch)
-3. [Testing](#testing)
-4. [Deployment](#deployment)
-5. [Developer Instructions](#developer-instructions)
-6. [Timeline and Milestones](#timeline-and-milestones)
-7. [Contact Information](#contact-information)
+3. [Database Structure](#database-structure)
+4. [Testing](#testing)
+5. [Deployment](#deployment)
+6. [Developer Instructions](#developer-instructions)
+7. [Timeline and Milestones](#timeline-and-milestones)
+8. [Contact Information](#contact-information)
 
 ## Features and User Guide
 
