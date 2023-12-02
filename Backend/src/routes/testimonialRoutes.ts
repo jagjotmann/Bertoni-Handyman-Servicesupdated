@@ -5,9 +5,10 @@ import User from "../models/userModel.js";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 
-router.get("/allTestimonials", async (req: Request, res: Response) => {
+router.post("/getTestimonials", async (req: Request, res: Response) => {
   try {
-    const tests = await Testimonial.find().populate('author');
+    const { amount } = req.body;
+    const tests = await Testimonial.find().populate('author').sort({ date: -1 }).limit(amount);;
     const formattedTests = tests.map(blog => {
       return {
         _id: blog._id,
