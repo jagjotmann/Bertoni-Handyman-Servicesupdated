@@ -185,7 +185,7 @@ It will typically run on http://localhost:3001.
       ```
 
   2.  **Install Node.js and npm**:
-      - This project requires Node.js version `[specify version, e.g., 14.x]` and npm version `[specify version, e.g., 6.x]`.
+      - This project requires Node.js version `(v21.1.0)` and npm version `npm (10.2.0)`.
       - Download and install them from [Node.js official website](https://nodejs.org/).
 
   #### Frontend
