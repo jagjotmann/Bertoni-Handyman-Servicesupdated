@@ -249,30 +249,37 @@ It will typically run on http://localhost:3001.
    - [ ] Implement user authentication for clients and employees.
    - [ ] Develop the dashboard interface.
    - [ ] Allow clients to log in and access their personalized dashboard.
+
    **Milestone 2: Quote Request Feature**
    - [ ] Enable clients to fill out job details for a quote.
    - [ ] Implement a request submission system.
    - [ ] Notify the admin when a quote request is submitted.
+
    **Milestone 3: Job and Employee Categorization**
    - [ ] Create a system for categorizing jobs.
    - [ ] Implement employee categorization.
    - [ ] Link employees to their respective job categories.
+   
    **Milestone 4: Receipts and Job Completion**
    - [ ] Create a system for generating receipts upon job completion.
    - [ ] Allow clients to access and download receipts from their dashboard.
    - [ ] Ensure accuracy and security of receipt data.
+         
    **Milestone 5: Email Communication Feature**
    - [ ] Integrate email functionality within the dashboard.
    - [ ] Enable clients to send and receive emails directly from the portal.
    - [ ] Ensure secure and efficient email communication.
+
    **Milestone 6: Scheduler Implementation**
    - [ ] Develop a scheduling system within the dashboard.
    - [ ] Allow clients to schedule jobs based on employee availability and job categories.
    - [ ] Ensure real-time updates for scheduling changes.
+
    **Milestone 7: Testing and Quality Assurance**
    - [ ] Conduct thorough testing of all features.
    - [ ] Identify and resolve any bugs or issues.
    - [ ] Perform usability testing to ensure a user-friendly experience.
+
    **Milestone 8: Deployment and Production**
    - [ ] Prepare the application for production deployment.
    - [ ] Deploy the construction website and admin portal to a live server.
