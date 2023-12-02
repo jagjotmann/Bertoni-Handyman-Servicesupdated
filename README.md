@@ -252,3 +252,34 @@ It will typically run on http://localhost:3001.
 ## Contact Information
 
 - Sean Bertoni: bertoni.sean@gmail.com | (916)-508-1742
+
+## Contributors
+
+[//]: contributor-faces
+
+<a href="https://github.com/seanthecod3r">
+<img src="https://avatars.githubusercontent.com/u/74293781?s=64&amp;v=4" alt="@seanthecod3r" width="50" height="50">
+</a>
+<a href="https://github.com/ahmedaosman-hub" class="" data-hovercard-type="user" data-hovercard-url="/users/ahmedaosman-hub/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self">
+  <img src="https://avatars.githubusercontent.com/u/55333039?s=64&amp;v=4" alt="@ahmedaosman-hub" width="50" height="50">
+</a>
+<a href="https://github.com/Lofty1971" class="" data-hovercard-type="user" data-hovercard-url="/users/Lofty1971/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self">
+  <img src="https://avatars.githubusercontent.com/u/38510472?s=64&amp;v=4" alt="@Lofty1971" width="50" height="50">
+</a>
+<a href="https://github.com/alexfedy" class="" data-hovercard-type="user" data-hovercard-url="/users/alexfedy/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self">
+  <img src="https://avatars.githubusercontent.com/u/73800011?s=64&amp;v=4" alt="@alexfedy" width="50" height="50">
+</a>
+<a href="https://github.com/Mayaar-Irshad" class="" data-hovercard-type="user" data-hovercard-url="/users/Mayaar-Irshad/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self">
+  <img src="https://avatars.githubusercontent.com/u/105467566?s=64&amp;v=4" alt="@Mayaar-Irshad" width="50" height="50">
+</a>
+<a href="https://github.com/raheem6" class="" data-hovercard-type="user" data-hovercard-url="/users/raheem6/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self">
+  <img src="https://avatars.githubusercontent.com/u/124087748?s=64&amp;v=4" alt="@raheem6" width="50" height="50">
+</a>
+<a href="https://github.com/mariellemcbride" class="" data-hovercard-type="user" data-hovercard-url="/users/mariellemcbride/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self">
+  <img src="https://avatars.githubusercontent.com/u/27976091?s=64&amp;v=4" alt="@mariellemcbride" width="50" height="50">
+</a>
+<a href="https://github.com/jagjotmann" class="" data-hovercard-type="user" data-hovercard-url="/users/jagjotmann/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self">
+  <img src="https://avatars.githubusercontent.com/u/148426416?s=64&amp;v=4" alt="@jagjotmann" width="50" height="50">
+</a>
+
+[//]: contributor-faces
