@@ -14,34 +14,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+require("dotenv").config();
 const router = express_1.default.Router();
 let transporter = nodemailer_1.default.createTransport({
     service: process.env.EMAIL_SERVICE,
     auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-    }
+        pass: process.env.EMAIL_PASS,
+    },
 });
 router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { message, userEmail } = req.body;
     if (!userEmail || !message) {
-        return res.status(400).json({ message: 'Missing required fields' });
+        return res.status(400).json({ message: "Missing required fields" });
     }
     let mailOptions = {
         from: process.env.EMAIL_USER,
         to: userEmail,
-        subject: 'Update on Your Request',
-        text: message
+        subject: "Update on Your Request",
+        text: message,
     };
     try {
         yield transporter.sendMail(mailOptions);
-        res.status(200).json({ message: 'Email successfully sent' });
+        res.status(200).json({ message: "Email successfully sent" });
     }
     catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error in sending email' });
+        res.status(500).json({ message: "Error in sending email" });
     }
 }));
-exports.default = router;
+module.exports = router;
