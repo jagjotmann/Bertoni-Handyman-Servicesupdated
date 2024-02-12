@@ -1,7 +1,9 @@
 //Quote Requests Page
-import React from "react";
+import { useState, useEffect } from "react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
+import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 
+// Initial quote requests data
 const quoteRequests = [
   {
     quoteNumber: "#000",
@@ -34,55 +36,175 @@ const quoteRequests = [
 ];
 
 function QuoteRequests() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredQuotes, setFilteredQuotes] = useState(quoteRequests);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("");
+
+  // Handle search query change
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // Apply filters based on search query and selected status
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase();
+    const filtered = quoteRequests.filter((quote) => {
+      const matchesStatus = selectedStatus
+        ? quote.status === selectedStatus
+        : true;
+      const matchesQuery =
+        quote.clientName.toLowerCase().includes(lowercasedQuery) ||
+        quote.quoteNumber.toLowerCase().includes(lowercasedQuery) ||
+        quote.status.toLowerCase().includes(lowercasedQuery);
+      return matchesStatus && matchesQuery;
+    });
+    setFilteredQuotes(filtered);
+  }, [searchQuery, selectedStatus]);
+
+  // Toggle filter dropdown visibility
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
+  // Set selected status from filter dropdown
+  const handleFilterSelect = (status: string) => {
+    setSelectedStatus(status);
+    setIsDropdownOpen(false);
+  };
   return (
     <FullSectionLayout>
-      <div className="px-6 pt-4">
-        <h1 className="text-2xl font-bold mb-4 w-243">Quote Requests</h1>
-
-        <div className="mb-2">
-          <input
-            type="text"
-            className="w-324 h-49 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
-            placeholder="Search"
-          />
+      {/* Page container */}
+      <div className="min-h-screen flex flex-col bg-[#f2f2f4]">
+        {/* Header container with a background of white */}
+        <div className="bg-white">
+          <h2 className="text-2xl font-bold p-4 pl-10">Quote Requests</h2>
         </div>
 
-        <button className="w-202 h-49 bg-black text-white rounded-md px-4 py-2 hover:bg-gray-900 focus:outline-none focus:ring focus:border-blue-300">
-          Filter
-        </button>
+        {/* Container with bg of white, rounded corners, and shadow */}
+        <div className="m-4 bg-white rounded-lg shadow-2xl p-6">
+          {/* Search and Filter on the same line */}
+          <div className="flex items-center mb-4">
+            {/* Search Bar */}
+            <div className="flex items-center border-2 border-gray-300 rounded-3xl overflow-hidden">
+              <input
+                className="pl-5 pr-3 py-2 w-full text-lg"
+                type="text"
+                placeholder="Search..."
+                onChange={handleSearchChange}
+              />
+              <button className="px-5 text-gray-500 ">
+                <IoSearch size="1.25em" />
+              </button>
+            </div>
 
-        <table className="w-full border-collapse border border-gray-200">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="py-2 px-4 font-inter text-left w-128 h-30">
-                Quote Num
-              </th>
-              <th className="py-2 px-4 font-inter text-left w-186 h-30">
-                Client Name
-              </th>
-              <th className="py-2 px-4 font-inter text-left w-92 h-30">
-                Date Created
-              </th>
-              <th className="py-2 px-4 font-inter text-left w-98 h-30">
-                Status
-              </th>
-              <th className="py-2 px-4 font-inter text-left w-98 h-30">
-                Action
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {quoteRequests.map((request, index) => (
-              <tr key={index} className={index % 2 === 0 ? "bg-gray-100" : ""}>
-                <td className="py-2 px-4 w-37 h-30">{request.quoteNumber}</td>
-                <td className="py-2 px-4 w-83 h-30">{request.clientName}</td>
-                <td className="py-2 px-4 w-67 h-30">{request.dateCreated}</td>
-                <td className="py-2 px-4 w-56 h-30">{request.status}</td>
-                <td className="py-2 px-4 w-34 h-30">{request.action}</td>
+            {/* Filter Button */}
+            <div className="relative">
+              <button
+                id="dropdownDefaultButton"
+                data-dropdown-toggle="dropdown"
+                className="flex items-center bg-black text-white rounded-3xl px-5 py-2 ml-4"
+                onClick={toggleDropdown}
+              >
+                <span className="text-lg pr-10">Filter</span>
+                <IoFilter size="1.25em" />
+              </button>
+
+              {/* Static Dropdown Menu */}
+              {isDropdownOpen && (
+                <div
+                  id="dropdown"
+                  className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 absolute"
+                >
+                  <ul
+                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                    aria-labelledby="dropdownDefaultButton"
+                  >
+                    {["All", "Pending", "Declined", "Completed"].map(
+                      (status) => (
+                        <li key={status}>
+                          <button
+                            className="block px-4 py-2 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                            onClick={() =>
+                              handleFilterSelect(status === "All" ? "" : status)
+                            }
+                          >
+                            {status}
+                          </button>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Display the number of results */}
+          <div className="mb-4">
+            <span className="text-md font-semibold">
+              {filteredQuotes.length} results
+            </span>
+          </div>
+
+          {/* Table Container */}
+          <table className="w-full rounded-3xl  mb-10">
+            <thead className="bg-black rounded-3xl">
+              <tr>
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider ">
+                  Quote Num
+                </th>
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                  Client Name
+                </th>
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                  Date Created
+                </th>
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                  Status
+                </th>
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                  Action
+                </th>
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider"></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredQuotes.map((request, index) => (
+                <tr key={index}>
+                  <td className="px-4 py-2 border-b border-gray-300">
+                    {request.quoteNumber}
+                  </td>
+                  <td className="px-4 py-2 border-b border-gray-300">
+                    {request.clientName}
+                  </td>
+                  <td className="px-4 py-2 border-b border-gray-300">
+                    {request.dateCreated}
+                  </td>
+                  <td
+                    className={`px-4 py-2 border-b border-gray-300 ${
+                      request.status === "Completed"
+                        ? "text-green-500"
+                        : request.status === "Denied"
+                        ? "text-red-500"
+                        : "text-yellow-500"
+                    }`}
+                  >
+                    {request.status}
+                  </td>
+                  <td className="px-4 py-2 border-b border-gray-300">
+                    <button className="text-black underline hover:text-blue-700">
+                      {request.action}
+                    </button>
+                  </td>
+                  <td className="border-b border-gray-300">
+                    <button className="text-black  rounded-lg  hover:text-red-500">
+                      <IoCloseCircle size="1.25em" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </FullSectionLayout>
   );
