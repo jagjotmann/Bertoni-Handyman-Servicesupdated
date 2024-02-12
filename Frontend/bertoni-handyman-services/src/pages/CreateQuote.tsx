@@ -144,9 +144,7 @@ const AddItemModal: React.FC<{
 //this is the handler for conditional rendering for labor table
 const Labor: React.FC<LaborList> = ({ labor, deleteLabor }) => {
   if (labor.length === 0) {
-    return (
-      <div className="text-left text-gray-400">Add labor cost...</div>
-    );
+    return <div className="text-left text-gray-400">Add labor cost...</div>;
   }
 
   const handleDeleteClick = (index: number) => {
@@ -170,7 +168,7 @@ const Labor: React.FC<LaborList> = ({ labor, deleteLabor }) => {
             <tr key={index} className="border-b">
               <td className="p-2 px-4 border-r-2">${labor[0]}/hour</td>
               <td className="p-2 px-4 border-r-2">{labor[1]}</td>
-              <td className="p-2 px-4 border-r-2">${labor[0]*labor[1]}</td>
+              <td className="p-2 px-4 border-r-2">${labor[0] * labor[1]}</td>
               <td className="p-2 px-4">
                 <button
                   type="button"
@@ -321,7 +319,10 @@ const CreateQuote = () => {
   //sums total cost of item list and labor (***still need to do this part***)
   useEffect(() => {
     const totalCost = itemList.reduce((total, item) => total + item[1], 0);
-    const laborCost = laborList.reduce((total, laborEntry) => total + (laborEntry[0]*laborEntry[1]), 0);
+    const laborCost = laborList.reduce(
+      (total, laborEntry) => total + laborEntry[0] * laborEntry[1],
+      0
+    );
     const updatedTotalCost = totalCost + laborCost;
     setFinalTotalCost(updatedTotalCost);
   }, [itemList, laborList]);
@@ -394,8 +395,14 @@ const CreateQuote = () => {
               <div className="flex flex-row justify-between py-2 font-bold">
                 {/*Horizontal flexbox for name, phone address*/}
                 <div>
-                  <p className="text-gray-400">Name:</p>
-                  <p>{client.name}</p>
+                  <p className="text-gray-400">Email:</p>
+                  <a
+                    href={`mailto:${client.name}`}
+                    className="text-blue-500 hover:text-blue-300"
+                  >
+                    {client.name}
+                  </a>
+                  {/* <p>{client.name}</p> */}
                 </div>
                 <div>
                   <p className="text-gray-400">Phone:</p>
