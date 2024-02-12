@@ -153,7 +153,15 @@ function QuoteRequests() {
                   <td className="px-4 py-2 border-b border-gray-300">
                     {request.dateCreated}
                   </td>
-                  <td className="px-4 py-2 border-b border-gray-300">
+                  <td
+                    className={`px-4 py-2 border-b border-gray-300 ${
+                      request.status === "Completed"
+                        ? "text-green-500"
+                        : request.status === "Denied"
+                        ? "text-red-500"
+                        : "text-yellow-500"
+                    }`}
+                  >
                     {request.status}
                   </td>
                   <td className="px-4 py-2 border-b border-gray-300">
