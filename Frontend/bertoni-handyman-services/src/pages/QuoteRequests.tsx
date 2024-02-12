@@ -1,7 +1,9 @@
 //Quote Requests Page
-import React, { useState } from "react";
+import { Fragment, useState, useEffect } from "react";
+import { Menu, Transition } from "@headlessui/react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
-import { IoSearch, IoFilter } from "react-icons/io5";
+import { IoSearch } from "react-icons/io5";
+import { IoFilter } from "react-icons/io5";
 import { IoIosCloseCircle } from "react-icons/io";
 
 const quoteRequests = [
@@ -36,7 +38,33 @@ const quoteRequests = [
 ];
 
 function QuoteRequests() {
-  const [quotes, setQuotes] = useState({});
+  const [quotes, setQuotes] = useState([
+    // ... your initial quotes array
+  ]);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredQuotes, setFilteredQuotes] = useState(quoteRequests);
+
+  // Handle search query change
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(event.target.value);
+  };
+
+  // Update filtered quotes based on search query
+  useEffect(() => {
+    if (searchQuery === "") {
+      setFilteredQuotes(quoteRequests);
+    } else {
+      const lowercasedQuery = searchQuery.toLowerCase();
+      const filtered = quoteRequests.filter(
+        (quote) =>
+          quote.clientName.toLowerCase().includes(lowercasedQuery) ||
+          quote.quoteNumber.toLowerCase().includes(lowercasedQuery) ||
+          quote.status.toLowerCase().includes(lowercasedQuery)
+      );
+      setFilteredQuotes(filtered);
+    }
+  }, [searchQuery]);
 
   return (
     <FullSectionLayout>
@@ -57,6 +85,7 @@ function QuoteRequests() {
                 className="pl-5 pr-3 py-2 w-full text-lg"
                 type="text"
                 placeholder="Search..."
+                onChange={handleSearchChange}
               />
               <button className="px-5 text-gray-500 ">
                 <IoSearch size="1.25em" />
@@ -142,7 +171,7 @@ function QuoteRequests() {
               </tr>
             </thead>
             <tbody>
-              {quoteRequests.map((request, index) => (
+              {filteredQuotes.map((request, index) => (
                 <tr key={index}>
                   <td className="px-4 py-2 border-b border-gray-300">
                     {request.quoteNumber}
