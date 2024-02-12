@@ -3,6 +3,37 @@ import { IoBriefcaseOutline } from "react-icons/io5";
 import { LuClock } from "react-icons/lu";
 import { CiBadgeDollar } from "react-icons/ci";
 
+const tempData = [
+  {
+    clientID: "#000",
+    clientName: "Sean Celli",
+    clientEmail: "sean.celli@yahoo.com",
+    clientPhone: "(210)145-2453",
+    status: "Pending Quote",
+  },
+  {
+    clientID: "#001",
+    clientName: "Austin Loft",
+    clientEmail: "austin.loft@yahoo.com",
+    clientPhone: "(210)145-2453",
+    status: "Pending Quote",
+  },
+  {
+    clientID: "#002",
+    clientName: "Alex Fedororv",
+    clientEmail: "alex.ferororv@yahoo.com",
+    clientPhone: "(210)145-2453",
+    status: "Pending Quote",
+  },
+  {
+    clientID: "#003",
+    clientName: "Ahmed Osman",
+    clientEmail: "ahmed.osman@yahoo.com",
+    clientPhone: "(210)145-2453",
+    status: "Pending Quote",
+  },
+];
+
 const AdminDashboard = () => {
   return (
     <main className="flex-1 w-full overflow-x-hidden">
@@ -73,7 +104,28 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                {tempData.map((data) => (
+                  <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                    <th
+                      scope="row"
+                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                    >
+                      {data.clientID}
+                    </th>
+                    <td className="px-6 py-4">{data.clientName}</td>
+                    <td className="px-6 py-4">
+                      <a
+                        href={`mailto:${data.clientEmail}`}
+                        className="text-blue-500 hover:text-blue-300"
+                      >
+                        {data.clientEmail}
+                      </a>
+                    </td>
+                    <td className="px-6 py-4">{data.clientPhone}</td>
+                    <td className="px-6 py-4">{data.status}</td>
+                  </tr>
+                ))}
+                {/* <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
                   <th
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -120,7 +172,7 @@ const AdminDashboard = () => {
                   <td className="px-6 py-4">jeff101@email.com</td>
                   <td className="px-6 py-4">(201)145-2453</td>
                   <td className="px-6 py-4">Pending Quote</td>
-                </tr>
+                </tr> */}
               </tbody>
             </table>
           </div>
