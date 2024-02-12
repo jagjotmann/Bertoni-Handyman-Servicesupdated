@@ -2,8 +2,7 @@
 import { Fragment, useState, useEffect } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
-import { IoSearch } from "react-icons/io5";
-import { IoFilter } from "react-icons/io5";
+import { IoSearch, IoFilter } from "react-icons/io5";
 import { IoIosCloseCircle } from "react-icons/io";
 
 const quoteRequests = [
@@ -38,12 +37,10 @@ const quoteRequests = [
 ];
 
 function QuoteRequests() {
-  const [quotes, setQuotes] = useState([
-    // ... your initial quotes array
-  ]);
-
+  const [quotes, setQuotes] = useState(quoteRequests);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredQuotes, setFilteredQuotes] = useState(quoteRequests);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   // Handle search query change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,6 +62,8 @@ function QuoteRequests() {
       setFilteredQuotes(filtered);
     }
   }, [searchQuery]);
+
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
   return (
     <FullSectionLayout>
@@ -98,46 +97,49 @@ function QuoteRequests() {
                 id="dropdownDefaultButton"
                 data-dropdown-toggle="dropdown"
                 className="flex items-center bg-black text-white rounded-3xl px-5 py-2 ml-4"
+                onClick={toggleDropdown}
               >
                 <span className="text-lg pr-10">Filter</span>
                 <IoFilter size="1.25em" />
               </button>
 
               {/* Static Dropdown Menu */}
-              <div
-                id="dropdown"
-                className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 absolute"
-              >
-                <ul
-                  className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                  aria-labelledby="dropdownDefaultButton"
+              {isDropdownOpen && (
+                <div
+                  id="dropdown"
+                  className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 absolute"
                 >
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Pending
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Created
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                    >
-                      Declined
-                    </a>
-                  </li>
-                </ul>
-              </div>
+                  <ul
+                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
+                    aria-labelledby="dropdownDefaultButton"
+                  >
+                    <li>
+                      <a
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      >
+                        Pending
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      >
+                        Created
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="#"
+                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                      >
+                        Declined
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
 
