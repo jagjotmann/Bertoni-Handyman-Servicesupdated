@@ -1,7 +1,7 @@
 //Quote Requests Page
 import React from "react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
-import { IoSearch } from "react-icons/io5";
+import { IoSearch, IoFilter } from "react-icons/io5";
 
 const quoteRequests = [
   {
@@ -49,20 +49,25 @@ function QuoteRequests() {
           {/* Container with bg of white, rounded corners, and shadow */}
           <div className="m-4 bg-white rounded-lg shadow-xl p-6">
             {/* Search and Filter on the same line */}
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center border-solid border-1 border-neutral-800 rounded-3xl overflow-hidden">
+            <div className="flex items-center gap-10">
+              {/* Search Bar */}
+              <div className="flex items-center border-1 border-neutral-800 rounded-3xl overflow-hidden">
                 <input
-                  className="pl-5 py-2 w-full"
+                  className="pl-5 pr-3 py-2 w-full text-lg"
                   type="text"
                   placeholder="Search..."
                 />
-                <button className=" px-5 text-gray-400">
+                <button className="px-5 text-gray-500 ">
                   <IoSearch size="1.25em" />
                 </button>
               </div>
-              <div>
-                <button className="bg-green-500 text-white p-2 rounded">
-                  <i className="fas fa-filter"></i> Filter
+
+              {/* Filter Button */}
+              <div className="flex items-center bg-black text-white border-1 border-neutral-800 rounded-3xl overflow-hidden">
+                <p className="pl-5 pr-10 py-2 w-full text-lg">Filter</p>
+
+                <button className="px-5">
+                  <IoFilter size="1.25em" />
                 </button>
               </div>
 
