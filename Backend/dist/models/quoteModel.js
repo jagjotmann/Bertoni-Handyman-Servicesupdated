@@ -128,7 +128,7 @@ const QuoteSchema = new mongoose_1.Schema({
             required: true,
         },
         companyName: String,
-        email: String,
+        email: String, //Ideally would require one of email or phone
         phone: String,
     },
 });
