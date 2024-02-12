@@ -142,7 +142,7 @@ function QuoteRequests() {
           {/* Display the number of results */}
           <div className="mb-4">
             <span className="text-md font-semibold">
-              {quotes.length} results
+              {filteredQuotes.length} results
             </span>
           </div>
 
