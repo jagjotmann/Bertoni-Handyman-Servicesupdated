@@ -1,10 +1,9 @@
 //Quote Requests Page
-import { Fragment, useState, useEffect } from "react";
-import { Menu, Transition } from "@headlessui/react";
+import { useState, useEffect } from "react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
-import { IoSearch, IoFilter } from "react-icons/io5";
-import { IoIosCloseCircle } from "react-icons/io";
+import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 
+// Initial quote requests data
 const quoteRequests = [
   {
     quoteNumber: "#000",
@@ -37,7 +36,6 @@ const quoteRequests = [
 ];
 
 function QuoteRequests() {
-  const [quotes, setQuotes] = useState(quoteRequests);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredQuotes, setFilteredQuotes] = useState(quoteRequests);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -48,8 +46,7 @@ function QuoteRequests() {
     setSearchQuery(event.target.value);
   };
 
-  // Update filtered quotes based on search query
-  // Handle search query and filter status change
+  // Apply filters based on search query and selected status
   useEffect(() => {
     const lowercasedQuery = searchQuery.toLowerCase();
     const filtered = quoteRequests.filter((quote) => {
@@ -63,10 +60,12 @@ function QuoteRequests() {
       return matchesStatus && matchesQuery;
     });
     setFilteredQuotes(filtered);
-  }, [searchQuery, selectedStatus]); // Reacts to changes in either searchQuery or selectedStatus
+  }, [searchQuery, selectedStatus]);
 
+  // Toggle filter dropdown visibility
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
+  // Set selected status from filter dropdown
   const handleFilterSelect = (status: string) => {
     setSelectedStatus(status);
     setIsDropdownOpen(false);
@@ -198,7 +197,7 @@ function QuoteRequests() {
                   </td>
                   <td className="border-b border-gray-300">
                     <button className="text-black  rounded-lg  hover:text-red-500">
-                      <IoIosCloseCircle size="1.25em" />
+                      <IoCloseCircle size="1.25em" />
                     </button>
                   </td>
                 </tr>
