@@ -41,6 +41,7 @@ function QuoteRequests() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredQuotes, setFilteredQuotes] = useState(quoteRequests);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   // Handle search query change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,23 +49,28 @@ function QuoteRequests() {
   };
 
   // Update filtered quotes based on search query
+  // Handle search query and filter status change
   useEffect(() => {
-    if (searchQuery === "") {
-      setFilteredQuotes(quoteRequests);
-    } else {
-      const lowercasedQuery = searchQuery.toLowerCase();
-      const filtered = quoteRequests.filter(
-        (quote) =>
-          quote.clientName.toLowerCase().includes(lowercasedQuery) ||
-          quote.quoteNumber.toLowerCase().includes(lowercasedQuery) ||
-          quote.status.toLowerCase().includes(lowercasedQuery)
-      );
-      setFilteredQuotes(filtered);
-    }
-  }, [searchQuery]);
+    const lowercasedQuery = searchQuery.toLowerCase();
+    const filtered = quoteRequests.filter((quote) => {
+      const matchesStatus = selectedStatus
+        ? quote.status === selectedStatus
+        : true;
+      const matchesQuery =
+        quote.clientName.toLowerCase().includes(lowercasedQuery) ||
+        quote.quoteNumber.toLowerCase().includes(lowercasedQuery) ||
+        quote.status.toLowerCase().includes(lowercasedQuery);
+      return matchesStatus && matchesQuery;
+    });
+    setFilteredQuotes(filtered);
+  }, [searchQuery, selectedStatus]); // Reacts to changes in either searchQuery or selectedStatus
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
+  const handleFilterSelect = (status: string) => {
+    setSelectedStatus(status);
+    setIsDropdownOpen(false);
+  };
   return (
     <FullSectionLayout>
       {/* Page container */}
@@ -113,30 +119,20 @@ function QuoteRequests() {
                     className="py-2 text-sm text-gray-700 dark:text-gray-200"
                     aria-labelledby="dropdownDefaultButton"
                   >
-                    <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Pending
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Created
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                      >
-                        Declined
-                      </a>
-                    </li>
+                    {["All", "Pending", "Declined", "Completed"].map(
+                      (status) => (
+                        <li key={status}>
+                          <button
+                            className="block px-4 py-2 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                            onClick={() =>
+                              handleFilterSelect(status === "All" ? "" : status)
+                            }
+                          >
+                            {status}
+                          </button>
+                        </li>
+                      )
+                    )}
                   </ul>
                 </div>
               )}
