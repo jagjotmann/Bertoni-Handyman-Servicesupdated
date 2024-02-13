@@ -26,9 +26,7 @@ function QuoteRequests() {
       const statusParam = selectedStatus
         ? `&status=${encodeURIComponent(selectedStatus)}`
         : "";
-      const response = await fetch(
-        `/api/quotes/all${queryParam}${statusParam}`
-      );
+      const response = await fetch(`quotes/all${queryParam}${statusParam}`);
       const data = await response.json();
       setFilteredQuotes(data);
     };
