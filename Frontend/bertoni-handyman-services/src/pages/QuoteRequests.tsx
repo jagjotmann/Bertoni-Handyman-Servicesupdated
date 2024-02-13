@@ -4,11 +4,30 @@ import FullSectionLayout from "../layouts/FullSectionLayout";
 import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 
 type Quote = {
-  quoteNumber: string;
-  clientName: string;
-  dateCreated: string;
-  status: string;
-  action: string;
+  _id: string;
+  quoteDate: string;
+  quoteStatus: string;
+  project: {
+    name: string;
+    description: string;
+    address: {
+      streetAddress: string;
+      city: string;
+      state: string;
+      zipCode: string;
+    };
+  };
+
+  subtotal: number;
+  tax: number;
+  totalCost: number;
+  notes: string;
+  contactPerson: {
+    name: string;
+    companyName?: string;
+    email?: string;
+    phone?: string;
+  };
 };
 
 function QuoteRequests() {
@@ -46,6 +65,8 @@ function QuoteRequests() {
     setSelectedStatus(status);
     setIsDropdownOpen(false);
   };
+
+  console.log(filteredQuotes);
   return (
     <FullSectionLayout>
       {/* Page container */}
@@ -144,35 +165,38 @@ function QuoteRequests() {
               </tr>
             </thead>
             <tbody>
-              {filteredQuotes.map((request, index) => (
-                <tr key={index}>
+              {filteredQuotes.map((quote, index) => (
+                <tr key={quote._id}>
                   <td className="px-4 py-2 border-b border-gray-300">
-                    {request.quoteNumber}
+                    {quote.project.name}
                   </td>
                   <td className="px-4 py-2 border-b border-gray-300">
-                    {request.clientName}
+                    {quote.contactPerson.name}
                   </td>
                   <td className="px-4 py-2 border-b border-gray-300">
-                    {request.dateCreated}
+                    {new Date(quote.quoteDate).toLocaleDateString()}
                   </td>
                   <td
                     className={`px-4 py-2 border-b border-gray-300 ${
-                      request.status === "Completed"
+                      quote.quoteStatus === "Completed"
                         ? "text-green-500"
-                        : request.status === "Denied"
+                        : quote.quoteStatus === "Denied"
                         ? "text-red-500"
-                        : "text-yellow-500"
+                        : quote.quoteStatus === "Pending"
+                        ? "text-yellow-500"
+                        : "text-purple-500"
                     }`}
                   >
-                    {request.status}
+                    {quote.quoteStatus}
                   </td>
                   <td className="px-4 py-2 border-b border-gray-300">
+                    {/* Assuming you have some action to perform here */}
                     <button className="text-black underline hover:text-blue-700">
-                      {request.action}
+                      View
                     </button>
                   </td>
                   <td className="border-b border-gray-300">
-                    <button className="text-black  rounded-lg  hover:text-red-500">
+                    <button className="text-black rounded-lg hover:text-red-500">
                       <IoCloseCircle size="1.25em" />
                     </button>
                   </td>
