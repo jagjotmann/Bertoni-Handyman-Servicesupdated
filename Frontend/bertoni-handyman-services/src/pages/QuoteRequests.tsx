@@ -3,64 +3,42 @@ import { useState, useEffect } from "react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
 import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 
-// Initial quote requests data
-const quoteRequests = [
-  {
-    quoteNumber: "#000",
-    clientName: "Jeff Richard",
-    dateCreated: "1 Day ago",
-    status: "Pending",
-    action: "View",
-  },
-  {
-    quoteNumber: "#001",
-    clientName: "Jeff Richard",
-    dateCreated: "1 Day ago",
-    status: "Pending",
-    action: "View",
-  },
-  {
-    quoteNumber: "#002",
-    clientName: "Jeff Richard",
-    dateCreated: "1 Day ago",
-    status: "Pending",
-    action: "View",
-  },
-  {
-    quoteNumber: "#003",
-    clientName: "Jeff Richard",
-    dateCreated: "2 months ago",
-    status: "Completed",
-    action: "View",
-  },
-];
+type Quote = {
+  quoteNumber: string;
+  clientName: string;
+  dateCreated: string;
+  status: string;
+  action: string;
+};
 
 function QuoteRequests() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredQuotes, setFilteredQuotes] = useState(quoteRequests);
+  const [filteredQuotes, setFilteredQuotes] = useState<Quote[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
+
+  // Apply filters based on search query and selected status
+  useEffect(() => {
+    const fetchData = async () => {
+      const queryParam = searchQuery
+        ? `?search=${encodeURIComponent(searchQuery)}`
+        : "";
+      const statusParam = selectedStatus
+        ? `&status=${encodeURIComponent(selectedStatus)}`
+        : "";
+      const response = await fetch(
+        `/api/quotes/all${queryParam}${statusParam}`
+      );
+      const data = await response.json();
+      setFilteredQuotes(data);
+    };
+    fetchData();
+  }, [searchQuery, selectedStatus]);
 
   // Handle search query change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
-
-  // Apply filters based on search query and selected status
-  useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
-    const filtered = quoteRequests.filter((quote) => {
-      const matchesStatus = selectedStatus
-        ? quote.status === selectedStatus
-        : true;
-      const matchesQuery =
-        quote.clientName.toLowerCase().includes(lowercasedQuery) ||
-        quote.quoteNumber.toLowerCase().includes(lowercasedQuery) ||
-        quote.status.toLowerCase().includes(lowercasedQuery);
-      return matchesStatus && matchesQuery;
-    });
-    setFilteredQuotes(filtered);
-  }, [searchQuery, selectedStatus]);
 
   // Toggle filter dropdown visibility
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
