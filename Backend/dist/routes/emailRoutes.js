@@ -14,39 +14,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
-require("dotenv").config();
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 const router = express_1.default.Router();
-let transporter = nodemailer_1.default.createTransport({
-    service: process.env.EMAIL_SERVICE,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
-});
 // Define the sendMail function to accept dynamic parameters
 function sendMail(userEmail, message) {
     return __awaiter(this, void 0, void 0, function* () {
         const transporter = nodemailer_1.default.createTransport({
-            service: 'gmail',
+            service: "gmail",
             auth: {
-                user: 'webwizard122@gmail.com',
-                pass: 'webwizard@2020', // Note: Storing passwords in code is highly insecure. Use environment variables.
-            }
+                user: "webwizard122@gmail.com",
+                pass: "webwizard@2020", // Note: Storing passwords in code is highly insecure. Use environment variables.
+            },
         });
         const mailOptions = {
-            from: 'idealtechguru1@gmail.com',
+            from: "idealtechguru1@gmail.com",
             to: userEmail, // Use the dynamically provided email address
-            subject: 'Welcome to NodeJS App',
+            subject: "Welcome to NodeJS App",
             text: message, // Use the dynamically provided message
             // Consider adding HTML and attachments here if needed
         };
         try {
             yield transporter.sendMail(mailOptions);
-            console.log('Email sent successfully');
+            console.log("Email sent successfully");
             return true;
         }
         catch (error) {
-            console.error('Email send failed with error:', error);
+            console.error("Email send failed with error:", error);
             return false;
         }
     });
@@ -57,18 +51,6 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (!userEmail || !message) {
         return res.status(400).json({ message: "Missing required fields" });
     }
-    let mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: userEmail,
-        subject: "Update on Your Request",
-        text: message,
-    };
-    try {
-        yield transporter.sendMail(mailOptions);
-        res.status(200).json({ message: "Email successfully sent" });
-    }
-    catch (error) {
-        console.error(error);
     const emailSent = yield sendMail(userEmail, message);
     if (emailSent) {
         res.status(200).json({ message: "Email successfully sent" });
@@ -77,4 +59,5 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(500).json({ message: "Error in sending email" });
     }
 }));
+// export default router;
 module.exports = router;
