@@ -68,11 +68,18 @@ function QuoteRequests() {
   const handleFilterSelect = (status: string) => {
     setSelectedStatus(status);
     setIsDropdownOpen(false);
-    setFilteredQuotes((prevQuotes) =>
-      prevQuotes.filter(
-        (quote) => status === "" || quote.quoteStatus === status
-      )
-    );
+
+    const filtered = allQuotes.filter((quote) => {
+      const matchesSearch =
+        searchQuery.length === 0 ||
+        quote.contactPerson.name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+      const matchesStatus = status === "" || quote.quoteStatus === status;
+      return matchesSearch && matchesStatus;
+    });
+
+    setFilteredQuotes(filtered);
   };
 
   return (
