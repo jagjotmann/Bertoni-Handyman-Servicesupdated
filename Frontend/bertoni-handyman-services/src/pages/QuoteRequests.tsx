@@ -42,11 +42,9 @@ function QuoteRequests() {
         const data = await response.json();
         setAllQuotes(data);
         setFilteredQuotes(data);
-        console.log(data);
       } catch (error) {
         console.error("Failed to fetch quotes:", error);
       }
-      console.log("Hello");
     };
     fetchData();
   }, []);
@@ -82,6 +80,19 @@ function QuoteRequests() {
     setFilteredQuotes(filtered);
   };
 
+  const handleDeleteQuote = async (quoteId: string) => {
+    try {
+      await fetch(`quotes/${quoteId}`, { method: "DELETE" });
+      const updatedQuotes = allQuotes.filter((quote) => quote._id !== quoteId);
+      setFilteredQuotes(updatedQuotes);
+      const updatedAllQuotes = allQuotes.filter(
+        (quote) => quote._id !== quoteId
+      );
+      setAllQuotes(updatedAllQuotes);
+    } catch (error) {
+      console.error("Failed to delete quote:", error);
+    }
+  };
   return (
     <FullSectionLayout>
       <div className="min-h-screen flex flex-col bg-[#f2f2f4]">
@@ -207,7 +218,10 @@ function QuoteRequests() {
                     </button>
                   </td>
                   <td className="border-b border-gray-300">
-                    <button className="flex items-center text-black rounded-lg hover:text-red-500">
+                    <button
+                      className="flex items-center text-black rounded-lg hover:text-red-500"
+                      onClick={() => handleDeleteQuote(quote._id)}
+                    >
                       <IoCloseCircle size="1.25em" />
                     </button>
                   </td>
