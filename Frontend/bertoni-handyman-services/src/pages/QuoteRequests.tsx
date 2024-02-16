@@ -1,5 +1,4 @@
-//Quote Requests Page
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
 import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 
@@ -17,7 +16,6 @@ type Quote = {
       zipCode: string;
     };
   };
-
   subtotal: number;
   tax: number;
   totalCost: number;
@@ -33,52 +31,61 @@ type Quote = {
 function QuoteRequests() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredQuotes, setFilteredQuotes] = useState<Quote[]>([]);
+  const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
 
-  // Apply filters based on search query and selected status
   useEffect(() => {
     const fetchData = async () => {
-      const queryParam = searchQuery
-        ? `?search=${encodeURIComponent(searchQuery)}`
-        : "";
-      const statusParam = selectedStatus
-        ? `&status=${encodeURIComponent(selectedStatus)}`
-        : "";
-      const response = await fetch(`quotes/all${queryParam}${statusParam}`);
-      const data = await response.json();
-      setFilteredQuotes(data);
+      try {
+        const response = await fetch("quotes/all");
+        const data = await response.json();
+        setAllQuotes(data);
+        setFilteredQuotes(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Failed to fetch quotes:", error);
+      }
+      console.log("Hello");
     };
     fetchData();
-  }, [searchQuery, selectedStatus]);
-
+  }, []);
   // Handle search query change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
 
-  // Toggle filter dropdown visibility
+  // Execute search when the search button is clicked
+  const handleSearch = () => {
+    const filtered = allQuotes.filter((quote) =>
+      quote.contactPerson.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredQuotes(filtered);
+  };
+
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
-  // Set selected status from filter dropdown
   const handleFilterSelect = (status: string) => {
     setSelectedStatus(status);
     setIsDropdownOpen(false);
+    setFilteredQuotes((prevQuotes) =>
+      prevQuotes.filter(
+        (quote) => status === "" || quote.quoteStatus === status
+      )
+    );
   };
 
-  console.log(filteredQuotes);
   return (
     <FullSectionLayout>
-      {/* Page container */}
       <div className="min-h-screen flex flex-col bg-[#f2f2f4]">
-        {/* Header container with a background of white */}
+        {/* Header */}
         <div className="bg-white">
           <h2 className="text-2xl font-bold p-4 pl-10">Quote Requests</h2>
         </div>
 
-        {/* Container with bg of white, rounded corners, and shadow */}
+        {/* Main Content */}
         <div className="m-4 bg-white rounded-lg shadow-2xl p-6">
-          {/* Search and Filter on the same line */}
+          {/* Search and Filter Section */}
           <div className="flex items-center mb-4">
             {/* Search Bar */}
             <div className="flex items-center border-2 border-gray-300 rounded-3xl overflow-hidden">
@@ -88,7 +95,7 @@ function QuoteRequests() {
                 placeholder="Search..."
                 onChange={handleSearchChange}
               />
-              <button className="px-5 text-gray-500 ">
+              <button className="px-5 text-gray-500" onClick={handleSearch}>
                 <IoSearch size="1.25em" />
               </button>
             </div>
@@ -135,37 +142,36 @@ function QuoteRequests() {
             </div>
           </div>
 
-          {/* Display the number of results */}
+          {/* Results Section */}
           <div className="mb-4">
             <span className="text-md font-semibold">
               {filteredQuotes.length} results
             </span>
           </div>
 
-          {/* Table Container */}
-          <table className="w-full rounded-3xl  mb-10">
+          {/* Quotes Table */}
+          <table className="w-full rounded-3xl mb-10">
             <thead className="bg-black rounded-3xl">
               <tr>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider ">
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Quote Num
                 </th>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Client Name
                 </th>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Date Created
                 </th>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Status
                 </th>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Action
                 </th>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider"></th>
               </tr>
             </thead>
             <tbody>
-              {filteredQuotes.map((quote, index) => (
+              {filteredQuotes.map((quote) => (
                 <tr key={quote._id}>
                   <td className="px-4 py-2 border-b border-gray-300">
                     {quote.project.name}
@@ -180,24 +186,16 @@ function QuoteRequests() {
                     className={`px-4 py-2 border-b border-gray-300 ${
                       quote.quoteStatus === "Completed"
                         ? "text-green-500"
-                        : quote.quoteStatus === "Denied"
-                        ? "text-red-500"
                         : quote.quoteStatus === "Pending"
                         ? "text-yellow-500"
-                        : "text-purple-500"
+                        : "text-red-500"
                     }`}
                   >
                     {quote.quoteStatus}
                   </td>
                   <td className="px-4 py-2 border-b border-gray-300">
-                    {/* Assuming you have some action to perform here */}
                     <button className="text-black underline hover:text-blue-700">
                       View
-                    </button>
-                  </td>
-                  <td className="border-b border-gray-300">
-                    <button className="text-black rounded-lg hover:text-red-500">
-                      <IoCloseCircle size="1.25em" />
                     </button>
                   </td>
                 </tr>
@@ -209,5 +207,4 @@ function QuoteRequests() {
     </FullSectionLayout>
   );
 }
-
 export default QuoteRequests;

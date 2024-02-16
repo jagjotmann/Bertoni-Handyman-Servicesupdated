@@ -20,6 +20,10 @@ router.post("/create", async (req: Request, res: Response) => {
 
 //Route to get all quotes
 router.get("/all", async (req: Request, res: Response) => {
+  console.log(req.query);
+  console.log(req.query.search);
+  console.log(req.query.status);
+  console.log("hello");
   const { search, status } = req.query;
   let queryConditions: FilterQuery<typeof Quote> = {};
   if (search) {
@@ -27,15 +31,15 @@ router.get("/all", async (req: Request, res: Response) => {
       { clientName: new RegExp(search as string, "i") },
       { quoteNumber: new RegExp(search as string, "i") },
     ];
-  }
-  if (status) {
-    queryConditions["status"] = status;
-  }
-  try {
-    const quotes = await Quote.find(queryConditions);
-    res.status(200).json(quotes);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    if (status) {
+      queryConditions["status"] = status;
+    }
+    try {
+      const quotes = await Quote.find(queryConditions);
+      res.status(200).json(quotes);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
   }
 });
 
