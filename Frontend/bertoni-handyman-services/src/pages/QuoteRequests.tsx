@@ -175,6 +175,7 @@ function QuoteRequests() {
                 <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Action
                 </th>
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider"></th>
               </tr>
             </thead>
             <tbody>
@@ -203,6 +204,11 @@ function QuoteRequests() {
                   <td className="px-4 py-2 border-b border-gray-300">
                     <button className="text-black underline hover:text-blue-700">
                       View
+                    </button>
+                  </td>
+                  <td className="border-b border-gray-300">
+                    <button className="flex items-center text-black rounded-lg hover:text-red-500">
+                      <IoCloseCircle size="1.25em" />
                     </button>
                   </td>
                 </tr>
