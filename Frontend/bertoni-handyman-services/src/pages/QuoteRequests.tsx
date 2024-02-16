@@ -83,7 +83,7 @@ function QuoteRequests() {
             {/* Search Bar */}
             <div className="flex items-center border-2 border-gray-300 rounded-3xl overflow-hidden">
               <input
-                className="pl-5 pr-3 py-2 w-full text-lg"
+                className="pl-5 pr-3 py-2 w-full text-lg focus:outline-none"
                 type="text"
                 placeholder="Search..."
                 onChange={handleSearchChange}
