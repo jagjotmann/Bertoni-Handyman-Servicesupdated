@@ -16,6 +16,7 @@ import {
 } from "react-icons/fa";
 import CreateQuote from "./CreateQuote";
 import AdminDashboard from "../components/AdminDashboard";
+import GoogleCalendar from "./GoogleCalendar";
 
 function AdminPage() {
   // State to track which tab is currently selected
@@ -25,6 +26,10 @@ function AdminPage() {
   const handleTabClick = (tabName: string) => {
     setSelectedTab(tabName);
   };
+
+  //GoogleCalendar EmbedURL
+  const embedUrl = "https://calendar.google.com/calendar/embed?src=wizardsweb42%40gmail.com&ctz=America%2FLos_Angeles"; 
+
   // Function to render content based on the selected tab
   const renderContent = (): JSX.Element | null => {
     if (selectedTab === "Dashboard") {
@@ -32,7 +37,7 @@ function AdminPage() {
     } else if (selectedTab === "Clients") {
       return <CreateQuote />;
     } else if (selectedTab === "Calendar") {
-      return <h1>Calendar</h1>;
+      return <GoogleCalendar embedUrl={embedUrl} width="800px" height="600px"/>;
     } else if (selectedTab === "Quote Requests") {
       return <QuoteRequests />;
     } else if (selectedTab === "Settings") {
