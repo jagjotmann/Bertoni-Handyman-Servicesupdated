@@ -8,7 +8,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import GetAQuote from "./pages/GetAQuote";
-import Signin from "./pages/Signin";
+import Login from "./pages/Login";
 import ContactPage from "./pages/ContactPage";
 import ThankYou from "./pages/ThankYou";
 import Chat from "./pages/Chat";
@@ -38,7 +38,7 @@ function App() {
             <Route path="/get-a-quote" element={<GetAQuote />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/ThankYou" element={<ThankYou />} />
-            <Route path="/signin" element={<Signin />} />
+            <Route path="/Login" element={<Login />} />
             <Route path="/QuoteStatus" element={<QuoteStatus />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/QuoteLogin" element={<QuoteLogin />} />

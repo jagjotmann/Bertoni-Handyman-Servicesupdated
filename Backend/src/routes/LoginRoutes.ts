@@ -1,7 +1,16 @@
 // loginRoutes.ts
 import express from "express";
-import User from "../models/userModel.js";
+import User from "../models/userModel";
 import bcrypt from "bcrypt";
+const jwt = require("jsonwebtoken");
+
+// Function to create Tokens
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+const createToken = (_id: any) => {
+  return jwt.sign({ _id }, process.env.SECRET, {
+    expiresIn: "1h",
+  });
+};
 
 // Initialize an express router to handle login-related routes
 const router = express.Router();
@@ -23,11 +32,14 @@ router.post("/", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Create a token
+    const token = createToken(user._id);
+
     // Return success response if login is successful
-    res.status(200).json({ message: "Login successful", user });
+    res.status(200).json({ message: "Login successful", token }); // Include the token in the response
   } catch (error) {
     // Handle any server errors
-    const errorMessage = (error as Error).message; // Type assertion for better error handling
+    const errorMessage = (error as Error).message; // Type assertion for better error handling,
     res.status(500).json({ error: errorMessage });
   }
 });
