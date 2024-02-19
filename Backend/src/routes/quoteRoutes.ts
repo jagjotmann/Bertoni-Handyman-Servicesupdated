@@ -20,10 +20,6 @@ router.post("/create", async (req: Request, res: Response) => {
 
 //Route to get all quotes
 router.get("/all", async (req: Request, res: Response) => {
-  console.log(req.query);
-  console.log(req.query.search);
-  console.log(req.query.status);
-  console.log("hello");
   const { search, status } = req.query;
   let queryConditions: FilterQuery<typeof Quote> = {};
   if (search) {
