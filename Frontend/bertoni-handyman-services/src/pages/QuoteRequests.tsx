@@ -5,7 +5,7 @@ import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 type Quote = {
   _id: string;
   quoteDate: string;
-  quoteStatus: string;
+  statusId: string;
   project: {
     name: string;
     description: string;
@@ -28,12 +28,18 @@ type Quote = {
   };
 };
 
+type Status = {
+  _id: string;
+  name: string;
+};
+
 function QuoteRequests() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredQuotes, setFilteredQuotes] = useState<Quote[]>([]);
   const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [statuses, setStatuses] = useState<Status[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,7 +52,17 @@ function QuoteRequests() {
         console.error("Failed to fetch quotes:", error);
       }
     };
+    const fetchStatuses = async () => {
+      try {
+        const response = await fetch("status/all");
+        const data = await response.json();
+        setStatuses(data);
+      } catch (error) {
+        console.error("Failed to fetch statuses:", error);
+      }
+    };
     fetchData();
+    fetchStatuses();
   }, []);
   // Handle search query change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,21 +79,23 @@ function QuoteRequests() {
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
-  const handleFilterSelect = (status: string) => {
-    setSelectedStatus(status);
-    setIsDropdownOpen(false);
+  const handleFilterSelect = (selectedStatusName: string) => {
+    setIsDropdownOpen(false); // Close the dropdown
 
-    const filtered = allQuotes.filter((quote) => {
-      const matchesSearch =
-        searchQuery.length === 0 ||
-        quote.contactPerson.name
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase());
-      const matchesStatus = status === "" || quote.quoteStatus === status;
-      return matchesSearch && matchesStatus;
-    });
+    if (selectedStatusName === "All") {
+      setFilteredQuotes(allQuotes); // If "All" is selected, show all quotes
+    } else {
+      const filtered = allQuotes.filter((quote) => {
+        // Find the status object for the current quote's statusId
+        const statusObj = statuses.find(
+          (status) => status._id === quote.statusId
+        );
+        // Check if the status name matches the selected status name
+        return statusObj?.name === selectedStatusName;
+      });
 
-    setFilteredQuotes(filtered);
+      setFilteredQuotes(filtered); // Update state with the filtered quotes
+    }
   };
 
   const handleDeleteQuote = async (quoteId: string) => {
@@ -121,39 +139,35 @@ function QuoteRequests() {
             {/* Filter Button */}
             <div className="relative">
               <button
-                id="dropdownDefaultButton"
-                data-dropdown-toggle="dropdown"
-                className="flex items-center bg-black text-white rounded-3xl px-5 py-2 ml-4"
                 onClick={toggleDropdown}
+                className=" flex items-center bg-black text-white rounded-3xl px-5
+              py-2 ml-4"
               >
-                <span className="text-lg pr-10">Filter</span>
-                <IoFilter size="1.25em" />
+                <span className="px-3">Filter</span> <IoFilter size="1.25em" />
               </button>
 
               {/* Static Dropdown Menu */}
               {isDropdownOpen && (
-                <div
-                  id="dropdown"
-                  className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 absolute"
-                >
-                  <ul
-                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                    aria-labelledby="dropdownDefaultButton"
-                  >
-                    {["All", "Pending", "Declined", "Completed"].map(
-                      (status) => (
-                        <li key={status}>
-                          <button
-                            className="block px-4 py-2 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                            onClick={() =>
-                              handleFilterSelect(status === "All" ? "" : status)
-                            }
-                          >
-                            {status}
-                          </button>
-                        </li>
-                      )
-                    )}
+                <div className="absolute z-10 bg-white rounded-lg shadow divide-y divide-gray-100 w-44">
+                  <ul className="py-1 text-sm text-gray-700">
+                    <li>
+                      <button
+                        onClick={() => handleFilterSelect("All")}
+                        className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      >
+                        All
+                      </button>
+                    </li>
+                    {statuses.map((status) => (
+                      <li key={status._id}>
+                        <button
+                          onClick={() => handleFilterSelect(status.name)}
+                          className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                        >
+                          {status.name}
+                        </button>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               )}
@@ -190,43 +204,42 @@ function QuoteRequests() {
               </tr>
             </thead>
             <tbody>
-              {filteredQuotes.map((quote) => (
-                <tr key={quote._id}>
-                  <td className="px-4 py-2 border-b border-gray-300">
-                    {quote.project.name}
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-300">
-                    {quote.contactPerson.name}
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-300">
-                    {new Date(quote.quoteDate).toLocaleDateString()}
-                  </td>
-                  <td
-                    className={`px-4 py-2 border-b border-gray-300 ${
-                      quote.quoteStatus === "Completed"
-                        ? "text-green-500"
-                        : quote.quoteStatus === "Pending"
-                        ? "text-yellow-500"
-                        : "text-red-500"
-                    }`}
-                  >
-                    {quote.quoteStatus}
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-300">
-                    <button className="text-black underline hover:text-blue-700">
-                      View
-                    </button>
-                  </td>
-                  <td className="border-b border-gray-300">
-                    <button
-                      className="flex items-center text-black rounded-lg hover:text-red-500"
-                      onClick={() => handleDeleteQuote(quote._id)}
-                    >
-                      <IoCloseCircle size="1.25em" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {filteredQuotes.map((quote) => {
+                const statusName =
+                  statuses.find((status) => status._id === quote.statusId)
+                    ?.name || "Unknown Status";
+                return (
+                  <tr key={quote._id}>
+                    {/* Other cells */}
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {quote.project.name}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {quote.contactPerson.name}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {new Date(quote.quoteDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {statusName}
+                    </td>
+                    {/* Action buttons */}
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      <button className="text-black underline hover:text-blue-700">
+                        View
+                      </button>
+                    </td>
+                    <td className="border-b border-gray-300">
+                      <button
+                        className="flex items-center text-black rounded-lg hover:text-red-500"
+                        onClick={() => handleDeleteQuote(quote._id)}
+                      >
+                        <IoCloseCircle size="1.25em" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
