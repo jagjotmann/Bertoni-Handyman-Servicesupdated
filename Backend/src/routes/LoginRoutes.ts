@@ -44,6 +44,8 @@ router.post("/", async (req, res) => {
   }
 });
 
+// ===========================================================================//
+
 // Route to handle password change requests
 router.post("/changePassword", async (req, res) => {
   const { email, oldPassword, newPassword } = req.body;
