@@ -1,6 +1,7 @@
 //Quote Requests Page
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
+import axios from "axios";
 
 const quoteRequests = [
   {
@@ -34,6 +35,22 @@ const quoteRequests = [
 ];
 
 function QuoteRequests() {
+  const [quotes, setQuotes]: any = useState([]);
+
+  useEffect(() => {
+    async function getAllQuotes() {
+      try {
+        const response = await axios.get(`http://localhost:3001/quotes/all`);
+        console.log(response.data);
+        setQuotes(response.data);
+      } catch (error: any) {
+        console.log(error);
+      }
+    }
+
+    getAllQuotes();
+  }, []);
+
   return (
     <FullSectionLayout>
       <div className="px-6 pt-4">
@@ -55,7 +72,7 @@ function QuoteRequests() {
           <thead className="bg-gray-200">
             <tr>
               <th className="py-2 px-4 font-inter text-left w-128 h-30">
-                Quote Num
+                Quote ID
               </th>
               <th className="py-2 px-4 font-inter text-left w-186 h-30">
                 Client Name
@@ -72,15 +89,27 @@ function QuoteRequests() {
             </tr>
           </thead>
           <tbody>
-            {quoteRequests.map((request, index) => (
-              <tr key={index} className={index % 2 === 0 ? "bg-gray-100" : ""}>
-                <td className="py-2 px-4 w-37 h-30">{request.quoteNumber}</td>
-                <td className="py-2 px-4 w-83 h-30">{request.clientName}</td>
-                <td className="py-2 px-4 w-67 h-30">{request.dateCreated}</td>
-                <td className="py-2 px-4 w-56 h-30">{request.status}</td>
-                <td className="py-2 px-4 w-34 h-30">{request.action}</td>
-              </tr>
-            ))}
+            {quotes &&
+              quotes.map((quote: any, index: number) => (
+                <tr
+                  key={index}
+                  className={index % 2 === 0 ? "bg-gray-100" : ""}
+                >
+                  <td className="py-2 px-4 w-37 h-30">{quote._id || "None"}</td>
+                  <td className="py-2 px-4 w-83 h-30">
+                    {quote.contactPerson && quote.contactPerson.name
+                      ? quote.contactPerson.name
+                      : "None"}
+                  </td>
+                  <td className="py-2 px-4 w-67 h-30">
+                    {quote.quoteDate || "None"}
+                  </td>
+                  <td className="py-2 px-4 w-56 h-30">
+                    {quote.quoteStatus || "None"}
+                  </td>
+                  <td className="py-2 px-4 w-34 h-30">View</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

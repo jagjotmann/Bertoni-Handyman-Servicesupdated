@@ -9,42 +9,43 @@ interface Materials {
 }
 
 interface Labor {
-    name: string;
-    description?: string; //not sure if useful
-    numHours: number;
-    hourlyRate: number;
-    total: number; //numHours * hourlyRate calculated here to reduce calculations
-  }
+  name: string;
+  description?: string; //not sure if useful
+  numHours: number;
+  hourlyRate: number;
+  total: number; //numHours * hourlyRate calculated here to reduce calculations
+}
 
 export interface Quote extends Document {
-    quoteDate: Date;
-    project: {
-      name: string;
-      address: {
-        streetAddress: string;
-        streetAddress2?: string;
-        city: string;
-        state: string;
-        zipCode: string;
-      };
-      description?: string; //not sure if useful
+  quoteDate: Date;
+  project: {
+    name: string;
+    address: {
+      streetAddress: string;
+      streetAddress2?: string;
+      city: string;
+      state: string;
+      zipCode: string;
     };
-    quoteStatus: string; //quote completion status
-    items?: Materials[];
-    labor?: Labor[];
-    subtotal: number; //pre-tax cost
-    tax?: number;
-    totalCost: number; //post-tax cost
-    notes?: string; //not sure if useful
-    contactPerson: { //contact is client for all intents and purposes
-      name: string;
-      companyName?: string;
-      email?: string;
-      phone?: string;
-    };
-  }
+    description?: string; //not sure if useful
+  };
+  quoteStatus: string; //quote completion status
+  items?: Materials[];
+  labor?: Labor[];
+  subtotal: number; //pre-tax cost
+  tax?: number;
+  totalCost: number; //post-tax cost
+  notes?: string; //not sure if useful
+  contactPerson: {
+    //contact is client for all intents and purposes
+    name: string;
+    companyName?: string;
+    email?: string;
+    phone?: string;
+  };
+}
 
-  const QuoteSchema: Schema = new Schema<Quote>({
+const QuoteSchema: Schema = new Schema<Quote>({
   quoteDate: {
     type: Date,
     required: true,
@@ -77,6 +78,8 @@ export interface Quote extends Document {
   },
   quoteStatus: {
     type: String,
+    enum: ["Pending", "Accepted", "Completed", "Declined"],
+    default: "Pending",
     required: true,
   },
   items: [

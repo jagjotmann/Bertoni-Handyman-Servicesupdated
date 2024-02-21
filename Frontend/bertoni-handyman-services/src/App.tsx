@@ -41,7 +41,7 @@ function App() {
             <Route path="/signin" element={<Signin />} />
             <Route path="/QuoteStatus" element={<QuoteStatus />} />
             <Route path="/chat" element={<Chat />} />
-            <Route path="/QuoteLogin" element={<QuoteLogin />} />
+            <Route path="/QuoteLogin/:quoteid" element={<QuoteLogin />} />
             <Route path="/create-account" element={<CreateAccount />} />
             <Route path="/forgotPassword" element={<ForgotPassword />} />
             <Route

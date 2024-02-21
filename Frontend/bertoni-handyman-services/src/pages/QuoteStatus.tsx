@@ -3,6 +3,8 @@ import PageLayout from "../layouts/PageLayout";
 import PaddingSectionLayout from "../layouts/PaddingSectionLayout";
 import Modal from "../components/UI/Modal";
 import QuoteDashboard from "../components/QuoteDashboard";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 // Interface for modal properties
 interface ModalProps {
@@ -16,18 +18,23 @@ const QuoteStatus = () => {
   const [quoteNumberError, setQuoteNumberError] = useState(false);
   // State for handling modal display and content
   const [modal, setModal] = useState<ModalProps | null>(null);
+  const navigate = useNavigate();
 
   // Function to handle quote number validation and submission
-  const handleSignInWithQuoteNumber = () => {
+  const handleSignInWithQuoteNumber = async () => {
     setQuoteNumberError(!quoteNumber.trim());
     if (quoteNumber.trim()) {
-      // Placeholder for login logic with quote number, potentially an API call
-      // Example response handling:
-      // On successful validation, navigate to QuoteDashboard
-      // On failure, display error modal
-      setModal({
-        content: "Invalid quote number.",
-      });
+      try {
+        const response = await axios.get(
+          `http://localhost:3001/quotes/${quoteNumber}`
+        );
+
+        navigate(`/QuoteLogin/${quoteNumber}`);
+      } catch (err: any) {
+        setModal({
+          content: "Invalid quote number.",
+        });
+      }
     } else {
       setModal({
         content: "Please enter your quote number.",
