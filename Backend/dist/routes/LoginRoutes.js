@@ -18,8 +18,9 @@ const userModel_1 = __importDefault(require("../models/userModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jwt = require("jsonwebtoken");
 // Function to create Tokens
-const createToken = (userId, email) => {
-    return jwt.sign({ userId: userId, email: email }, process.env.SECRET, {
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+const createToken = (_id) => {
+    return jwt.sign({ _id }, process.env.SECRET, {
         expiresIn: "1h",
     });
 };
@@ -40,7 +41,7 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             return res.status(401).json({ message: "Invalid credentials" });
         }
         // Create a token
-        const token = createToken(user._id.toString(), user.contactInfo.email);
+        const token = createToken(user._id);
         // Return success response if login is successful
         res.status(200).json({ message: "Login successful", token }); // Include the token in the response
     }
@@ -50,6 +51,7 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         res.status(500).json({ error: errorMessage });
     }
 }));
+// ===========================================================================//
 // Route to handle password change requests
 router.post("/changePassword", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, oldPassword, newPassword } = req.body;
