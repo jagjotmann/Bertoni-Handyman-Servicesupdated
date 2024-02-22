@@ -33,11 +33,32 @@ router.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, function*
 //Route to get all quotes
 router.get("/all", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const quotes = yield quoteModel_js_1.default.find();
+        const quotes = yield quoteModel_js_1.default.find().sort({ quoteDate: -1 });
         res.status(200).json(quotes);
     }
     catch (error) {
         res.status(500).json({ error: error.message });
+    }
+}));
+//Route to get all quotes with search/status filter
+router.get("/allWithFiler", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { search, status } = req.query;
+    let queryConditions = {};
+    if (search) {
+        queryConditions["$or"] = [
+            { clientName: new RegExp(search, "i") },
+            { quoteNumber: new RegExp(search, "i") },
+        ];
+        if (status) {
+            queryConditions["status"] = status;
+        }
+        try {
+            const quotes = yield quoteModel_js_1.default.find(queryConditions);
+            res.status(200).json(quotes);
+        }
+        catch (error) {
+            res.status(500).json({ error: error.message });
+        }
     }
 }));
 // Route to get a specific quote by ID

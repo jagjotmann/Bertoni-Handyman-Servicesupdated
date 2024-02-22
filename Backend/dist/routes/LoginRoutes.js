@@ -14,8 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // loginRoutes.ts
 const express_1 = __importDefault(require("express"));
-const userModel_js_1 = __importDefault(require("../models/userModel.js"));
+const userModel_1 = __importDefault(require("../models/userModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const jwt = require("jsonwebtoken");
+// Function to create Tokens
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+const createToken = (_id) => {
+    return jwt.sign({ _id }, process.env.SECRET, {
+        expiresIn: "1h",
+    });
+};
 // Initialize an express router to handle login-related routes
 const router = express_1.default.Router();
 // Route to handle user login
@@ -23,7 +31,7 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     try {
         // Find a user by their email
-        const user = yield userModel_js_1.default.findOne({ "contactInfo.email": email });
+        const user = yield userModel_1.default.findOne({ "contactInfo.email": email });
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
@@ -32,21 +40,24 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!isValidPassword) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
+        // Create a token
+        const token = createToken(user._id);
         // Return success response if login is successful
-        res.status(200).json({ message: "Login successful", user });
+        res.status(200).json({ message: "Login successful", token }); // Include the token in the response
     }
     catch (error) {
         // Handle any server errors
-        const errorMessage = error.message; // Type assertion for better error handling
+        const errorMessage = error.message; // Type assertion for better error handling,
         res.status(500).json({ error: errorMessage });
     }
 }));
+// ===========================================================================//
 // Route to handle password change requests
 router.post("/changePassword", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, oldPassword, newPassword } = req.body;
     try {
         // Find the user by email
-        const user = yield userModel_js_1.default.findOne({ "contactInfo.email": email });
+        const user = yield userModel_1.default.findOne({ "contactInfo.email": email });
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }

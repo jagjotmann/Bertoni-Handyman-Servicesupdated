@@ -1,97 +1,137 @@
-//Quote Requests Page
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
 import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 
-// Initial quote requests data
-const quoteRequests = [
-  {
-    quoteNumber: "#000",
-    clientName: "Jeff Richard",
-    dateCreated: "1 Day ago",
-    status: "Pending",
-    action: "View",
-  },
-  {
-    quoteNumber: "#001",
-    clientName: "Jeff Richard",
-    dateCreated: "1 Day ago",
-    status: "Pending",
-    action: "View",
-  },
-  {
-    quoteNumber: "#002",
-    clientName: "Jeff Richard",
-    dateCreated: "1 Day ago",
-    status: "Pending",
-    action: "View",
-  },
-  {
-    quoteNumber: "#003",
-    clientName: "Jeff Richard",
-    dateCreated: "2 months ago",
-    status: "Completed",
-    action: "View",
-  },
-];
+type Quote = {
+  _id: string;
+  quoteDate: string;
+  statusId: string;
+  project: {
+    name: string;
+    description: string;
+    address: {
+      streetAddress: string;
+      city: string;
+      state: string;
+      zipCode: string;
+    };
+  };
+  subtotal: number;
+  tax: number;
+  totalCost: number;
+  notes: string;
+  contactPerson: {
+    name: string;
+    companyName?: string;
+    email?: string;
+    phone?: string;
+  };
+};
+
+type Status = {
+  _id: string;
+  name: string;
+};
 
 function QuoteRequests() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredQuotes, setFilteredQuotes] = useState(quoteRequests);
+  const [filteredQuotes, setFilteredQuotes] = useState<Quote[]>([]);
+  const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("");
+  const [statuses, setStatuses] = useState<Status[]>([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("quotes/all");
+        const data = await response.json();
+        setAllQuotes(data);
+        setFilteredQuotes(data);
+      } catch (error) {
+        console.error("Failed to fetch quotes:", error);
+      }
+    };
+    const fetchStatuses = async () => {
+      try {
+        const response = await fetch("status/all");
+        const data = await response.json();
+        setStatuses(data);
+      } catch (error) {
+        console.error("Failed to fetch statuses:", error);
+      }
+    };
+    fetchData();
+    fetchStatuses();
+  }, []);
   // Handle search query change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
 
-  // Apply filters based on search query and selected status
-  useEffect(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
-    const filtered = quoteRequests.filter((quote) => {
-      const matchesStatus = selectedStatus
-        ? quote.status === selectedStatus
-        : true;
-      const matchesQuery =
-        quote.clientName.toLowerCase().includes(lowercasedQuery) ||
-        quote.quoteNumber.toLowerCase().includes(lowercasedQuery) ||
-        quote.status.toLowerCase().includes(lowercasedQuery);
-      return matchesStatus && matchesQuery;
-    });
+  // Execute search when the search button is clicked
+  const handleSearch = () => {
+    const filtered = allQuotes.filter((quote) =>
+      quote.contactPerson.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
     setFilteredQuotes(filtered);
-  }, [searchQuery, selectedStatus]);
+  };
 
-  // Toggle filter dropdown visibility
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
-  // Set selected status from filter dropdown
-  const handleFilterSelect = (status: string) => {
-    setSelectedStatus(status);
-    setIsDropdownOpen(false);
+  const handleFilterSelect = (selectedStatusName: string) => {
+    setIsDropdownOpen(false); // Close the dropdown
+
+    if (selectedStatusName === "All") {
+      setFilteredQuotes(allQuotes); // If "All" is selected, show all quotes
+    } else {
+      const filtered = allQuotes.filter((quote) => {
+        // Find the status object for the current quote's statusId
+        const statusObj = statuses.find(
+          (status) => status._id === quote.statusId
+        );
+        // Check if the status name matches the selected status name
+        return statusObj?.name === selectedStatusName;
+      });
+
+      setFilteredQuotes(filtered); // Update state with the filtered quotes
+    }
+  };
+
+  const handleDeleteQuote = async (quoteId: string) => {
+    try {
+      await fetch(`quotes/${quoteId}`, { method: "DELETE" });
+      const updatedQuotes = allQuotes.filter((quote) => quote._id !== quoteId);
+      setFilteredQuotes(updatedQuotes);
+      const updatedAllQuotes = allQuotes.filter(
+        (quote) => quote._id !== quoteId
+      );
+      setAllQuotes(updatedAllQuotes);
+    } catch (error) {
+      console.error("Failed to delete quote:", error);
+    }
   };
   return (
     <FullSectionLayout>
-      {/* Page container */}
       <div className="min-h-screen flex flex-col bg-[#f2f2f4]">
-        {/* Header container with a background of white */}
+        {/* Header */}
         <div className="bg-white">
           <h2 className="text-2xl font-bold p-4 pl-10">Quote Requests</h2>
         </div>
 
-        {/* Container with bg of white, rounded corners, and shadow */}
+        {/* Main Content */}
         <div className="m-4 bg-white rounded-lg shadow-2xl p-6">
-          {/* Search and Filter on the same line */}
+          {/* Search and Filter Section */}
           <div className="flex items-center mb-4">
             {/* Search Bar */}
             <div className="flex items-center border-2 border-gray-300 rounded-3xl overflow-hidden">
               <input
-                className="pl-5 pr-3 py-2 w-full text-lg"
+                className="pl-5 pr-3 py-2 w-full text-lg focus:outline-none"
                 type="text"
                 placeholder="Search..."
                 onChange={handleSearchChange}
               />
-              <button className="px-5 text-gray-500 ">
+              <button className="px-5 text-gray-500" onClick={handleSearch}>
                 <IoSearch size="1.25em" />
               </button>
             </div>
@@ -99,109 +139,107 @@ function QuoteRequests() {
             {/* Filter Button */}
             <div className="relative">
               <button
-                id="dropdownDefaultButton"
-                data-dropdown-toggle="dropdown"
-                className="flex items-center bg-black text-white rounded-3xl px-5 py-2 ml-4"
                 onClick={toggleDropdown}
+                className=" flex items-center bg-black text-white rounded-3xl px-5
+              py-2 ml-4"
               >
-                <span className="text-lg pr-10">Filter</span>
-                <IoFilter size="1.25em" />
+                <span className="px-3">Filter</span> <IoFilter size="1.25em" />
               </button>
 
               {/* Static Dropdown Menu */}
               {isDropdownOpen && (
-                <div
-                  id="dropdown"
-                  className="z-10 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 absolute"
-                >
-                  <ul
-                    className="py-2 text-sm text-gray-700 dark:text-gray-200"
-                    aria-labelledby="dropdownDefaultButton"
-                  >
-                    {["All", "Pending", "Declined", "Completed"].map(
-                      (status) => (
-                        <li key={status}>
-                          <button
-                            className="block px-4 py-2 text-left w-full hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                            onClick={() =>
-                              handleFilterSelect(status === "All" ? "" : status)
-                            }
-                          >
-                            {status}
-                          </button>
-                        </li>
-                      )
-                    )}
+                <div className="absolute z-10 bg-white rounded-lg shadow divide-y divide-gray-100 w-44">
+                  <ul className="py-1 text-sm text-gray-700">
+                    <li>
+                      <button
+                        onClick={() => handleFilterSelect("All")}
+                        className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      >
+                        All
+                      </button>
+                    </li>
+                    {statuses.map((status) => (
+                      <li key={status._id}>
+                        <button
+                          onClick={() => handleFilterSelect(status.name)}
+                          className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                        >
+                          {status.name}
+                        </button>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Display the number of results */}
+          {/* Results Section */}
           <div className="mb-4">
             <span className="text-md font-semibold">
               {filteredQuotes.length} results
             </span>
           </div>
 
-          {/* Table Container */}
-          <table className="w-full rounded-3xl  mb-10">
+          {/* Quotes Table */}
+          <table className="w-full rounded-3xl mb-10">
             <thead className="bg-black rounded-3xl">
               <tr>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider ">
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Quote Num
                 </th>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Client Name
                 </th>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Date Created
                 </th>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Status
                 </th>
-                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider">
+                <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white tracking-wider">
                   Action
                 </th>
                 <th className="px-4 py-2 border-b border-gray-300 text-left text-md font-semibold text-white  tracking-wider"></th>
               </tr>
             </thead>
             <tbody>
-              {filteredQuotes.map((request, index) => (
-                <tr key={index}>
-                  <td className="px-4 py-2 border-b border-gray-300">
-                    {request.quoteNumber}
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-300">
-                    {request.clientName}
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-300">
-                    {request.dateCreated}
-                  </td>
-                  <td
-                    className={`px-4 py-2 border-b border-gray-300 ${
-                      request.status === "Completed"
-                        ? "text-green-500"
-                        : request.status === "Denied"
-                        ? "text-red-500"
-                        : "text-yellow-500"
-                    }`}
-                  >
-                    {request.status}
-                  </td>
-                  <td className="px-4 py-2 border-b border-gray-300">
-                    <button className="text-black underline hover:text-blue-700">
-                      {request.action}
-                    </button>
-                  </td>
-                  <td className="border-b border-gray-300">
-                    <button className="text-black  rounded-lg  hover:text-red-500">
-                      <IoCloseCircle size="1.25em" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {filteredQuotes.map((quote) => {
+                const statusName =
+                  statuses.find((status) => status._id === quote.statusId)
+                    ?.name || "Unknown Status";
+                return (
+                  <tr key={quote._id}>
+                    {/* Other cells */}
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {quote.project.name}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {quote.contactPerson.name}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {new Date(quote.quoteDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      {statusName}
+                    </td>
+                    {/* Action buttons */}
+                    <td className="px-4 py-2 border-b border-gray-300">
+                      <button className="text-black underline hover:text-blue-700">
+                        View
+                      </button>
+                    </td>
+                    <td className="border-b border-gray-300">
+                      <button
+                        className="flex items-center text-black rounded-lg hover:text-red-500"
+                        onClick={() => handleDeleteQuote(quote._id)}
+                      >
+                        <IoCloseCircle size="1.25em" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -209,5 +247,4 @@ function QuoteRequests() {
     </FullSectionLayout>
   );
 }
-
 export default QuoteRequests;
