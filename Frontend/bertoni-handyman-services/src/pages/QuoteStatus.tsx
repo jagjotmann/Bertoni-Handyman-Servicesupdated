@@ -65,7 +65,7 @@ const QuoteStatus = () => {
             <p className="max-w-md p-5 text-xl">
               If you have a quote number, you can check your quote status here.
             </p>
-            <div className="flex w-full flex-col gap-7 bg-[#F2F2F4] p-4 md:max-w-lg md:p-12">
+            <div className="flex w-full flex-col gap-7 rounded-md bg-gray-200 p-4 md:max-w-lg md:p-12">
               {/* Quote number input field */}
               <input
                 placeholder="ex. Q00000000"

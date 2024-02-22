@@ -55,8 +55,9 @@ const QuoteSchema = new mongoose_1.Schema({
         },
         description: String,
     },
-    quoteStatus: {
-        type: String,
+    status: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        ref: "Status",
         required: true,
     },
     items: [

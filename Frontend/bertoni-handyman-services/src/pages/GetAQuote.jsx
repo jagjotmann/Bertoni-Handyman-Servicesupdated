@@ -97,7 +97,6 @@ const QuoteForm = () => {
     },
     form: {
       width: "100%",
-      background: "#f6f6f6",
       padding: "20px",
       borderRadius: "5px",
     },
@@ -165,13 +164,13 @@ const QuoteForm = () => {
     <>
       <div style={styles.title}>Get a Quote</div>
       <div style={{ marginBottom: "20px" }}>
-        Already have an account?{" "}
-        <a href="/signin" style={{ textDecoration: "underline" }}>
-          Sign In
+        Already have a Quote?{" "}
+        <a href="/QuoteStatus" style={{ textDecoration: "underline" }}>
+          Check In
         </a>{" "}
         here.
       </div>
-      <form style={styles.form} onSubmit={handleSubmit}>
+      <form style={styles.form} onSubmit={handleSubmit} className="bg-gray-200">
         <div style={styles.row}>
           <input
             type="text"
@@ -286,7 +285,7 @@ const QuoteForm = () => {
   );
 
   return (
-    <div className="h-screen max-w-screen-md p-6 py-2 mx-auto">
+    <div className="mx-auto h-screen max-w-screen-md p-6 py-2">
       <div style={styles.container}>
         {isSubmitted ? (
           // Show success message after form submission
