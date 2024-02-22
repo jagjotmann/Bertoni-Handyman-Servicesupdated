@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 import Quote from "../models/quoteModel.js";
 import { Request, Response } from "express";
-import mongoose from "mongoose";
+import mongoose, { FilterQuery } from "mongoose";
 
 //Route to create a new quote
 router.post("/create", async (req: Request, res: Response) => {
@@ -20,11 +20,22 @@ router.post("/create", async (req: Request, res: Response) => {
 
 //Route to get all quotes
 router.get("/all", async (req: Request, res: Response) => {
-  try {
-    const quotes = await Quote.find();
-    res.status(200).json(quotes);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
+  const { search, status } = req.query;
+  let queryConditions: FilterQuery<typeof Quote> = {};
+  if (search) {
+    queryConditions["$or"] = [
+      { clientName: new RegExp(search as string, "i") },
+      { quoteNumber: new RegExp(search as string, "i") },
+    ];
+    if (status) {
+      queryConditions["status"] = status;
+    }
+    try {
+      const quotes = await Quote.find(queryConditions);
+      res.status(200).json(quotes);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
   }
 });
 
