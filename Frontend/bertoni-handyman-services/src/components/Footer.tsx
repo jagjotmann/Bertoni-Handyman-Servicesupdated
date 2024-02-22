@@ -15,7 +15,7 @@ const Footer = () => {
         {/* Link to Admin Login page */}
         <div className="mt-2">
           <Link
-            to="/signin"
+            to="/Login"
             className="text-gray-600 transition duration-300 hover:text-gray-800"
           >
             Admin Login
