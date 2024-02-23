@@ -3,7 +3,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRoutes = require("./dist/routes/userRoutes.js");
 const quoteRoutes = require("./dist/routes/quoteRoutes.js");
-const statusRoutes = require("./dist/routes/statusRoutes.js");
 const testimonialRoutes = require("./dist/routes/testimonialRoutes.js");
 const emailRoutes = require("./dist/routes/emailRoutes.js");
 const LoginRoutes = require("./dist/routes/LoginRoutes.js");
@@ -26,7 +25,6 @@ app.use(cors()); // Enable CORS for all routes
 // Route middlewares
 app.use("/users", userRoutes);
 app.use("/quotes", quoteRoutes);
-app.use("/status", statusRoutes);
 app.use("/testimonials", testimonialRoutes);
 app.use("/login", LoginRoutes);
 app.use("/email", emailRoutes);
