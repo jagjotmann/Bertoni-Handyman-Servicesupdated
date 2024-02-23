@@ -49,8 +49,9 @@ function QuoteRequests() {
         if (statusFromLocation) {
           setFilterStatus(statusFromLocation);
           const filteredData = data.filter(
-            (quote) => quote.quoteStatus === statusFromLocation
+            (quote: Quote) => quote.quoteStatus === statusFromLocation
           );
+
           setFilteredQuotes(filteredData);
         } else {
           setFilteredQuotes(data);

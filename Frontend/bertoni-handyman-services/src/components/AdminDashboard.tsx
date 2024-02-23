@@ -41,37 +41,41 @@ const AdminDashboard = () => {
       <p className="text-2xl text-black-600 mt-2 font-bold p-5">Dashboard</p>
       <div className="flex gap-4 p-6">
         <div className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 ">
-          <Link
-            to={{
-              pathname: "/quote-requests",
-              state: { filterStatus: "Completed" },
-            }}
-          >
-            <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
+            <Link
+              to={
+                {
+                  pathname: "/quote-requests",
+                  state: { filterStatus: "Completed" },
+                } as any
+              }
+            >
               <IoBriefcaseOutline className="text-xl text-black-500" />
               <p className="text-sm text-gray-600 mt-2 font-bold">
                 Total Jobs Completed
               </p>
               <p className="text-2xl font-medium">20</p>
-            </div>
-          </Link>
+            </Link>
+          </div>
         </div>
 
         <div className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 ">
-          <Link
-            to={{
-              pathname: "/quote-requests",
-              state: { filterStatus: "Pending" },
-            }}
-          >
-            <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
+            <Link
+              to={
+                {
+                  pathname: "/quote-requests",
+                  state: { filterStatus: "Pending" },
+                } as any
+              }
+            >
               <LuClock className="text-xl text-black-500" />
               <p className="text-sm text-gray-600 mt-2 font-bold">
                 Pending Jobs
               </p>
               <p className="text-2xl font-medium">2</p>
-            </div>
-          </Link>
+            </Link>
+          </div>
         </div>
 
         <div className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 ">
