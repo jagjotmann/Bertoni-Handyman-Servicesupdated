@@ -5,7 +5,8 @@ import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 type Quote = {
   _id: string;
   quoteDate: string;
-  statusId: string;
+
+  quoteStatus: string;
   project: {
     name: string;
     description: string;
@@ -28,41 +29,26 @@ type Quote = {
   };
 };
 
-type Status = {
-  _id: string;
-  name: string;
-};
-
 function QuoteRequests() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredQuotes, setFilteredQuotes] = useState<Quote[]>([]);
   const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [statuses, setStatuses] = useState<Status[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("quotes/all");
         const data = await response.json();
+        console.log("Fetched quotes", data);
         setAllQuotes(data);
         setFilteredQuotes(data);
       } catch (error) {
         console.error("Failed to fetch quotes:", error);
       }
     };
-    const fetchStatuses = async () => {
-      try {
-        const response = await fetch("status/all");
-        const data = await response.json();
-        setStatuses(data);
-      } catch (error) {
-        console.error("Failed to fetch statuses:", error);
-      }
-    };
+
     fetchData();
-    fetchStatuses();
   }, []);
   // Handle search query change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,14 +71,9 @@ function QuoteRequests() {
     if (selectedStatusName === "All") {
       setFilteredQuotes(allQuotes); // If "All" is selected, show all quotes
     } else {
-      const filtered = allQuotes.filter((quote) => {
-        // Find the status object for the current quote's statusId
-        const statusObj = statuses.find(
-          (status) => status._id === quote.statusId
-        );
-        // Check if the status name matches the selected status name
-        return statusObj?.name === selectedStatusName;
-      });
+      const filtered = allQuotes.filter(
+        (quote) => quote.quoteStatus === selectedStatusName
+      );
 
       setFilteredQuotes(filtered); // Update state with the filtered quotes
     }
@@ -158,16 +139,18 @@ function QuoteRequests() {
                         All
                       </button>
                     </li>
-                    {statuses.map((status) => (
-                      <li key={status._id}>
-                        <button
-                          onClick={() => handleFilterSelect(status.name)}
-                          className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
-                        >
-                          {status.name}
-                        </button>
-                      </li>
-                    ))}
+                    {["Pending", "Accepted", "Completed", "Declined"].map(
+                      (status) => (
+                        <li key={status}>
+                          <button
+                            onClick={() => handleFilterSelect(status)}
+                            className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                          >
+                            {status}
+                          </button>
+                        </li>
+                      )
+                    )}
                   </ul>
                 </div>
               )}
@@ -205,9 +188,6 @@ function QuoteRequests() {
             </thead>
             <tbody>
               {filteredQuotes.map((quote) => {
-                const statusName =
-                  statuses.find((status) => status._id === quote.statusId)
-                    ?.name || "Unknown Status";
                 return (
                   <tr key={quote._id}>
                     {/* Other cells */}
@@ -221,8 +201,16 @@ function QuoteRequests() {
                       {new Date(quote.quoteDate).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-2 border-b border-gray-300">
-                      {statusName}
+                      {[
+                        "Pending",
+                        "Accepted",
+                        "Completed",
+                        "Declined",
+                      ].includes(quote.quoteStatus)
+                        ? quote.quoteStatus
+                        : "Unknown"}
                     </td>
+
                     {/* Action buttons */}
                     <td className="px-4 py-2 border-b border-gray-300">
                       <button className="text-black underline hover:text-blue-700">

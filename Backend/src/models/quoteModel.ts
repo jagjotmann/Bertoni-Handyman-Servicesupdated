@@ -30,10 +30,12 @@ export interface Quote extends Document {
     description?: string; //not sure if useful
   };
   status: {
-    type: mongoose.Schema.Types.ObjectId;
-    ref: "Status";
+    type: String;
+    enum: ["Pending", "Accepted", "Completed", "Declined"];
     required: true;
-  }; //quote completion status
+    default: "Pending";
+  };
+
   items?: Materials[];
   labor?: Labor[];
   subtotal: number; //pre-tax cost
