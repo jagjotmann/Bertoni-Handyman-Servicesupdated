@@ -24,6 +24,7 @@ import AddTestimonial from "./pages/AddTestimonial";
 import QuoteStatus from "./pages/QuoteStatus";
 import ForgotPassword from "./pages/forgotPassword";
 import NavbarWrapper from "./components/NavbarWrapper";
+import QuoteRequests from "./pages/QuoteRequests";
 
 /*Root component*/
 
@@ -37,18 +38,19 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/get-a-quote" element={<GetAQuote />} />
             <Route path="/contact" element={<ContactPage />} />
-            <Route path="/ThankYou" element={<ThankYou />} />
-            <Route path="/Login" element={<Login />} />
-            <Route path="/QuoteStatus" element={<QuoteStatus />} />
+            <Route path="/thank-you" element={<ThankYou />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/quoteStatus" element={<QuoteStatus />} />
             <Route path="/chat" element={<Chat />} />
-            <Route path="/QuoteLogin/:quoteid" element={<QuoteLogin />} />
+            <Route path="/quote-login/:quoteid" element={<QuoteLogin />} />
             <Route path="/create-account" element={<CreateAccount />} />
-            <Route path="/forgotPassword" element={<ForgotPassword />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route
               path="/create-account-success"
               element={<CreateAccountSuccess />}
             />
             <Route path="/admin" element={<AdminPage />} />
+            <Route path="/quote-requests" element={<QuoteRequests />} />
             <Route
               path="/admin-client-profile"
               element={<AdminClientProfile />}
