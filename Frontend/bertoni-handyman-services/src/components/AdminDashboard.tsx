@@ -2,6 +2,7 @@ import React from "react";
 import { IoBriefcaseOutline } from "react-icons/io5";
 import { LuClock } from "react-icons/lu";
 import { CiBadgeDollar } from "react-icons/ci";
+import { Link } from "react-router-dom";
 
 const tempData = [
   {
@@ -40,23 +41,39 @@ const AdminDashboard = () => {
       <p className="text-2xl text-black-600 mt-2 font-bold p-5">Dashboard</p>
       <div className="flex gap-4 p-6">
         <div className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 ">
-          <div className="flex items-center justify-between">
-            <IoBriefcaseOutline className="text-xl text-black-500" />
-          </div>
-          <p className="text-sm text-gray-600 mt-2 font-bold">
-            Total Jobs Completed
-          </p>
-          <div className="flex items-center justify-between">
-            <p className="text-2xl font-medium">20</p>
-          </div>
+          <Link
+            to={{
+              pathname: "/quote-requests",
+              state: { filterStatus: "Completed" },
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <IoBriefcaseOutline className="text-xl text-black-500" />
+              <p className="text-sm text-gray-600 mt-2 font-bold">
+                Total Jobs Completed
+              </p>
+              <p className="text-2xl font-medium">20</p>
+            </div>
+          </Link>
         </div>
+
         <div className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 ">
-          <div className="flex items-center justify-between">
-            <LuClock className="text-xl text-black-500" />
-          </div>
-          <p className="text-sm text-gray-600 mt-2 font-bold">Pending Jobs</p>
-          <p className="text-2xl font-medium">2</p>
+          <Link
+            to={{
+              pathname: "/quote-requests",
+              state: { filterStatus: "Pending" },
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <LuClock className="text-xl text-black-500" />
+              <p className="text-sm text-gray-600 mt-2 font-bold">
+                Pending Jobs
+              </p>
+              <p className="text-2xl font-medium">2</p>
+            </div>
+          </Link>
         </div>
+
         <div className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 ">
           <div className="flex items-center justify-between">
             <CiBadgeDollar className="text-xl text-black-500" />
