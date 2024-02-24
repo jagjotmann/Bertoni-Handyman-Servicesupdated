@@ -35,27 +35,19 @@ function QuoteRequests() {
   const [filteredQuotes, setFilteredQuotes] = useState<Quote[]>([]);
   const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [filterStatus, setFilterStatus] = useState("");
   const location = useLocation();
+  const { filterStatus } = location.state || {};
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("quotes/all");
         const data = await response.json();
-        console.log("Fetched quotes", data);
         setAllQuotes(data);
-        const statusFromLocation = location.state?.filterStatus;
-        if (statusFromLocation) {
-          setFilterStatus(statusFromLocation);
-          const filteredData = data.filter(
-            (quote: Quote) => quote.quoteStatus === statusFromLocation
-          );
-
-          setFilteredQuotes(filteredData);
-        } else {
-          setFilteredQuotes(data);
-        }
+        const filteredData = filterStatus
+          ? data.filter((quote: Quote) => quote.quoteStatus === filterStatus)
+          : data;
+        setFilteredQuotes(filteredData);
       } catch (error) {
         console.error("Failed to fetch quotes:", error);
       }
