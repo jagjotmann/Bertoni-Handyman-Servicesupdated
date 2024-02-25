@@ -1,6 +1,9 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, FormEvent } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import axios from 'axios';
+
+
 
 //Dummy Client until backend is ready to connect
 const dummyClient = {
@@ -281,15 +284,62 @@ const AddLaborModal: React.FC<{
 };
 
 //Main component
-const CreateQuote = () => {
+const CreateQuote: React.FC = () => {
+  const { quoteId } = useParams<{ quoteId: string }>();
   //variables
-  const [client, setClient] = useState(dummyClient);
+  //const [client, setClient] = useState(dummyClient);
+  const [quote, setQuote] = useState(""); //"" allows a loading state for transparency of data loading
+  const [editing, setEditing] = useState(!quoteId); //allows default editing state when routed with no quote
   const navigate = useNavigate();
-  const [assignedEmployee, setAssignedEmployee] = useState<string | null>(null);
 
   const [itemList, setItemList] = useState<MaterialTuple[]>([]);
   const [laborList, setLaborList] = useState<LaborTuple[]>([]);
   const [finalTotalCost, setFinalTotalCost] = useState(0);
+  const [formData, setFormData] = useState({ //form for quote client info
+    id: "",
+    phone: "",
+    description: "",
+    name: "",
+    address: "",
+    preferredEndDate: "",
+  });
+
+  useEffect(() => {
+    const fetchQuote = async () => {
+      try {
+        const quote = await axios.get(`/quotes/${quoteId}`);
+        setQuote(quote.data);
+        setFormData({
+          id: quote.data.id,
+          phone: quote.data.contactPerson.phone,
+          description: quote.data.project.description,
+          name: quote.data.contactPerson.name,
+          address: quote.data.project.address.streetAddress,
+          preferredEndDate: quote.data.project.preferredEndDate,
+        });
+      } catch (error) {
+        console.error('Error fetching quote:', error);
+      }
+    };
+
+    if (quoteId) {
+      fetchQuote();
+    }
+  }, [quoteId]);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      if (quoteId) {
+        await axios.put(`/quote/${quoteId}`, formData);
+      } else {
+        await axios.post(`/quote/create`, formData);
+      }
+      // redirect to CreateQuote @ quoteId
+    } catch (error) {
+      console.error('Error submitting quote:', error);
+    }
+  };
 
   //add item to item list
   const addItem = (item: MaterialTuple) => {
@@ -354,7 +404,7 @@ const CreateQuote = () => {
         <div className="flex justify-start items-center">
           <h1 className="text-3xl font-bold pr-2">Create a Quote</h1>
           <p className="bg-blue-500 text-xs text-white font-bold py-1 px-2 rounded-full">
-            ID: {client.id}
+            ID: {formData.id}
           </p>
         </div>
         <div className="flex justify-end">
@@ -397,29 +447,29 @@ const CreateQuote = () => {
                 <div>
                   <p className="text-gray-400">Email:</p>
                   <a
-                    href={`mailto:${client.name}`}
+                    href={`mailto:${formData.name}`}
                     className="text-blue-500 hover:text-blue-300"
                   >
-                    {client.name}
+                    {formData.name}
                   </a>
                   {/* <p>{client.name}</p> */}
                 </div>
                 <div>
                   <p className="text-gray-400">Phone:</p>
-                  <p>{client.phone}</p>
+                  <p>{formData.phone}</p>
                 </div>
                 <div>
                   <p className="text-gray-400">Address:</p>
-                  <p>{client.address}</p>
+                  <p>{formData.address}</p>
                 </div>
               </div>
               <div className="font-bold py-2">
                 <p className="text-gray-400">Job Decription:</p>
-                <p>{client.description}</p>
+                <p>{formData.description}</p>
               </div>
               <div className="font-bold py-2">
                 <p className="text-gray-400">Preferred Client Finish Date:</p>
-                <p>{client.preferredEndDate}</p>
+                <p>{formData.preferredEndDate}</p>
               </div>
             </div>
             <div className="">
