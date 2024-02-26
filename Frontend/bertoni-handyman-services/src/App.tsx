@@ -57,7 +57,7 @@ function App() {
               path="/client-profile-Alternate-View"
               element={<ClientProfileAlternateView />}
             />
-            <Route path="/create-a-quote" element={<CreateQuote />} />
+            <Route path="/create-a-quote/:quoteId" element={<CreateQuote />} />
             <Route path="/add-testimonial" element={<AddTestimonial />} />
           </Routes>
           <Footer />
