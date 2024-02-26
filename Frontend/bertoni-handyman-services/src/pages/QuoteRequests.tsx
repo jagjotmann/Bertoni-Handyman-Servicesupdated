@@ -1,7 +1,9 @@
+import React, { useEffect, useState } from "react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FullSectionLayout from "../layouts/FullSectionLayout";
 import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
+import { useLocation } from "react-router-dom";
 
 type Quote = {
   _id: string;
@@ -35,22 +37,26 @@ function QuoteRequests() {
   const [filteredQuotes, setFilteredQuotes] = useState<Quote[]>([]);
   const [allQuotes, setAllQuotes] = useState<Quote[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const location = useLocation();
+  const { filterStatus } = location.state || {};
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("quotes/all");
         const data = await response.json();
-        console.log("Fetched quotes", data);
         setAllQuotes(data);
-        setFilteredQuotes(data);
+        const filteredData = filterStatus
+          ? data.filter((quote: Quote) => quote.quoteStatus === filterStatus)
+          : data;
+        setFilteredQuotes(filteredData);
       } catch (error) {
         console.error("Failed to fetch quotes:", error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [location.state]);
   // Handle search query change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
