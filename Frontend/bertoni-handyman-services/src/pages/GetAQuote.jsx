@@ -285,7 +285,7 @@ const QuoteForm = () => {
   );
 
   return (
-    <div className="mx-auto h-screen max-w-screen-md p-6 py-2">
+    <div className="mx-auto min-h-screen max-w-screen-md p-6 py-2">
       <div style={styles.container}>
         {isSubmitted ? (
           // Show success message after form submission

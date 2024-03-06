@@ -47,7 +47,7 @@ router.get("/listEvents", async (req: Request, res: Response) => {
 router.post("/createEvent", async (req: Request, res: Response) => {
   const data = req.body;
   try {
-    createEvent(OATH2_INSTANCE);
+    createEvent(OATH2_INSTANCE, data);
     res.status(201).json({ message: "Event created." });
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -261,9 +261,11 @@ function deleteFirstEvent(auth, fromToday) {
   });
 }
 
-function createEvent(auth) {
+function createEvent(auth, data) {
   const calendar = google.calendar({ version: "v3", auth });
   // console.log(calendar)
+  console.log(data);
+  return;
 
   let tomorrowOneHourLater = new Date(tomorrow.getTime());
   tomorrowOneHourLater.setHours(tomorrow.getHours() + 1);
