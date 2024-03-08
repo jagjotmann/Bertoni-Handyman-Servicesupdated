@@ -1,45 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { IoBriefcaseOutline } from "react-icons/io5";
 import { LuClock } from "react-icons/lu";
 import { CiBadgeDollar } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
-
-const tempData = [
-  {
-    clientID: "#000",
-    clientName: "Sean Celli",
-    clientEmail: "sean.celli@yahoo.com",
-    clientPhone: "(210)145-2453",
-    status: "Pending Quote",
-  },
-  {
-    clientID: "#001",
-    clientName: "Austin Loft",
-    clientEmail: "austin.loft@yahoo.com",
-    clientPhone: "(210)145-2453",
-    status: "Pending Quote",
-  },
-  {
-    clientID: "#002",
-    clientName: "Alex Fedororv",
-    clientEmail: "alex.ferororv@yahoo.com",
-    clientPhone: "(210)145-2453",
-    status: "Pending Quote",
-  },
-  {
-    clientID: "#003",
-    clientName: "Ahmed Osman",
-    clientEmail: "ahmed.osman@yahoo.com",
-    clientPhone: "(210)145-2453",
-    status: "Pending Quote",
-  },
-];
+import type { Quote } from "../pages/QuoteRequests";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const navigateToQuoteRequests = (filterStatus: string) => {
     navigate("/quote-requests", { state: { filterStatus } });
   };
+
+  const [pendingQuotes, setPendingQuotes] = useState<Quote[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("quotes/all");
+        const data = await response.json();
+        setPendingQuotes(
+          data.filter((quote: Quote) => quote.quoteStatus === "Pending")
+        );
+      } catch (error) {
+        console.error("Failed to fetch quotes:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  console.log("Pending Quotes:", pendingQuotes);
+
   return (
     <main className="flex-1 w-full overflow-x-hidden">
       <p className="text-2xl text-black-600 mt-2 font-bold p-5">Dashboard</p>
@@ -111,75 +102,30 @@ const AdminDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {tempData.map((data) => (
-                  <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
+                {pendingQuotes.map((quote) => (
+                  <tr
+                    key={quote._id}
+                    className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+                  >
                     <th
                       scope="row"
                       className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                     >
-                      {data.clientID}
+                      {quote._id.slice(-9)} {/* Quote ID as Client ID */}
                     </th>
-                    <td className="px-6 py-4">{data.clientName}</td>
+                    <td className="px-6 py-4">{quote.contactPerson.name}</td>
                     <td className="px-6 py-4">
                       <a
-                        href={`mailto:${data.clientEmail}`}
+                        href={`mailto:${quote.contactPerson.email}`}
                         className="text-blue-500 hover:text-blue-300"
                       >
-                        {data.clientEmail}
+                        {quote.contactPerson.email}
                       </a>
                     </td>
-                    <td className="px-6 py-4">{data.clientPhone}</td>
-                    <td className="px-6 py-4">{data.status}</td>
+                    <td className="px-6 py-4">{quote.contactPerson.phone}</td>
+                    <td className="px-6 py-4">{quote.quoteStatus}</td>
                   </tr>
                 ))}
-                {/* <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    #000
-                  </th>
-                  <td className="px-6 py-4">Jeff Richard</td>
-                  <td className="px-6 py-4">jeff101@email.com</td>
-                  <td className="px-6 py-4">(201)145-2453</td>
-                  <td className="px-6 py-4">Pending Quote</td>
-                </tr>
-                <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    #001
-                  </th>
-                  <td className="px-6 py-4">Jeff Richard</td>
-                  <td className="px-6 py-4">jeff101@email.com</td>
-                  <td className="px-6 py-4">(201)145-2453</td>
-                  <td className="px-6 py-4">Pending Quote</td>
-                </tr>
-                <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    #002
-                  </th>
-                  <td className="px-6 py-4">Jeff Richard</td>
-                  <td className="px-6 py-4">jeff101@email.com</td>
-                  <td className="px-6 py-4">(201)145-2453</td>
-                  <td className="px-6 py-4">Pending Quote</td>
-                </tr>
-                <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700">
-                  <th
-                    scope="row"
-                    className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                  >
-                    #003
-                  </th>
-                  <td className="px-6 py-4">Jeff Richard</td>
-                  <td className="px-6 py-4">jeff101@email.com</td>
-                  <td className="px-6 py-4">(201)145-2453</td>
-                  <td className="px-6 py-4">Pending Quote</td>
-                </tr> */}
               </tbody>
             </table>
           </div>
