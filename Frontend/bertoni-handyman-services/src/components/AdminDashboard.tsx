@@ -18,9 +18,15 @@ const AdminDashboard = () => {
       try {
         const response = await fetch("quotes/all");
         const data = await response.json();
-        setPendingQuotes(
-          data.filter((quote: Quote) => quote.quoteStatus === "Pending")
+        const sortedData = data.sort(
+          (a: Quote, b: Quote) =>
+            new Date(b.quoteDate).getTime() - new Date(a.quoteDate).getTime()
         );
+        const limitedPendingQuotes = sortedData
+          .filter((quote: Quote) => quote.quoteStatus === "Pending")
+          .slice(0, 8);
+
+        setPendingQuotes(limitedPendingQuotes);
       } catch (error) {
         console.error("Failed to fetch quotes:", error);
       }
@@ -28,8 +34,6 @@ const AdminDashboard = () => {
 
     fetchData();
   }, []);
-
-  console.log("Pending Quotes:", pendingQuotes);
 
   return (
     <main className="flex-1 w-full overflow-x-hidden">
