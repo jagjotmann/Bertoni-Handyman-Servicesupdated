@@ -1,51 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import PaddingSectionLayout from "../layouts/PaddingSectionLayout";
 
-let today = new Date();
-let tomorrow = new Date(today);
-
-tomorrow.setDate(today.getDate() + 1);
-
-type Event = {
-  summary: string;
-  description: string;
-  start: {
-    dateTime: string;
-  };
-  end: {
-    dateTime: string;
-  };
-  attendees: {
-    email: string;
-  }[];
-  reminders: {
-    useDefault: boolean;
-    overrides: {
-      method: string;
-      minutes: number;
-    }[];
-  };
-};
-
-let event = {
-  summary: "Sample Event happening Tomorrow!",
-  description:
-    "This is your sample event created from Murilloves' Google Calendar NODEJS API",
-  start: {
-    dateTime: today.toISOString(),
-  },
-  end: {
-    dateTime: tomorrow.toISOString(),
-  },
-  attendees: [{ email: "email1@gmail.com" }, { email: "email2@gmail.com" }],
-  reminders: {
-    useDefault: false,
-    overrides: [
-      { method: "email", minutes: 24 * 60 },
-      { method: "popup", minutes: 30 },
-    ],
-  },
-};
+// const validQuote = "65d801f3452ad8fd60537222";
+const validQuote = "65da41d696f6a43eb6bd56c5";
 
 const ScheduleAppointment = () => {
   const [completed, setCompleted] = useState(false);
@@ -57,92 +14,101 @@ const ScheduleAppointment = () => {
   const [time, setTime] = useState("");
 
   async function submitAppointment() {
+    setScheduling(true);
     let details = {
-      email,
+      quoteID,
       summary,
       description,
       date,
       time,
     };
-    setCompleted(true);
-    return;
     try {
       const response = await fetch(
-        "http://localhost:3000/scheduling/createEvent",
+        "http://localhost:3001/scheduling/createEvent",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ data: details }),
+          body: JSON.stringify(details),
         }
       );
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        setScheduling(false);
+        setErrorText("Could not create event");
+        console.log(response);
+        // throw new Error("Network response was not ok");
+        return;
+      }
+
+      const data = await response.json();
+      setCompleted(true);
+      setScheduling(false);
+    } catch (err: any) {
+      console.log(err);
+      setErrorText(err);
+      setScheduling(false);
+    }
+  }
+
+  function isValidQuote(quote: string) {
+    // Define a regular expression pattern for quote validation.
+    // const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // return pattern.test(quote);
+    return quote.length > 5;
+  }
+
+  const [quoteID, setQuoteID] = useState("");
+  const [quoteVerfied, setQuoteVerified] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [failedSearch, setFailedSearch] = useState(false);
+  const [errorText, setErrorText] = useState("");
+
+  const [scheduling, setScheduling] = useState(false);
+
+  const quoteInput = useRef<HTMLInputElement>(null);
+
+  const [timer, setTimer] = useState<NodeJS.Timeout>();
+
+  const handleQuoteIDValidation = async (e: any) => {
+    if (!isValidQuote(quoteID)) {
+      return;
+    }
+
+    setFailedSearch(false);
+    setVerifying(true);
+    setErrorText("");
+
+    try {
+      const response = await fetch(`http://localhost:3000/quotes/${quoteID}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      setVerifying(false);
+
+      if (!response.ok) {
+        setErrorText("Invalid Quote ID.");
+        setQuoteVerified(false);
+        return;
       }
 
       const data = await response.json();
 
-      setCompleted(true);
+      if (data.scheduled == true) {
+        setErrorText("This quote has already been scheduled.");
+        return;
+      }
+
+      setQuoteVerified(true);
     } catch (err: any) {
       console.log(err);
-    }
-  }
-
-  function isValidEmail(email: string) {
-    // Define a regular expression pattern for email validation.
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return pattern.test(email);
-  }
-
-  const [email, setEmail] = useState("");
-  const [emailVerified, setEmailVerified] = useState(false);
-  const [verifying, setVerifying] = useState(false);
-  const [failedSearch, setFailedSearch] = useState(false);
-
-  const emailInput = useRef<HTMLInputElement>(null);
-
-  function handleFocus() {
-    if (emailInput.current) {
-      emailInput.current.blur();
-    }
-  }
-
-  const [timer, setTimer] = useState<NodeJS.Timeout>();
-
-  const handleEmailValidation = async (e: any) => {
-    e.preventDefault();
-    setFailedSearch(false);
-    setEmail(e.target.value);
-
-    if (isValidEmail(email)) {
-      clearTimeout(timer);
-      const newTimer = setTimeout(async () => {
-        setVerifying(true);
-        let response = await verify(email);
-        if (response) {
-          setEmailVerified(true);
-          setVerifying(false);
-          setFailedSearch(false);
-        } else {
-          setEmailVerified(false);
-          setVerifying(false);
-          setFailedSearch(true);
-        }
-        handleFocus();
-      }, 1000);
-      setTimer(newTimer);
+      setErrorText(err);
     }
   };
-
-  function verify(email: string) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(true);
-      }, 2000);
-    });
-  }
 
   function getCurrentDate() {
     const date = new Date();
@@ -160,28 +126,33 @@ const ScheduleAppointment = () => {
           <br />
           <div className="w-full max-w-xl mb-6">
             <label className="block text-gray-500 text-md mb-2">
-              Before we begin, please enter the email address associated with
-              your account.
+              Before we begin, please enter the QuoteID associated with your
+              quote.
             </label>
+            <div className=" text-red-500">{errorText}</div>
             <input
-              ref={emailInput}
+              ref={quoteInput}
               className="appearance-none block w-full bg-gray-200 text-gray-700 border  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               type="text"
-              placeholder="Type your email..."
-              value={email}
-              onChange={(e) => handleEmailValidation(e)}
+              placeholder="Quote number"
+              value={quoteID}
+              onChange={(e) => setQuoteID(e.target.value)}
             />
             {failedSearch && (
-              <p className="text-yellow-600">
-                Email could not be connected to account.
-              </p>
+              <p className="text-yellow-600">Quote was not found.</p>
             )}
             {verifying && <p className="italic">Verifying...</p>}
           </div>
-          {emailVerified && (
+          <button
+            onClick={(e) => handleQuoteIDValidation(e)}
+            className="py-2 px-4 font-medium rounded  text-white bg-[#2A3036] hover:bg-[#4e555c] duration-150"
+          >
+            Continue
+          </button>
+          {quoteVerfied && (
             <>
-              <p className="text-green-500">
-                Email Verified! Continue making appointment.
+              <p className="text-green-500 mt-4 font-semibold">
+                Quote Verified! Continue making appointment.
               </p>
               <br />
               <form
@@ -252,6 +223,7 @@ const ScheduleAppointment = () => {
                     >
                       Schedule
                     </button>
+                    {scheduling && <p className="italic">Scheduling...</p>}
                   </div>
                 </div>
               </form>

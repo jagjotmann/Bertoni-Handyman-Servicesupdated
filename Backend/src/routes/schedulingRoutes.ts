@@ -6,6 +6,8 @@ const fs = require("fs");
 const readline = require("readline");
 const { google } = require("googleapis");
 const axios = require("axios");
+import Quote from "../models/quoteModel.js";
+import mongoose from "mongoose";
 
 import { Request, Response } from "express";
 const stdin = process.openStdin();
@@ -44,42 +46,75 @@ router.get("/listEvents", async (req: Request, res: Response) => {
   }
 });
 
+// type Event = {
+//   quoteID: string;
+//   summary: string;
+//   description: string;
+//   date: string;
+//   time: string;
+// };
+
 router.post("/createEvent", async (req: Request, res: Response) => {
   const data = req.body;
+  let quoteObject = {};
   try {
-    createEvent(OATH2_INSTANCE, data);
-    res.status(201).json({ message: "Event created." });
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    const response = await axios.get(
+      `http://localhost:3001/quotes/${data.quoteID}`
+    );
+    if (response.status != 200) {
+      res.status(400).json({ error: "Quote not found" });
+      return;
+    }
+    quoteObject = response.data;
+    if (quoteObject) {
+      let quote_contact = quoteObject.contactPerson.email
+        ? quoteObject.contactPerson.email
+        : "n/a";
+      try {
+        let created_event = createEvent(OATH2_INSTANCE, data, quote_contact);
+        if (created_event) {
+          const quoteId = data.quoteID;
+          const updatedQuoteData = { scheduled: true };
+          await axios
+            .put(`http://localhost:3001/quotes/${quoteId}`, updatedQuoteData)
+            .then((response) => {
+              if (response.status == 200) {
+                res.status(200).json({ message: "Event Created" });
+                return;
+              } else {
+                res
+                  .status(400)
+                  .json({ error: "Could not update Quote scheduled status" });
+                return;
+              }
+            })
+            .catch((error) => {
+              res
+                .status(400)
+                .json({ error: "Could not update Quote scheduled status" });
+              return;
+            });
+        } else {
+          res.status(400).json({ error: "Could not create event" });
+        }
+      } catch (error: any) {
+        res
+          .status(400)
+          .json({ error: "Could not create event: " + error.message });
+      }
+    } else {
+      res.status(400).json({
+        message:
+          "Sorry! Invalid Quote ID. Please make sure you entered the correct Quote ID.",
+      });
+    }
+  } catch (error) {
+    res.status(404).json({
+      error:
+        "Invalid Quote ID. Please make sure you entered the correct Quote ID.",
+    });
   }
 });
-
-// switch (Number(d)) {
-//   case 10:
-//     listEvents(auth, numberOfListedEvents);
-//     break;
-//   case 20:
-//     createEvent(auth);
-//     break;
-//   case 30:
-//     updateEvent(auth);
-//     break;
-//   case 40:
-//     deleteFirstEvent(auth);
-//     break;
-//   case 41:
-//     deleteFirstEvent(auth, true);
-//     break;
-//   case 90:
-//     printAuth(auth);
-//     break;
-//   case 666:
-//     revokeToken(auth);
-//     break;
-//   case 0:
-//     process.exit();
-//     break;
-// }
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -181,51 +216,51 @@ function paramsEventsList(fromIsoDate, numberOfEvents) {
   return paramsList;
 }
 
-function getActionFromUser(auth) {
-  const numberOfListedEvents = 100;
-  console.log(
-    `10 - Lists your ${numberOfListedEvents} first Google calendar events`
-  );
-  // console.log(`11 - Lists your ${numberOfListedEvents} first Google calendar events from Today`)
-  console.log("20 - Inserts new event for tomorrow");
-  console.log("30 - Update the first event to current day");
-  console.log("40 - Delete first event");
-  console.log("41 - Delete first event from today");
-  console.log("90 - Print Auth");
-  console.log("666 - Revoke your token");
-  console.log("\n0 - Exit");
-  console.log("\n");
-  console.log("Choose an action:");
+// function getActionFromUser(auth) {
+//   const numberOfListedEvents = 100;
+//   console.log(
+//     `10 - Lists your ${numberOfListedEvents} first Google calendar events`
+//   );
+//   // console.log(`11 - Lists your ${numberOfListedEvents} first Google calendar events from Today`)
+//   console.log("20 - Inserts new event for tomorrow");
+//   console.log("30 - Update the first event to current day");
+//   console.log("40 - Delete first event");
+//   console.log("41 - Delete first event from today");
+//   console.log("90 - Print Auth");
+//   console.log("666 - Revoke your token");
+//   console.log("\n0 - Exit");
+//   console.log("\n");
+//   console.log("Choose an action:");
 
-  stdin.addListener("data", function (d) {
-    switch (Number(d)) {
-      case 10:
-        listEvents(auth, numberOfListedEvents);
-        break;
-      case 20:
-        createEvent(auth);
-        break;
-      case 30:
-        updateEvent(auth);
-        break;
-      case 40:
-        deleteFirstEvent(auth);
-        break;
-      case 41:
-        deleteFirstEvent(auth, true);
-        break;
-      case 90:
-        printAuth(auth);
-        break;
-      case 666:
-        revokeToken(auth);
-        break;
-      case 0:
-        process.exit();
-        break;
-    }
-  });
-}
+//   stdin.addListener("data", function (d) {
+//     switch (Number(d)) {
+//       case 10:
+//         listEvents(auth, numberOfListedEvents);
+//         break;
+//       case 20:
+//         createEvent(auth);
+//         break;
+//       case 30:
+//         updateEvent(auth);
+//         break;
+//       case 40:
+//         deleteFirstEvent(auth);
+//         break;
+//       case 41:
+//         deleteFirstEvent(auth, true);
+//         break;
+//       case 90:
+//         printAuth(auth);
+//         break;
+//       case 666:
+//         revokeToken(auth);
+//         break;
+//       case 0:
+//         process.exit();
+//         break;
+//     }
+//   });
+// }
 
 function printAuth(calendar) {
   // console.log('- Auth: ', auth)
@@ -261,51 +296,63 @@ function deleteFirstEvent(auth, fromToday) {
   });
 }
 
-function createEvent(auth, data) {
+function createEvent(auth, data, email) {
   const calendar = google.calendar({ version: "v3", auth });
-  // console.log(calendar)
-  console.log(data);
-  return;
 
-  let tomorrowOneHourLater = new Date(tomorrow.getTime());
-  tomorrowOneHourLater.setHours(tomorrow.getHours() + 1);
+  try {
+    var startDate = new Date(data.date + "T" + data.time);
+    var endDate = new Date(startDate.getTime());
+    endDate.setHours(startDate.getHours() + 4);
 
-  let event = {
-    summary: "Sample Event happening Tomorrow!",
-    description:
-      "This is your sample event created from Murilloves' Google Calendar NODEJS API",
-    start: {
-      dateTime: tomorrow.toISOString(),
-    },
-    end: {
-      dateTime: tomorrowOneHourLater.toISOString(),
-    },
-    attendees: [{ email: "lpage@example.com" }, { email: "sbrin@example.com" }],
-    reminders: {
-      useDefault: false,
-      overrides: [
-        { method: "email", minutes: 24 * 60 },
-        { method: "popup", minutes: 30 },
-      ],
-    },
-  };
+    // let tomorrowOneHourLater = new Date(tomorrow.getTime());
+    // tomorrowOneHourLater.setHours(tomorrow.getHours() + 1);
 
-  calendar.events.insert(
-    {
-      auth: auth,
-      calendarId: "wizardsweb42@gmail.com",
-      resource: event,
-    },
-    (err, res) => {
-      if (err) return console.log(err);
-      const event = res.data;
+    let event = {
+      summary:
+        "EMAIL: " +
+        email +
+        " - " +
+        "QUOTE ID: " +
+        data.quoteID +
+        " - " +
+        data.summary,
+      description: data.description,
+      start: {
+        dateTime: startDate.toISOString(),
+      },
+      end: {
+        dateTime: endDate.toISOString(),
+      },
+      attendees: [],
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: "email", minutes: 24 * 60 },
+          { method: "popup", minutes: 30 },
+        ],
+      },
+    };
 
-      if (event) {
-        console.log("Booked event:");
-        console.log(event);
+    calendar.events.insert(
+      {
+        auth: auth,
+        calendarId: "wizardsweb42@gmail.com",
+        resource: event,
+      },
+      (err, res) => {
+        if (err) return false;
+        const event = res.data;
+
+        if (event) {
+          console.log("Booked event");
+        }
       }
-    }
-  );
+    );
+
+    return true;
+  } catch (err: any) {
+    return false;
+  }
 }
 
 function updateEvent(auth) {

@@ -19,15 +19,18 @@ const userModel_js_1 = __importDefault(require("../models/userModel.js"));
 router.post("/getTestimonials", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { amount } = req.body;
-        const tests = yield testimonialModel_js_1.default.find().populate('author').sort({ date: -1 }).limit(amount);
-        ;
-        const formattedTests = tests.map(blog => {
+        const tests = yield testimonialModel_js_1.default.find()
+            .populate("author")
+            .sort({ date: -1 })
+            .limit(amount);
+        const formattedTests = tests.map((blog) => {
+            console.log(blog);
             return {
                 _id: blog._id,
                 content: blog.content,
                 author: {
                     // @ts-ignore
-                    fullName: blog.author.name.firstName + " " + blog.author.name.lastName,
+                    fullName: blog.name.firstName + " " + blog.name.lastName,
                 },
                 // @ts-ignore
                 username: blog.author.username,
@@ -35,13 +38,14 @@ router.post("/getTestimonials", (req, res) => __awaiter(void 0, void 0, void 0, 
                 rating: blog.rating,
             };
         });
-        res.status(200).json({ message: "Fetched Testimonials", testimonials: formattedTests });
+        res
+            .status(200)
+            .json({ message: "Fetched Testimonials", testimonials: formattedTests });
     }
     catch (err) {
         console.log(err);
         res.status(400).json({ error: err.message });
     }
-    ;
 }));
 router.post("/addTestimonial", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, content, rating } = req.body;
@@ -49,9 +53,13 @@ router.post("/addTestimonial", (req, res) => __awaiter(void 0, void 0, void 0, f
     if (!Author) {
         return res.status(400).json({ error: "No user with this email exists." });
     }
-    const alreadyHasATestimonial = yield testimonialModel_js_1.default.findOne({ author: Author._id });
+    const alreadyHasATestimonial = yield testimonialModel_js_1.default.findOne({
+        author: Author._id,
+    });
     if (alreadyHasATestimonial) {
-        return res.status(400).json({ error: "Cannot submit multiple testimonials." });
+        return res
+            .status(400)
+            .json({ error: "Cannot submit multiple testimonials." });
     }
     const authorId = Author._id;
     try {
@@ -62,7 +70,10 @@ router.post("/addTestimonial", (req, res) => __awaiter(void 0, void 0, void 0, f
             rating: rating,
         });
         yield newTestimonial.save();
-        res.status(201).json({ message: "Testimonial added succesfully", testimonial: newTestimonial });
+        res.status(201).json({
+            message: "Testimonial added succesfully",
+            testimonial: newTestimonial,
+        });
     }
     catch (error) {
         console.log(error);

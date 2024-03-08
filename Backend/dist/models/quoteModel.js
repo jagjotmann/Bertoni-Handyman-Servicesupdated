@@ -132,6 +132,10 @@ const QuoteSchema = new mongoose_1.Schema({
         email: String, //Ideally would require one of email or phone
         phone: String,
     },
+    scheduled: {
+        type: Boolean,
+        default: false,
+    },
 });
 const QuoteModel = mongoose_1.default.model("Quote", QuoteSchema);
 exports.default = QuoteModel;
