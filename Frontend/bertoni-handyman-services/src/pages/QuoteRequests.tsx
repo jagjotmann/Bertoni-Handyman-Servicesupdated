@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FullSectionLayout from "../layouts/FullSectionLayout";
 import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 import { useLocation } from "react-router-dom";
 
-type Quote = {
+export type Quote = {
   _id: string;
   quoteDate: string;
 
@@ -220,7 +220,10 @@ function QuoteRequests() {
 
                     {/* Action buttons */}
                     <td className="px-4 py-2 border-b border-gray-300">
-                      <Link to={`/create-a-quote/${quote._id}`} className="text-black underline hover:text-blue-700">
+                      <Link
+                        to={`/create-a-quote/${quote._id}`}
+                        className="text-black underline hover:text-blue-700"
+                      >
                         View
                       </Link>
                     </td>
