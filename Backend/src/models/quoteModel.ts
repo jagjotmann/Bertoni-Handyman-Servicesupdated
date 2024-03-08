@@ -1,8 +1,16 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+// Assuming the enum QuoteStatus is used elsewhere and might be useful for validation or filtering
+enum QuoteStatus {
+  Pending = "pending",
+  Approved = "approved",
+  Denied = "denied",
+  Completed = "completed",
+}
+
 interface Materials {
   name: string;
-  description?: string; //not sure if useful
+  description?: string;
   quantity: number;
   unitPrice: number;
   total: number;
@@ -10,10 +18,10 @@ interface Materials {
 
 interface Labor {
   name: string;
-  description?: string; //not sure if useful
+  description?: string;
   numHours: number;
   hourlyRate: number;
-  total: number; //numHours * hourlyRate calculated here to reduce calculations
+  total: number;
 }
 
 export interface Quote extends Document {
@@ -27,23 +35,20 @@ export interface Quote extends Document {
       state: string;
       zipCode: string;
     };
-    description?: string; //not sure if useful
+    description?: string;
   };
   status: {
-    type: String;
-    enum: ["Pending", "Accepted", "Completed", "Declined"];
+    type: mongoose.Schema.Types.ObjectId;
+    ref: "Status";
     required: true;
-    default: "Pending";
   };
-
   items?: Materials[];
   labor?: Labor[];
-  subtotal: number; //pre-tax cost
+  subtotal: number;
   tax?: number;
-  totalCost: number; //post-tax cost
-  notes?: string; //not sure if useful
+  totalCost: number;
+  notes?: string;
   contactPerson: {
-    //contact is client for all intents and purposes
     name: string;
     companyName?: string;
     email?: string;
@@ -157,7 +162,7 @@ const QuoteSchema: Schema = new Schema<Quote>({
       required: true,
     },
     companyName: String,
-    email: String, //Ideally would require one of email or phone
+    email: String,
     phone: String,
   },
   scheduled: {
@@ -165,6 +170,14 @@ const QuoteSchema: Schema = new Schema<Quote>({
     default: false,
   },
 });
+
+// Custom validation to ensure either email or phone is provided
+QuoteSchema.path('contactPerson').validate(function (value) {
+  return value.email || value.phone; // Ensures at least one contact method is provided
+}, 'Either an email or phone number must be provided.');
+
+// Placeholder for custom methods you might want to add
+// Example: QuoteSchema.methods.calculateTotalCost = function() { /* implementation */ };
 
 const QuoteModel = mongoose.model<Quote>("Quote", QuoteSchema);
 
