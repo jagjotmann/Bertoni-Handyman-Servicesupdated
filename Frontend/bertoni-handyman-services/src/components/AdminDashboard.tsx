@@ -89,9 +89,6 @@ const AdminDashboard = () => {
               <thead className="text-xs text-white  bg-blue-400 ">
                 <tr>
                   <th scope="col" className="px-6 py-3">
-                    Client ID
-                  </th>
-                  <th scope="col" className="px-6 py-3">
                     Client Name
                   </th>
                   <th scope="col" className="px-6 py-3">
@@ -111,12 +108,6 @@ const AdminDashboard = () => {
                     key={quote._id}
                     className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
                   >
-                    <th
-                      scope="row"
-                      className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                    >
-                      {quote._id.slice(-9)} {/* Quote ID as Client ID */}
-                    </th>
                     <td className="px-6 py-4">{quote.contactPerson.name}</td>
                     <td className="px-6 py-4">
                       <a
