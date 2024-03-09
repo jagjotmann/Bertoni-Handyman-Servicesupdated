@@ -166,15 +166,9 @@ const Login = () => {
               {passwordError && (
                 <p className="text-sm text-red-500">{passwordError}</p>
               )}
-              {/* Recaptcha */}
-              <ReCAPTCHA
-                sitekey="YOUR_SITE_KEY_HERE"
-                onChange={(token: string | null) =>
-                  setRecaptchaToken(token || "")
-                }
-              />
-              {/* Forgot password link */}
-              <div className="text-right">
+
+              {/* Forgot password link - */}
+              <div className=" text-right">
                 <Link
                   to="/forgotPassword"
                   className="text-sm text-blue-600 hover:underline"
@@ -182,7 +176,16 @@ const Login = () => {
                   Forgot password?
                 </Link>
               </div>
-
+              {/* Recaptcha */}
+              <div className="my-3 flex justify-center">
+                <ReCAPTCHA
+                  className="flex justify-center"
+                  sitekey="YOUR_SITE_KEY_HERE"
+                  onChange={(token: string | null) =>
+                    setRecaptchaToken(token || "")
+                  }
+                />
+              </div>
               <div className="items-center ">
                 {/* Sign-in button */}
                 <button
