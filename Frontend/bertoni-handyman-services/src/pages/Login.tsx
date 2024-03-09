@@ -1,9 +1,9 @@
 import axios from "axios";
 import React, { useState } from "react";
+import DOMPurify from "dompurify"; // Import DOMPurify
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
-import EmailDashboard from "../components/EmailDashboard";
-import QuoteDashboard from "../components/QuoteDashboard";
+import ReCAPTCHA from "react-google-recaptcha";
 import Modal from "../components/UI/Modal";
 import PaddingSectionLayout from "../layouts/PaddingSectionLayout";
 import PageLayout from "../layouts/PageLayout";
@@ -25,6 +25,9 @@ const Login = () => {
 
   // State for handling modal display and content
   const [modal, setModal] = useState<ModalProps | null>(null);
+
+  // state hook to store the reCAPTCHA token
+  const [recaptchaToken, setRecaptchaToken] = useState("");
 
   // Function to validate email format
   const validateEmail = (email: string) => {
@@ -66,11 +69,16 @@ const Login = () => {
     if (hasError) {
       return;
     }
+    // Sanitize inputs before sending them to the server
+    const sanitizedEmail = DOMPurify.sanitize(email);
+    const sanitizedPassword = DOMPurify.sanitize(password);
+
     try {
-      // Attempt to log in the user
+      // Attempt to log in the user with sanitized inputs
       const response = await axios.post("http://localhost:3001/login", {
-        email,
-        password,
+        email: sanitizedEmail,
+        password: sanitizedPassword,
+        recaptchaToken, // Include this in the payload
       });
 
       const token = response.data.token;
@@ -158,7 +166,13 @@ const Login = () => {
               {passwordError && (
                 <p className="text-sm text-red-500">{passwordError}</p>
               )}
-
+              {/* Recaptcha */}
+              <ReCAPTCHA
+                sitekey="YOUR_SITE_KEY_HERE"
+                onChange={(token: string | null) =>
+                  setRecaptchaToken(token || "")
+                }
+              />
               {/* Forgot password link */}
               <div className="text-right">
                 <Link

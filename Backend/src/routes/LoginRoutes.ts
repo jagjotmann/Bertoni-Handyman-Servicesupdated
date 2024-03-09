@@ -2,6 +2,8 @@
 import express from "express";
 import User from "../models/userModel";
 import bcrypt from "bcrypt";
+import axios from "axios";
+
 const jwt = require("jsonwebtoken");
 
 // Function to create Tokens
@@ -15,9 +17,28 @@ const createToken = (_id: any) => {
 // Initialize an express router to handle login-related routes
 const router = express.Router();
 
+// function to verify the reCAPTCHA token:
+async function verifyRecaptcha(token) {
+  const secretKey = "YOUR_SECRET_KEY"; // Replace with your secret key
+  try {
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`
+    );
+    return response.data.success;
+  } catch (error) {
+    console.error("Error verifying reCAPTCHA:", error);
+    return false;
+  }
+}
 // Route to handle user login
 router.post("/", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, recaptchaToken } = req.body;
+
+  // Verify reCAPTCHA token first
+  const isRecaptchaValid = await verifyRecaptcha(recaptchaToken);
+  if (!isRecaptchaValid) {
+    return res.status(400).json({ message: "reCAPTCHA verification failed" });
+  }
 
   try {
     // Find a user by their email

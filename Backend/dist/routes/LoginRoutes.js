@@ -16,6 +16,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const axios_1 = __importDefault(require("axios"));
 const jwt = require("jsonwebtoken");
 // Function to create Tokens
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
@@ -26,9 +27,28 @@ const createToken = (_id) => {
 };
 // Initialize an express router to handle login-related routes
 const router = express_1.default.Router();
+// function to verify the reCAPTCHA token:
+function verifyRecaptcha(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const secretKey = "YOUR_SECRET_KEY"; // Replace with your secret key
+        try {
+            const response = yield axios_1.default.post(`https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`);
+            return response.data.success;
+        }
+        catch (error) {
+            console.error("Error verifying reCAPTCHA:", error);
+            return false;
+        }
+    });
+}
 // Route to handle user login
 router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
+    const { email, password, recaptchaToken } = req.body;
+    // Verify reCAPTCHA token first
+    const isRecaptchaValid = yield verifyRecaptcha(recaptchaToken);
+    if (!isRecaptchaValid) {
+        return res.status(400).json({ message: "reCAPTCHA verification failed" });
+    }
     try {
         // Find a user by their email
         const user = yield userModel_1.default.findOne({ "contactInfo.email": email });

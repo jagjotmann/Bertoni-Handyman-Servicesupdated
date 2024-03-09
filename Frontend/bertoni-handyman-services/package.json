@@ -17,11 +17,13 @@
     "@types/react-router-dom": "^5.3.3",
     "autoprefixer": "^10.4.15",
     "axios": "^1.6.2",
+    "dompurify": "^3.0.9",
     "framer-motion": "^10.16.4",
     "postcss": "^8.4.29",
     "react": "^18.2.0",
     "react-datepicker": "^4.21.0",
     "react-dom": "^18.2.0",
+    "react-google-recaptcha": "^3.1.0",
     "react-icons": "^4.11.0",
     "react-router-dom": "^6.22.1",
     "react-scripts": "^5.0.1",
@@ -54,6 +56,8 @@
     ]
   },
   "devDependencies": {
+    "@types/dompurify": "^3.0.5",
+    "@types/react-google-recaptcha": "^2.1.9",
     "eslint-config-react-app": "^7.0.1"
   }
 }
