@@ -21,7 +21,7 @@ const jwt = require("jsonwebtoken");
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const createToken = (_id) => {
     return jwt.sign({ _id }, process.env.SECRET, {
-        expiresIn: "1h",
+        expiresIn: "30min",
     });
 };
 // Initialize an express router to handle login-related routes

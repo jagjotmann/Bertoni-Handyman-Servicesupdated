@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const createToken = (_id: any) => {
   return jwt.sign({ _id }, process.env.SECRET, {
-    expiresIn: "1h",
+    expiresIn: "30min",
   });
 };
 

@@ -73,8 +73,9 @@ const Login = () => {
         password,
       });
 
+      const token = response.data.token;
       // Store the token in local storage
-      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("token", token);
 
       // Navigate to the admin page upon successful login
       navigate("/admin");
