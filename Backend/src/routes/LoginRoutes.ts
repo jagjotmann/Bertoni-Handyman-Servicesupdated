@@ -1,4 +1,3 @@
-// loginRoutes.ts
 import express from "express";
 import User from "../models/userModel";
 import bcrypt from "bcrypt";
@@ -7,7 +6,6 @@ import axios from "axios";
 const jwt = require("jsonwebtoken");
 
 // Function to create Tokens
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const createToken = (_id: any) => {
   return jwt.sign({ _id }, process.env.SECRET, {
     expiresIn: "30min",
@@ -17,7 +15,7 @@ const createToken = (_id: any) => {
 // Initialize an express router to handle login-related routes
 const router = express.Router();
 
-// function to verify the reCAPTCHA token:
+// Function to verify the reCAPTCHA token:
 async function verifyRecaptcha(token) {
   const secretKey = "YOUR_SECRET_KEY"; // Replace with your secret key
   try {
@@ -30,6 +28,7 @@ async function verifyRecaptcha(token) {
     return false;
   }
 }
+
 // Route to handle user login
 router.post("/", async (req, res) => {
   const { email, password, recaptchaToken } = req.body;
@@ -47,11 +46,33 @@ router.post("/", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Check for lockout
+    const now = new Date();
+    if (user.lockUntil && user.lockUntil > now) {
+      return res.status(429).json({
+        message: "Too many failed login attempts. Please try again later.",
+      });
+    }
+
     // Check if the provided password matches the user's password
     const isValidPassword = await bcrypt.compare(password, user.password);
+
     if (!isValidPassword) {
+      let updates = { $inc: { loginAttempts: 1 } };
+      if (user.loginAttempts + 1 >= 10 && !user.lockUntil) {
+        // Assuming 10 failed attempts threshold
+        updates.$set = { lockUntil: new Date(now.getTime() + 15 * 60 * 1000) }; // Lock account for 15 minutes
+      }
+      await User.updateOne({ "contactInfo.email": email }, updates);
+
       return res.status(401).json({ message: "Invalid credentials" });
     }
+
+    // Reset loginAttempts and lockUntil on successful login
+    await User.updateOne(
+      { "contactInfo.email": email },
+      { $set: { loginAttempts: 0, lockUntil: null } }
+    );
 
     // Create a token
     const token = createToken(user._id);
@@ -64,7 +85,6 @@ router.post("/", async (req, res) => {
     res.status(500).json({ error: errorMessage });
   }
 });
-
 // ===========================================================================//
 
 // Route to handle password change requests
