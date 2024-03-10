@@ -2,25 +2,39 @@ import React, { useState } from "react";
 import PageLayout from "../layouts/PageLayout";
 import PaddingSectionLayout from "../layouts/PaddingSectionLayout";
 import Modal from "../components/UI/Modal";
-import QuoteDashboard from "../components/QuoteDashboard";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import QuoteList from "../components/QuoteList";
+import QuoteForm from "../components/QuoteForm";
 
-// Interface for modal properties
 interface ModalProps {
   title?: string;
   content?: string;
 }
 
+interface Quote {
+  id: string;
+  detail: string;
+  status: string;
+}
+
 const QuoteStatus = () => {
-  // State for managing quote number input and errors
   const [quoteNumber, setQuoteNumber] = useState("");
   const [quoteNumberError, setQuoteNumberError] = useState(false);
-  // State for handling modal display and content
   const [modal, setModal] = useState<ModalProps | null>(null);
+  const [showQuoteForm, setShowQuoteForm] = useState(false);
+  const [showQuoteList, setShowQuoteList] = useState(false);
+  const [quotes, setQuotes] = useState<Quote[]>([]);
   const navigate = useNavigate();
 
-  // Function to handle quote number validation and submission
+  // Define the handleFormSubmit function here
+  const handleFormSubmit = (formData: any) => {
+    console.log("Form Data Submitted:", formData);
+    // Here, you would typically handle the form submission,
+    // such as sending the data to a backend server via an API call.
+    // For demonstration purposes, this just logs the form data to the console.
+  };
+
   const handleSignInWithQuoteNumber = async () => {
     setQuoteNumberError(!quoteNumber.trim());
     if (quoteNumber.trim()) {
@@ -28,7 +42,6 @@ const QuoteStatus = () => {
         const response = await axios.get(
           `http://localhost:3001/quotes/${quoteNumber}`
         );
-
         navigate(`/QuoteLogin/${quoteNumber}`);
       } catch (err: any) {
         setModal({
@@ -42,7 +55,6 @@ const QuoteStatus = () => {
     }
   };
 
-  // Function to handle modal closure
   const errorHandler = () => {
     setModal(null);
   };
@@ -51,7 +63,6 @@ const QuoteStatus = () => {
     <PageLayout>
       <div className="min-h-screen">
         <PaddingSectionLayout>
-          {/* Modal for displaying error or information messages */}
           {modal && (
             <Modal
               title={modal.title}
@@ -60,13 +71,11 @@ const QuoteStatus = () => {
             />
           )}
           <section className="flex flex-col items-center justify-center text-center">
-            {/* Layout for the quote status check */}
             <h1 className="p-4 text-4xl font-bold">Check your Quote Status</h1>
             <p className="max-w-md p-5 text-xl">
               If you have a quote number, you can check your quote status here.
             </p>
             <div className="flex w-full flex-col gap-7 rounded-md bg-gray-200 p-4 md:max-w-lg md:p-12">
-              {/* Quote number input field */}
               <input
                 placeholder="ex. Q00000000"
                 value={quoteNumber}
@@ -77,17 +86,15 @@ const QuoteStatus = () => {
                     : "border-black placeholder-black"
                 } rounded-xl bg-[#F2F2F4] p-1 md:p-2`}
               />
-              <div className="flex justify-center border-b-2 border-black border-divider pb-4">
-                {/* Button to submit the quote number */}
-                <button
-                  className="rounded-xl bg-[#F69327] px-5 py-2 text-xs font-medium text-[#2D333A] shadow-md transition-transform hover:scale-105 md:text-lg "
-                  onClick={handleSignInWithQuoteNumber}
-                >
-                  Check Quote Status
-                </button>
-              </div>
+              <button
+                className="rounded-xl bg-[#F69327] px-5 py-2 text-xs font-medium text-[#2D333A] shadow-md transition-transform hover:scale-105 md:text-lg"
+                onClick={handleSignInWithQuoteNumber}
+              >
+                Check Quote Status
+              </button>
+              {showQuoteForm && <QuoteForm onSubmit={handleFormSubmit} />}
+              {showQuoteList && <QuoteList quotes={quotes} />}
               <div className="flex justify-center">
-                {/* Link to obtain a new quote */}
                 <p className="mt-4 text-center">
                   Don't have a Quote?{" "}
                   <a href="/get-a-quote" className="underline">
@@ -104,3 +111,4 @@ const QuoteStatus = () => {
 };
 
 export default QuoteStatus;
+
