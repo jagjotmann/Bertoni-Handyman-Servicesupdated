@@ -30,8 +30,11 @@ let access_token;
 fs.readFile("credentials.json", (err, content) => {
   if (err) return console.log("Error loading client secret file:", err);
   // Authorize a client with credentials, then call the Google Calendar API.
+  let json_content = JSON.parse(content);
+  json_content.installed.client_id = process.env.CLIENT_ID;
+  json_content.installed.client_secret = process.env.CLIENT_SECRET;
   console.log("Authorizing Credentials...");
-  authorize(JSON.parse(content));
+  authorize(json_content);
 });
 
 router.get("/listEvents", async (req: Request, res: Response) => {

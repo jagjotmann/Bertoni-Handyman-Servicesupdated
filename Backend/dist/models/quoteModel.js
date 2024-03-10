@@ -24,6 +24,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
+// Assuming the enum QuoteStatus is used elsewhere and might be useful for validation or filtering
+var QuoteStatus;
+(function (QuoteStatus) {
+    QuoteStatus["Pending"] = "pending";
+    QuoteStatus["Approved"] = "approved";
+    QuoteStatus["Denied"] = "denied";
+    QuoteStatus["Completed"] = "completed";
+})(QuoteStatus || (QuoteStatus = {}));
 const QuoteSchema = new mongoose_1.Schema({
     quoteDate: {
         type: Date,
@@ -129,7 +137,7 @@ const QuoteSchema = new mongoose_1.Schema({
             required: true,
         },
         companyName: String,
-        email: String, //Ideally would require one of email or phone
+        email: String,
         phone: String,
     },
     scheduled: {
@@ -137,5 +145,11 @@ const QuoteSchema = new mongoose_1.Schema({
         default: false,
     },
 });
+// Custom validation to ensure either email or phone is provided
+// QuoteSchema.path('contactPerson').validate(function (value) {
+//   return value.email || value.phone; // Ensures at least one contact method is provided
+// }, 'Either an email or phone number must be provided.');
+// Placeholder for custom methods you might want to add
+// Example: QuoteSchema.methods.calculateTotalCost = function() { /* implementation */ };
 const QuoteModel = mongoose_1.default.model("Quote", QuoteSchema);
 exports.default = QuoteModel;

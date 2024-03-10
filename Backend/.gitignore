@@ -13,7 +13,6 @@
 /build
 
 # misc
-credentials.json
 .DS_Store
 .env.local
 .env.development.local
