@@ -3,18 +3,6 @@ import { useState, useEffect, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from 'axios';
 
-
-
-//Dummy Client until backend is ready to connect
-const dummyClient = {
-  id: "719127591",
-  name: "jeff@email.com",
-  phone: "988-122-1234",
-  address: "123 Main Rd. West Way",
-  description: "Description of client needs given in “Get a Quote” form.",
-  preferredEndDate: "4/3/2024",
-};
-
 //name of material and cost
 type MaterialTuple = [string, number];
 
@@ -300,6 +288,7 @@ const CreateQuote: React.FC = () => {
     phone: "",
     description: "",
     name: "",
+    email: "",
     address: "",
     preferredEndDate: "",
   });
@@ -310,10 +299,11 @@ const CreateQuote: React.FC = () => {
         const quote = await axios.get(`/quotes/${quoteId}`);
         setQuote(quote.data);
         setFormData({
-          id: quote.data.id,
+          id: String(quoteId),
           phone: quote.data.contactPerson.phone,
           description: quote.data.project.description,
           name: quote.data.contactPerson.name,
+          email: quote.data.contactPerson.email,
           address: quote.data.project.address.streetAddress,
           preferredEndDate: quote.data.project.preferredEndDate,
         });
@@ -447,10 +437,10 @@ const CreateQuote: React.FC = () => {
                 <div>
                   <p className="text-gray-400">Email:</p>
                   <a
-                    href={`mailto:${formData.name}`}
+                    href={`mailto:${formData.email}`}
                     className="text-blue-500 hover:text-blue-300"
                   >
-                    {formData.name}
+                    {formData.email}
                   </a>
                   {/* <p>{client.name}</p> */}
                 </div>
