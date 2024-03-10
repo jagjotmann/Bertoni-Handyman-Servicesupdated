@@ -12,14 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// loginRoutes.ts
 const express_1 = __importDefault(require("express"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
-const axios_1 = __importDefault(require("axios"));
 const jwt = require("jsonwebtoken");
 // Function to create Tokens
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const createToken = (_id) => {
     return jwt.sign({ _id }, process.env.SECRET, {
         expiresIn: "30min",
@@ -27,39 +24,35 @@ const createToken = (_id) => {
 };
 // Initialize an express router to handle login-related routes
 const router = express_1.default.Router();
-// function to verify the reCAPTCHA token:
-function verifyRecaptcha(token) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const secretKey = "YOUR_SECRET_KEY"; // Replace with your secret key
-        try {
-            const response = yield axios_1.default.post(`https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${token}`);
-            return response.data.success;
-        }
-        catch (error) {
-            console.error("Error verifying reCAPTCHA:", error);
-            return false;
-        }
-    });
-}
 // Route to handle user login
 router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password, recaptchaToken } = req.body;
-    // Verify reCAPTCHA token first
-    const isRecaptchaValid = yield verifyRecaptcha(recaptchaToken);
-    if (!isRecaptchaValid) {
-        return res.status(400).json({ message: "reCAPTCHA verification failed" });
-    }
+    const { email, password } = req.body;
     try {
         // Find a user by their email
         const user = yield userModel_1.default.findOne({ "contactInfo.email": email });
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
+        // Check for lockout
+        const now = new Date();
+        if (user.lockUntil && user.lockUntil > now) {
+            return res.status(429).json({
+                message: "Too many failed login attempts. Please try again later.",
+            });
+        }
         // Check if the provided password matches the user's password
         const isValidPassword = yield bcrypt_1.default.compare(password, user.password);
         if (!isValidPassword) {
+            let updates = { $inc: { loginAttempts: 1 } };
+            if (user.loginAttempts + 1 >= 10 && !user.lockUntil) {
+                // Assuming 10 failed attempts threshold
+                updates.$set = { lockUntil: new Date(now.getTime() + 15 * 60 * 1000) }; // Lock account for 15 minutes
+            }
+            yield userModel_1.default.updateOne({ "contactInfo.email": email }, updates);
             return res.status(401).json({ message: "Invalid credentials" });
         }
+        // Reset loginAttempts and lockUntil on successful login
+        yield userModel_1.default.updateOne({ "contactInfo.email": email }, { $set: { loginAttempts: 0, lockUntil: null } });
         // Create a token
         const token = createToken(user._id);
         // Return success response if login is successful

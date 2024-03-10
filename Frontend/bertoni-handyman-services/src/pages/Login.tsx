@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState } from "react";
+import { useState, useRef, FormEvent } from "react";
 import DOMPurify from "dompurify"; // Import DOMPurify
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
@@ -27,7 +27,6 @@ const Login = () => {
   const [modal, setModal] = useState<ModalProps | null>(null);
 
   // state hook to store the reCAPTCHA token
-  const [recaptchaToken, setRecaptchaToken] = useState("");
 
   // Function to validate email format
   const validateEmail = (email: string) => {
@@ -78,7 +77,6 @@ const Login = () => {
       const response = await axios.post("http://localhost:3001/login", {
         email: sanitizedEmail,
         password: sanitizedPassword,
-        recaptchaToken, // Include this in the payload
       });
 
       const token = response.data.token;
@@ -176,16 +174,8 @@ const Login = () => {
                   Forgot password?
                 </Link>
               </div>
-              {/* Recaptcha */}
-              <div className="my-3 flex justify-center">
-                <ReCAPTCHA
-                  className="flex justify-center"
-                  sitekey="YOUR_SITE_KEY_HERE"
-                  onChange={(token: string | null) =>
-                    setRecaptchaToken(token || "")
-                  }
-                />
-              </div>
+              {/* reCAPTCHA here*/}
+
               <div className="items-center ">
                 {/* Sign-in button */}
                 <button
