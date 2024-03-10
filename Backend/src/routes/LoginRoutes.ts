@@ -1,7 +1,7 @@
+import axios from "axios";
+import bcrypt from "bcrypt";
 import express from "express";
 import User from "../models/userModel";
-import bcrypt from "bcrypt";
-import axios from "axios";
 
 const jwt = require("jsonwebtoken");
 
@@ -17,7 +17,20 @@ const router = express.Router();
 
 // Route to handle user login
 router.post("/", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, recaptchaToken } = req.body; 
+  
+  // First, verify the reCAPTCHA token
+  try {
+    const recaptchaResponse = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, {}, {
+      params: {
+        secret: process.env.reCAPTCHA_SECRET_KEY, // Use your secret key here
+        response: recaptchaToken,
+      },
+    });
+
+    if (!recaptchaResponse.data.success) {
+      return res.status(403).json({ message: "reCAPTCHA verification failed" });
+    }
 
   try {
     // Find a user by their email
@@ -38,7 +51,7 @@ router.post("/", async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-      let updates = { $inc: { loginAttempts: 1 } };
+      const updates = { $inc: { loginAttempts: 1 } };
       if (user.loginAttempts + 1 >= 10 && !user.lockUntil) {
         // Assuming 10 failed attempts threshold
         updates.$set = { lockUntil: new Date(now.getTime() + 15 * 60 * 1000) }; // Lock account for 15 minutes
