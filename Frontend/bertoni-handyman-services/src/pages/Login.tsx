@@ -1,6 +1,6 @@
 import axios from "axios";
 import DOMPurify from "dompurify"; // Import DOMPurify
-import { FormEvent, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
