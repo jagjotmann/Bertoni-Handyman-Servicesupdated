@@ -52,6 +52,10 @@ var QuoteStatus;
   QuoteStatus["Approved"] = "approved";
   QuoteStatus["Denied"] = "denied";
   QuoteStatus["Completed"] = "completed";
+    QuoteStatus["Pending"] = "pending";
+    QuoteStatus["Approved"] = "approved";
+    QuoteStatus["Denied"] = "denied";
+    QuoteStatus["Completed"] = "completed";
 })(QuoteStatus || (QuoteStatus = {}));
 const QuoteSchema = new mongoose_1.Schema({
   quoteDate: {
@@ -156,6 +160,15 @@ const QuoteSchema = new mongoose_1.Schema({
     name: {
       type: String,
       required: true,
+    notes: String,
+    contactPerson: {
+        name: {
+            type: String,
+            required: true,
+        },
+        companyName: String,
+        email: String,
+        phone: String,
     },
     companyName: String,
     email: String,
@@ -166,6 +179,9 @@ const QuoteSchema = new mongoose_1.Schema({
 QuoteSchema.path("contactPerson").validate(function (value) {
   return value.email || value.phone; // Ensures at least one contact method is provided
 }, "Either an email or phone number must be provided.");
+// QuoteSchema.path('contactPerson').validate(function (value) {
+//   return value.email || value.phone; // Ensures at least one contact method is provided
+// }, 'Either an email or phone number must be provided.');
 // Placeholder for custom methods you might want to add
 // Example: QuoteSchema.methods.calculateTotalCost = function() { /* implementation */ };
 const QuoteModel = mongoose_1.default.model("Quote", QuoteSchema);

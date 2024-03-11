@@ -42,6 +42,17 @@ const UserSchema: Schema = new Schema({
     required: true,
     minlength: 8,
   },
+  // Keeping track of Login Attempts
+  loginAttempts: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+  lockUntil: {
+    type: Date,
+  },
+
+  // personal Info
   name: {
     firstName: {
       type: String,
