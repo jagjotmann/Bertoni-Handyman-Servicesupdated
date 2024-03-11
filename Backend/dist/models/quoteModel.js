@@ -170,6 +170,12 @@ const QuoteSchema = new mongoose_1.Schema({
         email: String,
         phone: String,
     },
+    scheduled: {
+        type: Boolean,
+        default: false,
+    },
+});
+// Custom validation to ensure either email or phone is provided
     companyName: String,
     email: String,
     phone: String,

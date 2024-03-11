@@ -54,6 +54,7 @@ export interface Quote extends Document {
     email?: string;
     phone?: string;
   };
+  scheduled: boolean;
 }
 
 const QuoteSchema: Schema = new Schema<Quote>({
@@ -163,6 +164,10 @@ const QuoteSchema: Schema = new Schema<Quote>({
     companyName: String,
     email: String,
     phone: String,
+  },
+  scheduled: {
+    type: Boolean,
+    default: false,
   },
 });
 

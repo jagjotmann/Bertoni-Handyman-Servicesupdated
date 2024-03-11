@@ -27,7 +27,7 @@ import QuoteStatus from "./pages/QuoteStatus";
 import ForgotPassword from "./pages/forgotPassword";
 import NavbarWrapper from "./components/NavbarWrapper";
 import QuoteRequests from "./pages/QuoteRequests";
-
+import ScheduleAppointment from "./components/ScheduleAppointment";
 /*Root component*/
 
 function App() {
@@ -62,6 +62,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/login" element={<Login />} />
             <Route path="/quoteStatus" element={<QuoteStatus />} />
+            <Route path="/schedule" element={<ScheduleAppointment />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/quote-login/:quoteid" element={<QuoteLogin />} />
             <Route path="/create-account" element={<CreateAccount />} />
