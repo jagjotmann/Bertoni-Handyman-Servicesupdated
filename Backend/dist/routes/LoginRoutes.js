@@ -12,16 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// loginRoutes.ts
 const express_1 = __importDefault(require("express"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jwt = require("jsonwebtoken");
 // Function to create Tokens
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 const createToken = (_id) => {
     return jwt.sign({ _id }, process.env.SECRET, {
-        expiresIn: "1h",
+        expiresIn: "30min",
     });
 };
 // Initialize an express router to handle login-related routes
@@ -35,11 +33,26 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
         }
+        // Check for lockout
+        const now = new Date();
+        if (user.lockUntil && user.lockUntil > now) {
+            return res.status(429).json({
+                message: "Too many failed login attempts. Please try again later.",
+            });
+        }
         // Check if the provided password matches the user's password
         const isValidPassword = yield bcrypt_1.default.compare(password, user.password);
         if (!isValidPassword) {
+            let updates = { $inc: { loginAttempts: 1 } };
+            if (user.loginAttempts + 1 >= 10 && !user.lockUntil) {
+                // Assuming 10 failed attempts threshold
+                updates.$set = { lockUntil: new Date(now.getTime() + 15 * 60 * 1000) }; // Lock account for 15 minutes
+            }
+            yield userModel_1.default.updateOne({ "contactInfo.email": email }, updates);
             return res.status(401).json({ message: "Invalid credentials" });
         }
+        // Reset loginAttempts and lockUntil on successful login
+        yield userModel_1.default.updateOne({ "contactInfo.email": email }, { $set: { loginAttempts: 0, lockUntil: null } });
         // Create a token
         const token = createToken(user._id);
         // Return success response if login is successful
