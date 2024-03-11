@@ -6,7 +6,7 @@ import FullSectionLayout from "../layouts/FullSectionLayout";
 import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 import { useLocation } from "react-router-dom";
 
-type Quote = {
+export type Quote = {
   _id: string;
   quoteDate: string;
 
