@@ -421,9 +421,9 @@ const CreateQuote: React.FC = () => {
           {/* Big box on page*/}
           <button
             className="bg-gray-700 w-full text-white rounded-t-2xl text-left py-2 px-2"
-            onClick={() => navigate(-1)} //Change to client link
+            onClick={() => navigate("/admin")} //Change to client link
           >
-            &lt; Back to Client Profile
+            &lt; Back to Admin Dashboard
           </button>
           <div className="bg-white px-8 flex flex-col shadow-xl rounded-b-2xl">
             {/*White portion of box below client profile link*/}
