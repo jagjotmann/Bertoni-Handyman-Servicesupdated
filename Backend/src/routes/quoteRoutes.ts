@@ -7,7 +7,8 @@ const { sendMail } = require('./emailRoutes');
 
 //Route to create a new quote
 router.post("/create", async (req: Request, res: Response) => {
-  const quoteData = req.body;
+  let quoteData = req.body;
+  quoteData.quoteDate = new Date();
   try {
     const newQuote = new Quote(quoteData);
     await newQuote.save();
