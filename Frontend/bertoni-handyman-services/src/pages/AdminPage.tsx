@@ -47,7 +47,8 @@ function AdminPage() {
     if (selectedTab === "Dashboard") {
       return <AdminDashboard />;
     } else if (selectedTab === "Clients") {
-      return <CreateQuote />;
+      navigate("/create-a-quote/new");
+      return null;
     } else if (selectedTab === "Calendar") {
       return (
         <GoogleCalendar embedUrl={embedUrl} width="800px" height="600px" />
