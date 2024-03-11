@@ -24,7 +24,7 @@ function sendMail(userEmail, message) {
             service: "gmail",
             auth: {
                 user: "webwizard122@gmail.com",
-                pass: "webwizard@2020", // Note: Storing passwords in code is highly insecure. Use environment variables.
+                pass: "webwizard@2020", //Note: Storing passwords in code is highly insecure. Use environment variables.
             },
         });
         const mailOptions = {
@@ -45,6 +45,7 @@ function sendMail(userEmail, message) {
         }
     });
 }
+module.exports.sendMail = sendMail;
 // Replace the existing POST route logic with a call to sendMail
 router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { message, userEmail } = req.body;

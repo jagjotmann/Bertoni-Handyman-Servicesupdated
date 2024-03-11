@@ -13,7 +13,7 @@ async function sendMail(userEmail: string, message: string) {
     service: "gmail",
     auth: {
       user: "webwizard122@gmail.com",
-      pass: "webwizard@2020", // Note: Storing passwords in code is highly insecure. Use environment variables.
+      pass: "webwizard@2020", //Note: Storing passwords in code is highly insecure. Use environment variables.
     },
   });
 
@@ -34,6 +34,8 @@ async function sendMail(userEmail: string, message: string) {
     return false;
   }
 }
+
+module.exports.sendMail = sendMail;
 
 // Replace the existing POST route logic with a call to sendMail
 router.post("/", async (req: Request, res: Response) => {
