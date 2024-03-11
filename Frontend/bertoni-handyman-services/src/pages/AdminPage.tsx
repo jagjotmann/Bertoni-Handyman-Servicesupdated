@@ -26,10 +26,13 @@ function AdminPage() {
   const navigate = useNavigate(); // Hook for navigation
 
   // Function to handle logout
-  const handleLogout = () => {
-    localStorage.removeItem("token"); // Remove the token from local storage
-    navigate("/login"); // Redirect to login page.
-  };
+ const handleLogout = () => {
+  console.log("Removing token...");
+  localStorage.removeItem("token"); // Remove the token from local storage
+  console.log("Token removed");
+  navigate("/login"); // Redirect to login page.
+};
+
   // Function to set the selected tab
   const handleTabClick = (tabName: string) => {
     setSelectedTab(tabName);
