@@ -13,20 +13,45 @@ const AdminDashboard = () => {
 
   const [pendingQuotes, setPendingQuotes] = useState<Quote[]>([]);
 
+  const [newClientsThisWeek, setNewClientsThisWeek] = useState(0);
+  const [newClientsThisMonth, setNewClientsThisMonth] = useState(0);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("quotes/all");
-        const data = await response.json();
+        const data: Quote[] = await response.json();
+
+        const now = new Date();
+        const oneWeekAgo = new Date(new Date().setDate(now.getDate() - 7));
+        const oneMonthAgo = new Date(new Date().setMonth(now.getMonth() - 1));
+
         const sortedData = data.sort(
-          (a: Quote, b: Quote) =>
+          (a, b) =>
             new Date(b.quoteDate).getTime() - new Date(a.quoteDate).getTime()
         );
+
         const limitedPendingQuotes = sortedData
           .filter((quote: Quote) => quote.quoteStatus === "Pending")
           .slice(0, 8);
 
+        const quotesFromLastWeek = sortedData.filter(
+          (quote) => new Date(quote.quoteDate) >= oneWeekAgo
+        );
+
+        const quotesFromLastMonth = sortedData.filter(
+          (quote) =>
+            new Date(quote.quoteDate) >= oneMonthAgo &&
+            new Date(quote.quoteDate) < oneWeekAgo
+        );
+
         setPendingQuotes(limitedPendingQuotes);
+
+        setNewClientsThisWeek(quotesFromLastWeek.length);
+        // For monthly count, ensure you're not double-counting this week's quotes
+        setNewClientsThisMonth(
+          quotesFromLastMonth.length + quotesFromLastWeek.length
+        );
       } catch (error) {
         console.error("Failed to fetch quotes:", error);
       }
@@ -72,11 +97,11 @@ const AdminDashboard = () => {
         <div className="mt-4">
           <div className="flex justify-between">
             <div>
-              <p className="text-2xl font-medium">2</p>
+              <p className="text-2xl font-medium">{newClientsThisWeek}</p>
               <p className="text-sm text-gray-600">New clients (this week)</p>
             </div>
             <div>
-              <p className="text-2xl font-medium">4</p>
+              <p className="text-2xl font-medium">{newClientsThisMonth}</p>
               <p className="text-sm text-gray-600">New clients (this month)</p>
             </div>
           </div>
