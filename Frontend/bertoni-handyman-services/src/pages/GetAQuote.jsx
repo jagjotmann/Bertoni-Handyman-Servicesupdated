@@ -1,4 +1,5 @@
 import React, { useState, forwardRef } from "react";
+import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -44,25 +45,28 @@ const QuoteForm = () => {
 
     if (Object.keys(formErrors).length === 0) {
       setIsSubmitting(true);
-      // Mock API call - replace with actual API call
+      let quoteRequestObject = {};
+      quoteRequestObject.contactPerson = {};
+      // @ts-ignore
+      quoteRequestObject.contactPerson.name = `${firstName} ${lastName}`;
+      // @ts-ignore
+      quoteRequestObject.contactPerson.email = email;
+      // @ts-ignore
+      if (phoneNumber) quoteRequestObject.contactPerson.phone = phoneNumber;
+      // @ts-ignore
+      quoteRequestObject.notes = specifications;
       try {
-        const response = await sendFormDataToServer({
-          firstName,
-          lastName,
-          email,
-          phoneNumber,
-          preferredFinishDate,
-          specifications,
-        });
-        // Handle response
-        console.log(response);
-        // Reset form fields
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        setPhoneNumber("");
-        setPreferredFinishDate("");
-        setSpecifications("");
+        const quoteResponse = await sendFormDataToServer(quoteRequestObject);
+        if (quoteResponse?.data?.quote?._id) {
+          const newEmail = {
+            message: `Thank you for submitting a quote request. To check the status of your request, please visit the quote status page and enter your quote number: ${quoteResponse.data.quote._id}`,
+            userEmail: email,
+          };
+          const emailResponse = await axios.post(`email`, newEmail);
+          console.log(emailResponse);
+        }
+
+        resetFormFields();
         setIsSubmitted(true);
       } catch (error) {
         // Handle error
@@ -73,12 +77,17 @@ const QuoteForm = () => {
     }
   };
 
+  const resetFormFields = () => {
+    setFirstName("");
+    setLastName("");
+    setEmail("");
+    setPhoneNumber("");
+    setPreferredFinishDate("");
+    setSpecifications("");
+  };
+
   const sendFormDataToServer = (formData) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({ status: "success", ...formData });
-      }, 2000);
-    });
+    return axios.post(`quotes/create`, formData);
   };
 
   const styles = {

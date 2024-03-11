@@ -1,13 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-// Assuming the enum QuoteStatus is used elsewhere and might be useful for validation or filtering
-enum QuoteStatus {
-  Pending = "pending",
-  Approved = "approved",
-  Denied = "denied",
-  Completed = "completed",
-}
-
 interface Materials {
   name: string;
   description?: string;
@@ -37,11 +29,7 @@ export interface Quote extends Document {
     };
     description?: string;
   };
-  status: {
-    type: mongoose.Schema.Types.ObjectId;
-    ref: "Status";
-    required: true;
-  };
+  quoteStatus: String;
   items?: Materials[];
   labor?: Labor[];
   subtotal: number;
@@ -65,54 +53,46 @@ const QuoteSchema: Schema = new Schema<Quote>({
   project: {
     name: {
       type: String,
-      required: true,
     },
     address: {
       streetAddress: {
         type: String,
-        required: true,
       },
       streetAddress2: String,
       city: {
         type: String,
-        required: true,
       },
       state: {
         type: String,
-        required: true,
       },
       zipCode: {
         type: String,
-        required: true,
       },
     },
     description: String,
   },
-  status: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Status",
+  quoteStatus: {
+    type: String,
     required: true,
+    enum: ["Pending", "Accepted", "Declined", "Completed"],
+    default: "Pending",
   },
   items: [
     {
       name: {
         type: String,
-        required: true,
       },
       description: String,
       quantity: {
         type: Number,
-        required: true,
         min: 1,
       },
       unitPrice: {
         type: Number,
-        required: true,
         min: 0,
       },
       total: {
         type: Number,
-        required: true,
         min: 0,
       },
     },
@@ -121,29 +101,24 @@ const QuoteSchema: Schema = new Schema<Quote>({
     {
       name: {
         type: String,
-        required: true,
       },
       description: String,
       numHours: {
         type: Number,
-        required: true,
         min: 0,
       },
       hourlyRate: {
         type: Number,
-        required: true,
         min: 0,
       },
       total: {
         type: Number,
-        required: true,
         min: 0,
       },
     },
   ],
   subtotal: {
     type: Number,
-    required: true,
     default: 0,
   },
   tax: {
@@ -152,14 +127,12 @@ const QuoteSchema: Schema = new Schema<Quote>({
   },
   totalCost: {
     type: Number,
-    required: true,
     default: 0,
   },
   notes: String,
   contactPerson: {
     name: {
       type: String,
-      required: true,
     },
     companyName: String,
     email: String,
@@ -167,7 +140,6 @@ const QuoteSchema: Schema = new Schema<Quote>({
   },
   scheduled: {
     type: Boolean,
-    default: false,
   },
 });
 
