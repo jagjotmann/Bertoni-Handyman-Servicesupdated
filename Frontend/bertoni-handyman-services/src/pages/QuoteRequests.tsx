@@ -4,7 +4,7 @@ import FullSectionLayout from "../layouts/FullSectionLayout";
 import { IoSearch, IoFilter, IoCloseCircle } from "react-icons/io5";
 import { useLocation } from "react-router-dom";
 
-type Quote = {
+export type Quote = {
   _id: string;
   quoteDate: string;
 
@@ -194,12 +194,14 @@ function QuoteRequests() {
             </thead>
             <tbody>
               {filteredQuotes.map((quote) => {
+                const quoteNum =
+                  quote._id.length > 9 ? quote._id.slice(-9) : quote._id;
                 return (
                   <tr key={quote._id}>
-                    {/* Other cells */}
                     <td className="px-4 py-2 border-b border-gray-300">
-                      {quote.project.name}
+                      {quoteNum} {/* Displaying _id as quoteNum */}
                     </td>
+
                     <td className="px-4 py-2 border-b border-gray-300">
                       {quote.contactPerson.name}
                     </td>

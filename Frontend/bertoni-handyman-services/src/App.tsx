@@ -3,6 +3,8 @@ import logo from "./logo.svg";
 import "./App.css";
 import PageLayout from "./layouts/PageLayout";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { ReactNode } from 'react';
+import { Navigate } from "react-router-dom";
 import { NextUIProvider } from "@nextui-org/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -29,6 +31,25 @@ import ScheduleAppointment from "./components/ScheduleAppointment";
 /*Root component*/
 
 function App() {
+
+// Define a type for the props expected by ProtectedRoute
+type ProtectedRouteProps = {
+  children: ReactNode;
+};
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  // Check for token in localStorage
+  const token = localStorage.getItem('token');
+  
+  // If no token, redirect to login
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // If token exists, render the children components
+  return <>{children}</>;
+};
+
   return (
     <NextUIProvider>
       <Router>
@@ -50,7 +71,15 @@ function App() {
               path="/create-account-success"
               element={<CreateAccountSuccess />}
             />
-            <Route path="/admin" element={<AdminPage />} />
+            {/* <Route path="/admin" element={<AdminPage />} /> */}
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/quote-requests" element={<QuoteRequests />} />
             <Route
               path="/admin-client-profile"
