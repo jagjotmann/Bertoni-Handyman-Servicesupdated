@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 import mongoose, { FilterQuery } from "mongoose";
 const { sendMail } = require("./emailRoutes");
 const rateLimit = require("../../dist/middlewares/ratelimit.js");
-
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 //Route to create a new quote
 router.post("/create", rateLimit, async (req: Request, res: Response) => {
   let quoteData = req.body;
@@ -22,7 +22,7 @@ router.post("/create", rateLimit, async (req: Request, res: Response) => {
 });
 
 //Route to get all quotes
-router.get("/all", async (req: Request, res: Response) => {
+router.get("/all", adminRateLimit, async (req: Request, res: Response) => {
   try {
     const quotes = await Quote.find().sort({ quoteDate: -1 });
     res.status(200).json(quotes);
@@ -32,28 +32,32 @@ router.get("/all", async (req: Request, res: Response) => {
 });
 
 //Route to get all quotes with search/status filter
-router.get("/allWithFiler", async (req: Request, res: Response) => {
-  const { search, status } = req.query;
-  let queryConditions: FilterQuery<typeof Quote> = {};
-  if (search) {
-    queryConditions["$or"] = [
-      { clientName: new RegExp(search as string, "i") },
-      { quoteNumber: new RegExp(search as string, "i") },
-    ];
-    if (status) {
-      queryConditions["status"] = status;
-    }
-    try {
-      const quotes = await Quote.find(queryConditions);
-      res.status(200).json(quotes);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
+router.get(
+  "/allWithFiler",
+  adminRateLimit,
+  async (req: Request, res: Response) => {
+    const { search, status } = req.query;
+    let queryConditions: FilterQuery<typeof Quote> = {};
+    if (search) {
+      queryConditions["$or"] = [
+        { clientName: new RegExp(search as string, "i") },
+        { quoteNumber: new RegExp(search as string, "i") },
+      ];
+      if (status) {
+        queryConditions["status"] = status;
+      }
+      try {
+        const quotes = await Quote.find(queryConditions);
+        res.status(200).json(quotes);
+      } catch (error: any) {
+        res.status(500).json({ error: error.message });
+      }
     }
   }
-});
+);
 
 // Route to get a specific quote by ID
-router.get("/:quoteId", async (req: Request, res: Response) => {
+router.get("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
   const { quoteId } = req.params;
 
   try {
@@ -74,7 +78,7 @@ router.get("/:quoteId", async (req: Request, res: Response) => {
 console.log({ sendMailFunction: sendMail });
 
 // Route to update a specific quote by ID
-router.put("/:quoteId", async (req: Request, res: Response) => {
+router.put("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
   const { quoteId } = req.params;
   const updatedQuoteData = req.body;
 
@@ -137,24 +141,28 @@ router.put("/:quoteId", async (req: Request, res: Response) => {
 });
 
 // Route to delete a specific quote by ID
-router.delete("/:quoteId", async (req: Request, res: Response) => {
-  const { quoteId } = req.params;
+router.delete(
+  "/:quoteId",
+  adminRateLimit,
+  async (req: Request, res: Response) => {
+    const { quoteId } = req.params;
 
-  try {
-    if (!mongoose.Types.ObjectId.isValid(quoteId)) {
-      return res.status(400).json({ message: "Invalid quote ID" });
-    }
+    try {
+      if (!mongoose.Types.ObjectId.isValid(quoteId)) {
+        return res.status(400).json({ message: "Invalid quote ID" });
+      }
 
-    const deletedQuote = await Quote.findByIdAndRemove(quoteId);
-    if (!deletedQuote) {
-      return res.status(404).json({ message: "Quote not found" });
+      const deletedQuote = await Quote.findByIdAndRemove(quoteId);
+      if (!deletedQuote) {
+        return res.status(404).json({ message: "Quote not found" });
+      }
+      res
+        .status(200)
+        .json({ message: "Quote deleted successfully", quote: deletedQuote });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
-    res
-      .status(200)
-      .json({ message: "Quote deleted successfully", quote: deletedQuote });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
   }
-});
+);
 
 module.exports = router;

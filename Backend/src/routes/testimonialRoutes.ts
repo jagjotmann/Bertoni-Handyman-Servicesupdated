@@ -5,37 +5,44 @@ import User from "../models/userModel.js";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 const rateLimit = require("../../dist/middlewares/ratelimit.js");
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 
-router.post("/getTestimonials", async (req: Request, res: Response) => {
-  try {
-    const { amount } = req.body;
-    const tests = await Testimonial.find()
-      .populate("author")
-      .sort({ date: -1 })
-      .limit(amount);
-    const formattedTests = tests.map((blog) => {
-      return {
-        _id: blog._id,
-        content: blog.content,
-        author: {
+router.post(
+  "/getTestimonials",
+  adminRateLimit,
+  async (req: Request, res: Response) => {
+    try {
+      const { amount } = req.body;
+      const tests = await Testimonial.find()
+        .populate("author")
+        .sort({ date: -1 })
+        .limit(amount);
+      const formattedTests = tests.map((blog) => {
+        return {
+          _id: blog._id,
+          content: blog.content,
+          author: {
+            // @ts-ignore
+            fullName:
+              // @ts-ignore
+              blog.author.name.firstName + " " + blog.author.name.lastName,
+          },
           // @ts-ignore
-          fullName:
-            blog.author.name.firstName + " " + blog.author.name.lastName,
-        },
-        // @ts-ignore
-        username: blog.author.username,
-        date: blog.date,
-        rating: blog.rating,
-      };
-    });
-    res
-      .status(200)
-      .json({ message: "Fetched Testimonials", testimonials: formattedTests });
-  } catch (err: any) {
-    console.log(err);
-    res.status(400).json({ error: err.message });
+          username: blog.author.username,
+          date: blog.date,
+          rating: blog.rating,
+        };
+      });
+      res.status(200).json({
+        message: "Fetched Testimonials",
+        testimonials: formattedTests,
+      });
+    } catch (err: any) {
+      console.log(err);
+      res.status(400).json({ error: err.message });
+    }
   }
-});
+);
 
 router.post(
   "/addTestimonial",
@@ -81,15 +88,19 @@ router.post(
   }
 );
 
-router.post("/deleteTestimonial", async (req: Request, res: Response) => {
-  const { testimonial_id } = req.body;
-  Testimonial.findByIdAndDelete(testimonial_id)
-    .then((result) => {
-      res.json({ message: "Deleted" });
-    })
-    .catch((err: any) => {
-      res.json({ message: err });
-    });
-});
+router.post(
+  "/deleteTestimonial",
+  adminRateLimit,
+  async (req: Request, res: Response) => {
+    const { testimonial_id } = req.body;
+    Testimonial.findByIdAndDelete(testimonial_id)
+      .then((result) => {
+        res.json({ message: "Deleted" });
+      })
+      .catch((err: any) => {
+        res.json({ message: err });
+      });
+  }
+);
 
 module.exports = router;

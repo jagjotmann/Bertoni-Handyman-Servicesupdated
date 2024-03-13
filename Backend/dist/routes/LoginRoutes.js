@@ -16,6 +16,7 @@ const axios_1 = __importDefault(require("axios"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const express_1 = __importDefault(require("express"));
 const userModel_1 = __importDefault(require("../models/userModel"));
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 const jwt = require("jsonwebtoken");
 // Function to create Tokens
 const createToken = (_id) => {
@@ -26,7 +27,7 @@ const createToken = (_id) => {
 // Initialize an express router to handle login-related routes
 const router = express_1.default.Router();
 // Route to handle user login
-router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password, recaptchaToken } = req.body;
     // First, verify the reCAPTCHA token
     try {
@@ -47,19 +48,24 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             }
             // Check for lockout
             const now = new Date();
-            // if (user.lockUntil && user.lockUntil > now) {
-            //   return res.status(429).json({
-            //     message: "Too many failed login attempts. Please try again later.",
-            //   });
-            // }
+            // @ts-ignore
+            if (user.lockUntil && user.lockUntil > now) {
+                return res.status(429).json({
+                    message: "Too many failed login attempts. Please try again later.",
+                });
+            }
             // Check if the provided password matches the user's password
             const isValidPassword = yield bcrypt_1.default.compare(password, user.password);
             if (!isValidPassword) {
                 const updates = { $inc: { loginAttempts: 1 } };
-                // if (user.loginAttempts + 1 >= 10 && !user.lockUntil) {
-                //   // Assuming 10 failed attempts threshold
-                //   updates.$set = { lockUntil: new Date(now.getTime() + 15 * 60 * 1000) }; // Lock account for 15 minutes
-                // }
+                // @ts-ignore
+                if (user.loginAttempts + 1 >= 10 && !user.lockUntil) {
+                    // Assuming 10 failed attempts threshold
+                    // @ts-ignore
+                    updates.$set = {
+                        lockUntil: new Date(now.getTime() + 15 * 60 * 1000),
+                    }; // Lock account for 15 minutes
+                }
                 yield userModel_1.default.updateOne({ "contactInfo.email": email }, updates);
                 return res.status(401).json({ message: "Invalid credentials" });
             }
@@ -77,12 +83,13 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
     }
     catch (error) {
-        console.log(error);
+        const errorMessage = error.message; // Type assertion for better error handling,
+        res.status(500).json({ error: errorMessage });
     }
 }));
 // ===========================================================================//
 // Route to handle password change requests
-router.post("/changePassword", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/changePassword", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, oldPassword, newPassword } = req.body;
     try {
         // Find the user by email

@@ -1,7 +1,7 @@
 const setAdminRateLimit = require("express-rate-limit");
 
-// Rate limit middleware
-// only allow 5 requests per minute
+// Admin Rate limit middleware
+// only allow 100 requests per minute
 const AdminRateLimit = setAdminRateLimit({
   windowMs: 60 * 1000,
   max: 100,

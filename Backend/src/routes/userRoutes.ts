@@ -3,8 +3,9 @@ const router = express.Router();
 import User from "../models/userModel.js";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 
-router.post("/adduser", async (req: Request, res: Response) => {
+router.post("/adduser", adminRateLimit, async (req: Request, res: Response) => {
   const { email, firstName, lastName, password } = req.body;
 
   const saltRounds = 10;

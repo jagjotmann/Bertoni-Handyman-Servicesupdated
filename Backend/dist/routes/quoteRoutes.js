@@ -18,6 +18,7 @@ const quoteModel_js_1 = __importDefault(require("../models/quoteModel.js"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const { sendMail } = require("./emailRoutes");
 const rateLimit = require("../../dist/middlewares/ratelimit.js");
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 //Route to create a new quote
 router.post("/create", rateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let quoteData = req.body;
@@ -34,7 +35,7 @@ router.post("/create", rateLimit, (req, res) => __awaiter(void 0, void 0, void 0
     }
 }));
 //Route to get all quotes
-router.get("/all", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/all", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const quotes = yield quoteModel_js_1.default.find().sort({ quoteDate: -1 });
         res.status(200).json(quotes);
@@ -44,7 +45,7 @@ router.get("/all", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 }));
 //Route to get all quotes with search/status filter
-router.get("/allWithFiler", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/allWithFiler", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { search, status } = req.query;
     let queryConditions = {};
     if (search) {
@@ -65,7 +66,7 @@ router.get("/allWithFiler", (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 }));
 // Route to get a specific quote by ID
-router.get("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/:quoteId", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { quoteId } = req.params;
     try {
         if (!mongoose_1.default.Types.ObjectId.isValid(quoteId)) {
@@ -83,7 +84,7 @@ router.get("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function
 }));
 console.log({ sendMailFunction: sendMail });
 // Route to update a specific quote by ID
-router.put("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put("/:quoteId", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
     const { quoteId } = req.params;
     const updatedQuoteData = req.body;
@@ -129,7 +130,7 @@ router.put("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function
     }
 }));
 // Route to delete a specific quote by ID
-router.delete("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete("/:quoteId", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { quoteId } = req.params;
     try {
         if (!mongoose_1.default.Types.ObjectId.isValid(quoteId)) {
