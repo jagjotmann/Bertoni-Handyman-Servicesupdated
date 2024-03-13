@@ -45,21 +45,26 @@ router.post("/", async (req, res) => {
 
       // Check for lockout
       const now = new Date();
-      // if (user.lockUntil && user.lockUntil > now) {
-      //   return res.status(429).json({
-      //     message: "Too many failed login attempts. Please try again later.",
-      //   });
-      // }
+      // @ts-ignore
+      if (user.lockUntil && user.lockUntil > now) {
+        return res.status(429).json({
+          message: "Too many failed login attempts. Please try again later.",
+        });
+      }
 
       // Check if the provided password matches the user's password
       const isValidPassword = await bcrypt.compare(password, user.password);
 
       if (!isValidPassword) {
         const updates = { $inc: { loginAttempts: 1 } };
-        // if (user.loginAttempts + 1 >= 10 && !user.lockUntil) {
-        //   // Assuming 10 failed attempts threshold
-        //   updates.$set = { lockUntil: new Date(now.getTime() + 15 * 60 * 1000) }; // Lock account for 15 minutes
-        // }
+        // @ts-ignore
+        if (user.loginAttempts + 1 >= 10 && !user.lockUntil) {
+          // Assuming 10 failed attempts threshold
+          // @ts-ignore
+          updates.$set = {
+            lockUntil: new Date(now.getTime() + 15 * 60 * 1000),
+          }; // Lock account for 15 minutes
+        }
         await User.updateOne({ "contactInfo.email": email }, updates);
 
         return res.status(401).json({ message: "Invalid credentials" });
@@ -82,7 +87,8 @@ router.post("/", async (req, res) => {
       res.status(500).json({ error: errorMessage });
     }
   } catch (error) {
-    console.log(error);
+    const errorMessage = (error as Error).message; // Type assertion for better error handling,
+    res.status(500).json({ error: errorMessage });
   }
 });
 // ===========================================================================//
