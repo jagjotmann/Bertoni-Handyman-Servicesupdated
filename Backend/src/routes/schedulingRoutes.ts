@@ -8,6 +8,7 @@ const { google } = require("googleapis");
 const axios = require("axios");
 import Quote from "../models/quoteModel.js";
 import mongoose from "mongoose";
+const rateLimit = require("../../dist/middlewares/ratelimit.js");
 
 import { Request, Response } from "express";
 const stdin = process.openStdin();
@@ -57,7 +58,7 @@ router.get("/listEvents", async (req: Request, res: Response) => {
 //   time: string;
 // };
 
-router.post("/createEvent", async (req: Request, res: Response) => {
+router.post("/createEvent", rateLimit, async (req: Request, res: Response) => {
   const data = req.body;
   let quoteObject = {};
   try {

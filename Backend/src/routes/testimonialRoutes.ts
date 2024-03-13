@@ -4,18 +4,23 @@ import Testimonial from "../models/testimonialModel.js";
 import User from "../models/userModel.js";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
+const rateLimit = require("../../dist/middlewares/ratelimit.js");
 
 router.post("/getTestimonials", async (req: Request, res: Response) => {
   try {
     const { amount } = req.body;
-    const tests = await Testimonial.find().populate('author').sort({ date: -1 }).limit(amount);;
-    const formattedTests = tests.map(blog => {
+    const tests = await Testimonial.find()
+      .populate("author")
+      .sort({ date: -1 })
+      .limit(amount);
+    const formattedTests = tests.map((blog) => {
       return {
         _id: blog._id,
         content: blog.content,
         author: {
           // @ts-ignore
-          fullName: blog.author.name.firstName + " " + blog.author.name.lastName,
+          fullName:
+            blog.author.name.firstName + " " + blog.author.name.lastName,
         },
         // @ts-ignore
         username: blog.author.username,
@@ -23,46 +28,58 @@ router.post("/getTestimonials", async (req: Request, res: Response) => {
         rating: blog.rating,
       };
     });
-      res.status(200).json({ message: "Fetched Testimonials", testimonials: formattedTests });
-    } catch(err: any){
-      console.log(err);
-      res.status(400).json({ error: err.message });
-    };
+    res
+      .status(200)
+      .json({ message: "Fetched Testimonials", testimonials: formattedTests });
+  } catch (err: any) {
+    console.log(err);
+    res.status(400).json({ error: err.message });
+  }
 });
 
-router.post("/addTestimonial", async (req: Request, res: Response) => {
-  const { email, content, rating } = req.body;
+router.post(
+  "/addTestimonial",
+  rateLimit,
+  async (req: Request, res: Response) => {
+    const { email, content, rating } = req.body;
 
-  const Author = await User.findOne({contactInfo: {email: email}});
+    const Author = await User.findOne({ contactInfo: { email: email } });
 
-  if(!Author){
-    return res.status(400).json({ error: "No user with this email exists." });
-  }
+    if (!Author) {
+      return res.status(400).json({ error: "No user with this email exists." });
+    }
 
-  const alreadyHasATestimonial = await Testimonial.findOne({author: Author._id});
-
-  if(alreadyHasATestimonial){
-    return res.status(400).json({ error: "Cannot submit multiple testimonials." });
-  }
-  
-  const authorId = Author._id;
-
-  try {
-    const newTestimonial = new Testimonial({
-      author: authorId,
-      date: Date.now(),
-      content: content,
-      rating: rating,
+    const alreadyHasATestimonial = await Testimonial.findOne({
+      author: Author._id,
     });
 
-    await newTestimonial.save();
-    res.status(201).json({ message: "Testimonial added succesfully", testimonial: newTestimonial });
-  } catch (error: any) {
-    console.log(error);
-    res.status(400).json({ error: error.message });
-  }
-});
+    if (alreadyHasATestimonial) {
+      return res
+        .status(400)
+        .json({ error: "Cannot submit multiple testimonials." });
+    }
 
+    const authorId = Author._id;
+
+    try {
+      const newTestimonial = new Testimonial({
+        author: authorId,
+        date: Date.now(),
+        content: content,
+        rating: rating,
+      });
+
+      await newTestimonial.save();
+      res.status(201).json({
+        message: "Testimonial added succesfully",
+        testimonial: newTestimonial,
+      });
+    } catch (error: any) {
+      console.log(error);
+      res.status(400).json({ error: error.message });
+    }
+  }
+);
 
 router.post("/deleteTestimonial", async (req: Request, res: Response) => {
   const { testimonial_id } = req.body;

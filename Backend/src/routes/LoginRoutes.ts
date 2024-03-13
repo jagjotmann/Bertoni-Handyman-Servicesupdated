@@ -17,65 +17,72 @@ const router = express.Router();
 
 // Route to handle user login
 router.post("/", async (req, res) => {
-  const { email, password, recaptchaToken } = req.body; 
-  
+  const { email, password, recaptchaToken } = req.body;
+
   // First, verify the reCAPTCHA token
   try {
-    const recaptchaResponse = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, {}, {
-      params: {
-        secret: process.env.reCAPTCHA_SECRET_KEY, // Use your secret key here
-        response: recaptchaToken,
-      },
-    });
+    const recaptchaResponse = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify`,
+      {},
+      {
+        params: {
+          secret: process.env.reCAPTCHA_SECRET_KEY, // Use your secret key here
+          response: recaptchaToken,
+        },
+      }
+    );
 
     if (!recaptchaResponse.data.success) {
       return res.status(403).json({ message: "reCAPTCHA verification failed" });
     }
 
-  try {
-    // Find a user by their email
-    const user = await User.findOne({ "contactInfo.email": email });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
-
-    // Check for lockout
-    const now = new Date();
-    if (user.lockUntil && user.lockUntil > now) {
-      return res.status(429).json({
-        message: "Too many failed login attempts. Please try again later.",
-      });
-    }
-
-    // Check if the provided password matches the user's password
-    const isValidPassword = await bcrypt.compare(password, user.password);
-
-    if (!isValidPassword) {
-      const updates = { $inc: { loginAttempts: 1 } };
-      if (user.loginAttempts + 1 >= 10 && !user.lockUntil) {
-        // Assuming 10 failed attempts threshold
-        updates.$set = { lockUntil: new Date(now.getTime() + 15 * 60 * 1000) }; // Lock account for 15 minutes
+    try {
+      // Find a user by their email
+      const user = await User.findOne({ "contactInfo.email": email });
+      if (!user) {
+        return res.status(401).json({ message: "Invalid credentials" });
       }
-      await User.updateOne({ "contactInfo.email": email }, updates);
 
-      return res.status(401).json({ message: "Invalid credentials" });
+      // Check for lockout
+      const now = new Date();
+      // if (user.lockUntil && user.lockUntil > now) {
+      //   return res.status(429).json({
+      //     message: "Too many failed login attempts. Please try again later.",
+      //   });
+      // }
+
+      // Check if the provided password matches the user's password
+      const isValidPassword = await bcrypt.compare(password, user.password);
+
+      if (!isValidPassword) {
+        const updates = { $inc: { loginAttempts: 1 } };
+        // if (user.loginAttempts + 1 >= 10 && !user.lockUntil) {
+        //   // Assuming 10 failed attempts threshold
+        //   updates.$set = { lockUntil: new Date(now.getTime() + 15 * 60 * 1000) }; // Lock account for 15 minutes
+        // }
+        await User.updateOne({ "contactInfo.email": email }, updates);
+
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      // Reset loginAttempts and lockUntil on successful login
+      await User.updateOne(
+        { "contactInfo.email": email },
+        { $set: { loginAttempts: 0, lockUntil: null } }
+      );
+
+      // Create a token
+      const token = createToken(user._id);
+
+      // Return success response if login is successful
+      res.status(200).json({ message: "Login successful", token }); // Include the token in the response
+    } catch (error) {
+      // Handle any server errors
+      const errorMessage = (error as Error).message; // Type assertion for better error handling,
+      res.status(500).json({ error: errorMessage });
     }
-
-    // Reset loginAttempts and lockUntil on successful login
-    await User.updateOne(
-      { "contactInfo.email": email },
-      { $set: { loginAttempts: 0, lockUntil: null } }
-    );
-
-    // Create a token
-    const token = createToken(user._id);
-
-    // Return success response if login is successful
-    res.status(200).json({ message: "Login successful", token }); // Include the token in the response
   } catch (error) {
-    // Handle any server errors
-    const errorMessage = (error as Error).message; // Type assertion for better error handling,
-    res.status(500).json({ error: errorMessage });
+    console.log(error);
   }
 });
 // ===========================================================================//
