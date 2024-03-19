@@ -33,15 +33,13 @@ router.get("/all", async (req: Request, res: Response) => {
 
     if (page > 0 && limit > 0) {
       quotes = await query.skip(skip).limit(limit);
-      res
-        .status(200)
-        .json({
-          quotes,
-          total,
-          currentPage: page,
-          totalPages: Math.ceil(total / limit),
-          limit,
-        });
+      res.status(200).json({
+        quotes,
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        limit,
+      });
     } else {
       quotes = await query;
       res.status(200).json(quotes);
@@ -129,10 +127,10 @@ router.put("/:quoteId", async (req: Request, res: Response) => {
     let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
     // Example: Check if the status changed
     if (
-      (originalQuote.status?.toString() ?? "") !==
-      (updatedQuote.status?.toString() ?? "")
+      (originalQuote.quoteStatus?.toString() ?? "") !==
+      (updatedQuote.quoteStatus?.toString() ?? "")
     ) {
-      emailMessage += `Status changed from ${originalQuote.status} to ${updatedQuote.status}.\n`;
+      emailMessage += `Status changed from ${originalQuote.quoteStatus} to ${updatedQuote.quoteStatus}.\n`;
     }
     // Add more fields as needed
 
