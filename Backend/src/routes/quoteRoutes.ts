@@ -3,7 +3,7 @@ const router = express.Router();
 import Quote from "../models/quoteModel.js";
 import { Request, Response } from "express";
 import mongoose, { FilterQuery } from "mongoose";
-const { sendMail } = require('./emailRoutes');
+const { sendMail } = require("./emailRoutes");
 
 //Route to create a new quote
 router.post("/create", async (req: Request, res: Response) => {
@@ -22,16 +22,37 @@ router.post("/create", async (req: Request, res: Response) => {
 
 //Route to get all quotes
 router.get("/all", async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 0;
+  const limit = parseInt(req.query.limit as string) || 0;
+  const skip = (page - 1) * limit;
+
   try {
-    const quotes = await Quote.find().sort({ quoteDate: -1 });
-    res.status(200).json(quotes);
+    let query = Quote.find().sort({ quoteDate: -1 });
+    let quotes;
+    let total = await Quote.countDocuments();
+
+    if (page > 0 && limit > 0) {
+      quotes = await query.skip(skip).limit(limit);
+      res
+        .status(200)
+        .json({
+          quotes,
+          total,
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+          limit,
+        });
+    } else {
+      quotes = await query;
+      res.status(200).json(quotes);
+    }
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
 //Route to get all quotes with search/status filter
-router.get("/allWithFiler", async (req: Request, res: Response) => {
+router.get("/allWithFilter", async (req: Request, res: Response) => {
   const { search, status } = req.query;
   let queryConditions: FilterQuery<typeof Quote> = {};
   if (search) {
@@ -72,7 +93,6 @@ router.get("/:quoteId", async (req: Request, res: Response) => {
 
 console.log({ sendMailFunction: sendMail });
 
-
 // Route to update a specific quote by ID
 router.put("/:quoteId", async (req: Request, res: Response) => {
   const { quoteId } = req.params;
@@ -85,27 +105,33 @@ router.put("/:quoteId", async (req: Request, res: Response) => {
 
     // Retrieve the existing quote
     const originalQuote = await Quote.findById(quoteId);
-    console.log('originalQuote:', originalQuote);
+    console.log("originalQuote:", originalQuote);
 
     if (!originalQuote) {
       return res.status(404).json({ message: "Quote not found" });
     }
 
     // Update the quote
-    const updatedQuote = await Quote.findByIdAndUpdate(quoteId, updatedQuoteData, { new: true });
-    console.log('updatedQuote:', updatedQuote);
+    const updatedQuote = await Quote.findByIdAndUpdate(
+      quoteId,
+      updatedQuoteData,
+      { new: true }
+    );
+    console.log("updatedQuote:", updatedQuote);
 
     if (!updatedQuote) {
       return res.status(404).json({ message: "Quote not found" });
     }
 
     console.log(sendMail);
-    
 
     // Generate email content based on the changes
     let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
     // Example: Check if the status changed
-    if ((originalQuote.status?.toString() ?? '') !== (updatedQuote.status?.toString() ?? '')) {
+    if (
+      (originalQuote.status?.toString() ?? "") !==
+      (updatedQuote.status?.toString() ?? "")
+    ) {
       emailMessage += `Status changed from ${originalQuote.status} to ${updatedQuote.status}.\n`;
     }
     // Add more fields as needed
@@ -113,13 +139,18 @@ router.put("/:quoteId", async (req: Request, res: Response) => {
     // Send email notification
     // Assuming the contact person's email is stored in updatedQuote.contactPerson.email
     if (updatedQuote.contactPerson && updatedQuote.contactPerson.email) {
-      const emailSent = await sendMail(updatedQuote.contactPerson.email, emailMessage);
+      const emailSent = await sendMail(
+        updatedQuote.contactPerson.email,
+        emailMessage
+      );
       if (!emailSent) {
         console.log("Email notification send failed");
       }
     }
 
-    res.status(200).json({ message: "Quote updated successfully", quote: updatedQuote });
+    res
+      .status(200)
+      .json({ message: "Quote updated successfully", quote: updatedQuote });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
