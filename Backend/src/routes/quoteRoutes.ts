@@ -89,68 +89,68 @@ router.get("/:quoteId", async (req: Request, res: Response) => {
 
 console.log({ sendMailFunction: sendMail });
 
-// // Route to update a specific quote by ID
-// router.put("/:quoteId", async (req: Request, res: Response) => {
-//   const { quoteId } = req.params;
-//   const updatedQuoteData = req.body;
+// Route to update a specific quote by ID
+router.put("/:quoteId", async (req: Request, res: Response) => {
+  const { quoteId } = req.params;
+  const updatedQuoteData = req.body;
 
-//   try {
-//     if (!mongoose.Types.ObjectId.isValid(quoteId)) {
-//       return res.status(400).json({ message: "Invalid quote ID" });
-//     }
+  try {
+    if (!mongoose.Types.ObjectId.isValid(quoteId)) {
+      return res.status(400).json({ message: "Invalid quote ID" });
+    }
 
-//     // Retrieve the existing quote
-//     const originalQuote = await Quote.findById(quoteId);
-//     console.log("originalQuote:", originalQuote);
+    // Retrieve the existing quote
+    const originalQuote = await Quote.findById(quoteId);
+    console.log("originalQuote:", originalQuote);
 
-//     if (!originalQuote) {
-//       return res.status(404).json({ message: "Quote not found" });
-//     }
+    if (!originalQuote) {
+      return res.status(404).json({ message: "Quote not found" });
+    }
 
-//     // Update the quote
-//     const updatedQuote = await Quote.findByIdAndUpdate(
-//       quoteId,
-//       updatedQuoteData,
-//       { new: true }
-//     );
-//     console.log("updatedQuote:", updatedQuote);
+    // Update the quote
+    const updatedQuote = await Quote.findByIdAndUpdate(
+      quoteId,
+      updatedQuoteData,
+      { new: true }
+    );
+    console.log("updatedQuote:", updatedQuote);
 
-//     if (!updatedQuote) {
-//       return res.status(404).json({ message: "Quote not found" });
-//     }
+    if (!updatedQuote) {
+      return res.status(404).json({ message: "Quote not found" });
+    }
 
-//     console.log(sendMail);
+    console.log(sendMail);
 
-//     // Generate email content based on the changes
-//     let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
-//     // Example: Check if the status changed
-//     if (
-//       (originalQuote.status?.toString() ?? "") !==
-//       (updatedQuote.status?.toString() ?? "")
-//     ) {
-//       emailMessage += `Status changed from ${originalQuote.status} to ${updatedQuote.status}.\n`;
-//     }
-//     // Add more fields as needed
+    // Generate email content based on the changes
+    let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
+    // Example: Check if the status changed
+    if (
+      (originalQuote.quoteStatus?.toString() ?? "") !==
+      (updatedQuote.quoteStatus?.toString() ?? "")
+    ) {
+      emailMessage += `Status changed from ${originalQuote.quoteStatus} to ${updatedQuote.quoteStatus}.\n`;
+    }
+    // Add more fields as needed
 
-//     // Send email notification
-//     // Assuming the contact person's email is stored in updatedQuote.contactPerson.email
-//     if (updatedQuote.contactPerson && updatedQuote.contactPerson.email) {
-//       const emailSent = await sendMail(
-//         updatedQuote.contactPerson.email,
-//         emailMessage
-//       );
-//       if (!emailSent) {
-//         console.log("Email notification send failed");
-//       }
-//     }
+    // Send email notification
+    // Assuming the contact person's email is stored in updatedQuote.contactPerson.email
+    if (updatedQuote.contactPerson && updatedQuote.contactPerson.email) {
+      const emailSent = await sendMail(
+        updatedQuote.contactPerson.email,
+        emailMessage
+      );
+      if (!emailSent) {
+        console.log("Email notification send failed");
+      }
+    }
 
-//     res
-//       .status(200)
-//       .json({ message: "Quote updated successfully", quote: updatedQuote });
-//   } catch (error: any) {
-//     res.status(500).json({ error: error.message });
-//   }
-// });
+    res
+      .status(200)
+      .json({ message: "Quote updated successfully", quote: updatedQuote });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // Route to delete a specific quote by ID
 router.delete("/:quoteId", async (req: Request, res: Response) => {
