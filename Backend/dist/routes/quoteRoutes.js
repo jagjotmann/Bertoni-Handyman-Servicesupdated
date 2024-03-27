@@ -19,7 +19,8 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const { sendMail } = require('./emailRoutes');
 //Route to create a new quote
 router.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const quoteData = req.body;
+    let quoteData = req.body;
+    quoteData.quoteDate = new Date();
     try {
         const newQuote = new quoteModel_js_1.default(quoteData);
         yield newQuote.save();
@@ -79,6 +80,7 @@ router.get("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).json({ error: error.message });
     }
 }));
+console.log({ sendMailFunction: sendMail });
 // Route to update a specific quote by ID
 router.put("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
