@@ -105,8 +105,8 @@ router.put("/:quoteId", async (req: Request, res: Response) => {
     // Generate email content based on the changes
     let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
     // Example: Check if the status changed
-    if ((originalQuote.status?.toString() ?? '') !== (updatedQuote.status?.toString() ?? '')) {
-      emailMessage += `Status changed from ${originalQuote.status} to ${updatedQuote.status}.\n`;
+    if ((originalQuote.quoteStatus?.toString() ?? '') !== (updatedQuote.quoteStatus?.toString() ?? '')) {
+      emailMessage += `Status changed from ${originalQuote.quoteStatus} to ${updatedQuote.quoteStatus}.\n`;
     }
     // Add more fields as needed
 

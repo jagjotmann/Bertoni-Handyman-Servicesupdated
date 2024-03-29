@@ -19,7 +19,8 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const { sendMail } = require('./emailRoutes');
 //Route to create a new quote
 router.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const quoteData = req.body;
+    let quoteData = req.body;
+    quoteData.quoteDate = new Date();
     try {
         const newQuote = new quoteModel_js_1.default(quoteData);
         yield newQuote.save();
@@ -79,6 +80,7 @@ router.get("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).json({ error: error.message });
     }
 }));
+console.log({ sendMailFunction: sendMail });
 // Route to update a specific quote by ID
 router.put("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
@@ -104,8 +106,8 @@ router.put("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function
         // Generate email content based on the changes
         let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
         // Example: Check if the status changed
-        if (((_b = (_a = originalQuote.status) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '') !== ((_d = (_c = updatedQuote.status) === null || _c === void 0 ? void 0 : _c.toString()) !== null && _d !== void 0 ? _d : '')) {
-            emailMessage += `Status changed from ${originalQuote.status} to ${updatedQuote.status}.\n`;
+        if (((_b = (_a = originalQuote.quoteStatus) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '') !== ((_d = (_c = updatedQuote.quoteStatus) === null || _c === void 0 ? void 0 : _c.toString()) !== null && _d !== void 0 ? _d : '')) {
+            emailMessage += `Status changed from ${originalQuote.quoteStatus} to ${updatedQuote.quoteStatus}.\n`;
         }
         // Add more fields as needed
         // Send email notification
