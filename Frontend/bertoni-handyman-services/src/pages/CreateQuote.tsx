@@ -2,6 +2,9 @@ import React from "react";
 import { useState, useEffect, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from 'axios';
+import QuotePreviewModal from '../components/UI/QuotePreviewModal';
+import QuotePreview from "../components/QuotePreview";
+import {Quote} from '../../../../Backend/src/models/quoteModel'
 
 //name of material and cost
 type MaterialTuple = [string, number];
@@ -276,9 +279,12 @@ const CreateQuote: React.FC = () => {
   const { quoteId } = useParams<{ quoteId: string }>();
   //variables
   //const [client, setClient] = useState(dummyClient);
-  const [quote, setQuote] = useState(""); //"" allows a loading state for transparency of data loading
+  const [quote, setQuote] = useState<Quote | null>(null); //"" allows a loading state for transparency of data loading
   const [editable, setEditable] = useState(quoteId=="new"); //allows default editing state when routed with no quote
   const navigate = useNavigate();
+  const [isPreviewOpen, setPreviewOpen] = useState(false);
+  const [loading, setLoading] = useState(false); //can be attached to for adding loading Text to modal?
+  const [quoteHTML, setQuoteHTML] = useState('');
 
   const [itemList, setItemList] = useState<MaterialTuple[]>([]);
   const [laborList, setLaborList] = useState<LaborTuple[]>([]);
@@ -290,22 +296,45 @@ const CreateQuote: React.FC = () => {
     name: "",
     email: "",
     address: "",
-    preferredEndDate: "",
+    preferredEndDate: new Date(),
+    htmlContent: "",
   });
+
+  const handlePreview = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/quotes/${quoteId}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const quote = await response.json();
+      setQuoteHTML(quote.htmlContent);
+      setPreviewOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch quote', error);
+      // TODO: ADD ERROR HANDLING HERE
+    } finally {
+      setLoading(false);
+
+    }
+  };
 
   useEffect(() => {
     const fetchQuote = async () => {
       try {
-        const quote = await axios.get(`/quotes/${quoteId}`);
+        const quote = await axios.get<Quote>(`/quotes/${quoteId}`);
         setQuote(quote.data);
         setFormData({
-          id: String(quoteId),
-          phone: quote.data.contactPerson.phone,
-          description: quote.data.project.description,
+          id: quoteId || '',
+          phone: quote.data.contactPerson.phone || '',
+          description: quote.data.project.description || '',
           name: quote.data.contactPerson.name,
-          email: quote.data.contactPerson.email,
+          email: quote.data.contactPerson.email || '',
           address: quote.data.project.address.streetAddress,
-          preferredEndDate: quote.data.project.preferredEndDate,
+          preferredEndDate: quote.data.preferredEndDate || null,
+          htmlContent: quote.data.htmlContent.toString() || "Failed to get htmlContent",
         });
       } catch (error) {
         console.error('Error fetching quote:', error);
@@ -357,7 +386,7 @@ const CreateQuote: React.FC = () => {
     setLaborList(updatedLaborList);
   };
 
-  //sums total cost of item list and labor (***still need to do this part***)
+  //sums total cost of item list and labor
   useEffect(() => {
     const totalCost = itemList.reduce((total, item) => total + item[1], 0);
     const laborCost = laborList.reduce(
@@ -407,6 +436,16 @@ const CreateQuote: React.FC = () => {
           >
             Cancel
           </button>
+          <div className="px-2 border mr-4 rounded-full">
+            {quote && (
+            <QuotePreviewModal
+              quote={quote}
+              isOpen={isPreviewOpen}
+              onRequestClose={() => setPreviewOpen(false)}
+            >
+            </QuotePreviewModal>
+            )}
+          </div>
           <button
             className="bg-green-500 hover:bg-green-700 text-center text-white font-bold px-4 rounded-full pr-4"
             type="submit"
@@ -481,11 +520,12 @@ const CreateQuote: React.FC = () => {
                   {editable ?
                   <div>
                     <label className="text-gray-400" htmlFor="prefDate">Preferred End Date: </label>
-                    <input id="prefDate" type="date" value={formData.preferredEndDate} onChange={(e) => setFormData({ ...formData, preferredEndDate: e.target.value })} className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-gray-400 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900" placeholder= "Preferred End Date"/>
+                    <input id="prefDate" type="date" value={formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : ''}
+                     onChange={(e) => setFormData({ ...formData, preferredEndDate: new Date(e.target.value) })} className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-gray-400 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900" placeholder= "Preferred End Date"/>
                   </div>
                   :<div>
                     <p className="text-gray-400">Preferred End Date:</p>
-                    <p>{formData.preferredEndDate}</p>
+                    <p>{formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : ''}</p>
                   </div>
                   }
                 </div>
