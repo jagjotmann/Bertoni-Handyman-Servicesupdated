@@ -30,6 +30,7 @@ export type Quote = {
     phone?: string;
   };
 };
+type PageItem = number | "LEFT_SPILL" | "RIGHT_SPILL";
 
 function QuoteRequests() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -38,6 +39,18 @@ function QuoteRequests() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
   const { filterStatus } = location.state || {};
+  const [currentPage, setCurrentPage] = useState(1);
+  const quotesPerPage = 10;
+  const [totalPages, setTotalPages] = useState(0);
+
+  // Calculate the indices of the first and last quotes on the current page
+  const indexOfLastQuote = currentPage * quotesPerPage;
+  const indexOfFirstQuote = indexOfLastQuote - quotesPerPage;
+  // Extract the quotes for the current page from allQuotes
+  const currentQuotes = filteredQuotes.slice(
+    indexOfFirstQuote,
+    indexOfLastQuote
+  );
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,13 +62,20 @@ function QuoteRequests() {
           ? data.filter((quote: Quote) => quote.quoteStatus === filterStatus)
           : data;
         setFilteredQuotes(filteredData);
+        setTotalPages(Math.ceil(data.length / quotesPerPage));
       } catch (error) {
         console.error("Failed to fetch quotes:", error);
       }
     };
 
     fetchData();
-  }, [location.state]);
+  }, [location.state, filterStatus]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+    setTotalPages(Math.ceil(filteredQuotes.length / quotesPerPage));
+  }, [filterStatus, searchQuery, filteredQuotes.length]);
+
   // Handle search query change
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -98,6 +118,69 @@ function QuoteRequests() {
       console.error("Failed to delete quote:", error);
     }
   };
+
+  const renderPagination = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+      pageNumbers.push(i);
+    }
+
+    return (
+      <nav aria-label="Page navigation example">
+        <ul className="inline-flex -space-x-px text-sm">
+          {currentPage > 1 && (
+            <li>
+              <a
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage(currentPage - 1);
+                }}
+                href="#!"
+                className="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-e-0 border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              >
+                Previous
+              </a>
+            </li>
+          )}
+
+          {pageNumbers.map((number) => (
+            <li key={number}>
+              <a
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage(number);
+                }}
+                href="#!"
+                className={`flex items-center justify-center px-3 h-8 leading-tight ${
+                  currentPage === number
+                    ? "text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
+                    : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                }`}
+              >
+                {number}
+              </a>
+            </li>
+          ))}
+
+          {currentPage < totalPages && (
+            <li>
+              <a
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage(currentPage + 1);
+                }}
+                href="#!"
+                className="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+              >
+                Next
+              </a>
+            </li>
+          )}
+        </ul>
+      </nav>
+    );
+  };
+
   return (
     <FullSectionLayout>
       <div className="min-h-screen flex flex-col bg-[#f2f2f4]">
@@ -193,7 +276,7 @@ function QuoteRequests() {
               </tr>
             </thead>
             <tbody>
-              {filteredQuotes.map((quote) => {
+              {currentQuotes.map((quote) => {
                 const quoteNum =
                   quote._id.length > 9 ? quote._id.slice(-9) : quote._id;
                 return (
@@ -241,6 +324,9 @@ function QuoteRequests() {
               })}
             </tbody>
           </table>
+          <div className="mt-auto">
+            <div className="flex justify-center">{renderPagination()}</div>
+          </div>
         </div>
       </div>
     </FullSectionLayout>

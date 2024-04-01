@@ -8,7 +8,8 @@ const { google } = require("googleapis");
 const axios = require("axios");
 import Quote from "../models/quoteModel.js";
 import mongoose from "mongoose";
-
+const rateLimit = require("../../dist/middlewares/ratelimit.js");
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 import { Request, Response } from "express";
 const stdin = process.openStdin();
 
@@ -37,17 +38,21 @@ fs.readFile("credentials.json", (err, content) => {
   authorize(json_content);
 });
 
-router.get("/listEvents", async (req: Request, res: Response) => {
-  //   const { email, firstName, lastName, password } = req.body;
-  //   const saltRounds = 10;
-  //   const hashedPassword = await bcrypt.hash(password, saltRounds);
-  try {
-    listEvents(OATH2_INSTANCE, 10);
-    res.status(201).json({ message: "Events Listed Successfully." });
-  } catch (error: any) {
-    res.status(400).json({ error: error.message });
+router.get(
+  "/listEvents",
+  adminRateLimit,
+  async (req: Request, res: Response) => {
+    //   const { email, firstName, lastName, password } = req.body;
+    //   const saltRounds = 10;
+    //   const hashedPassword = await bcrypt.hash(password, saltRounds);
+    try {
+      listEvents(OATH2_INSTANCE, 10);
+      res.status(201).json({ message: "Events Listed Successfully." });
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
   }
-});
+);
 
 // type Event = {
 //   quoteID: string;
@@ -57,7 +62,7 @@ router.get("/listEvents", async (req: Request, res: Response) => {
 //   time: string;
 // };
 
-router.post("/createEvent", async (req: Request, res: Response) => {
+router.post("/createEvent", rateLimit, async (req: Request, res: Response) => {
   const data = req.body;
   let quoteObject = {};
   try {
