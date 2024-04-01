@@ -7,7 +7,7 @@ const testimonialRoutes = require("./dist/routes/testimonialRoutes.js");
 const emailRoutes = require("./dist/routes/emailRoutes.js");
 const LoginRoutes = require("./dist/routes/LoginRoutes.js");
 const schedulingRoutes = require("./dist/routes/schedulingRoutes.js");
-
+// const rateLimitMiddleware = require("./dist/middlewares/ratelimit.js");
 const process = require("process");
 const cors = require("cors");
 require("dotenv").config(); // Load environment variables
@@ -17,6 +17,7 @@ const PORT = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(cors()); // Enable CORS for all routes
+// app.use(rateLimitMiddleware); //use the reatelimit middleware for all routes (if we want to add this later)
 
 // Route middlewares
 app.use("/users", userRoutes);

@@ -16,6 +16,8 @@ const axios_1 = __importDefault(require("axios"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const express_1 = __importDefault(require("express"));
 const userModel_1 = __importDefault(require("../models/userModel"));
+
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 const jwt = require("jsonwebtoken");
 // Function to create Tokens
 const createToken = (_id) => {
@@ -26,7 +28,7 @@ const createToken = (_id) => {
 // Initialize an express router to handle login-related routes
 const router = express_1.default.Router();
 // Route to handle user login
-router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password, recaptchaToken } = req.body;
     // First, verify the reCAPTCHA token
     try {
@@ -88,7 +90,7 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 }));
 // ===========================================================================//
 // Route to handle password change requests
-router.post("/changePassword", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/changePassword", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, oldPassword, newPassword } = req.body;
     try {
         // Find the user by email
