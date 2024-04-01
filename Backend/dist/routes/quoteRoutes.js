@@ -16,10 +16,15 @@ const express = require("express");
 const router = express.Router();
 const quoteModel_js_1 = __importDefault(require("../models/quoteModel.js"));
 const mongoose_1 = __importDefault(require("mongoose"));
-const { sendMail } = require('./emailRoutes');
+const { sendMail } = require("./emailRoutes");
+const rateLimit = require("../../dist/middlewares/ratelimit.js");
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 //Route to create a new quote
-router.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const quoteData = req.body;
+
+router.post("/create", rateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+
+    let quoteData = req.body;
+    quoteData.quoteDate = new Date();
     try {
         const newQuote = new quoteModel_js_1.default(quoteData);
         yield newQuote.save();
@@ -32,7 +37,7 @@ router.post("/create", (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 }));
 //Route to get all quotes
-router.get("/all", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/all", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const quotes = yield quoteModel_js_1.default.find().sort({ quoteDate: -1 });
         res.status(200).json(quotes);
@@ -42,7 +47,7 @@ router.get("/all", (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
 }));
 //Route to get all quotes with search/status filter
-router.get("/allWithFiler", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/allWithFiler", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { search, status } = req.query;
     let queryConditions = {};
     if (search) {
@@ -63,7 +68,7 @@ router.get("/allWithFiler", (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 }));
 // Route to get a specific quote by ID
-router.get("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/:quoteId", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { quoteId } = req.params;
     try {
         if (!mongoose_1.default.Types.ObjectId.isValid(quoteId)) {
@@ -79,8 +84,9 @@ router.get("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function
         res.status(500).json({ error: error.message });
     }
 }));
+console.log({ sendMailFunction: sendMail });
 // Route to update a specific quote by ID
-router.put("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put("/:quoteId", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d;
     const { quoteId } = req.params;
     const updatedQuoteData = req.body;
@@ -90,13 +96,13 @@ router.put("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function
         }
         // Retrieve the existing quote
         const originalQuote = yield quoteModel_js_1.default.findById(quoteId);
-        console.log('originalQuote:', originalQuote);
+        console.log("originalQuote:", originalQuote);
         if (!originalQuote) {
             return res.status(404).json({ message: "Quote not found" });
         }
         // Update the quote
         const updatedQuote = yield quoteModel_js_1.default.findByIdAndUpdate(quoteId, updatedQuoteData, { new: true });
-        console.log('updatedQuote:', updatedQuote);
+        console.log("updatedQuote:", updatedQuote);
         if (!updatedQuote) {
             return res.status(404).json({ message: "Quote not found" });
         }
@@ -104,8 +110,9 @@ router.put("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function
         // Generate email content based on the changes
         let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
         // Example: Check if the status changed
-        if (((_b = (_a = originalQuote.status) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '') !== ((_d = (_c = updatedQuote.status) === null || _c === void 0 ? void 0 : _c.toString()) !== null && _d !== void 0 ? _d : '')) {
-            emailMessage += `Status changed from ${originalQuote.status} to ${updatedQuote.status}.\n`;
+        if (((_b = (_a = originalQuote.quoteStatus) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : "") !==
+            ((_d = (_c = updatedQuote.quoteStatus) === null || _c === void 0 ? void 0 : _c.toString()) !== null && _d !== void 0 ? _d : "")) {
+            emailMessage += `Status changed from ${originalQuote.quoteStatus} to ${updatedQuote.quoteStatus}.\n`;
         }
         // Add more fields as needed
         // Send email notification
@@ -116,14 +123,16 @@ router.put("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function
                 console.log("Email notification send failed");
             }
         }
-        res.status(200).json({ message: "Quote updated successfully", quote: updatedQuote });
+        res
+            .status(200)
+            .json({ message: "Quote updated successfully", quote: updatedQuote });
     }
     catch (error) {
         res.status(500).json({ error: error.message });
     }
 }));
 // Route to delete a specific quote by ID
-router.delete("/:quoteId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.delete("/:quoteId", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { quoteId } = req.params;
     try {
         if (!mongoose_1.default.Types.ObjectId.isValid(quoteId)) {

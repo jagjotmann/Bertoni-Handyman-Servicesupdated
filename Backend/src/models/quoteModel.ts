@@ -37,6 +37,7 @@ export interface Quote extends Document {
   tax?: number;
   totalCost: number;
   notes?: string;
+  preferredEndDate: Date;
   contactPerson: {
     name: string;
     companyName?: string;
@@ -44,6 +45,7 @@ export interface Quote extends Document {
     phone?: string;
   };
   scheduled: boolean;
+  htmlContent: String;
 }
 
 const QuoteSchema: Schema = new Schema<Quote>({
@@ -135,6 +137,7 @@ const QuoteSchema: Schema = new Schema<Quote>({
     default: 0,
   },
   notes: String,
+  preferredEndDate: Date,
   contactPerson: {
     name: {
       type: String,
@@ -145,6 +148,9 @@ const QuoteSchema: Schema = new Schema<Quote>({
   },
   scheduled: {
     type: Boolean,
+  },
+  htmlContent: {
+    type: String,
   },
 });
 

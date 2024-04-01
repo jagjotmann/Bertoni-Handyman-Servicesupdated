@@ -1,7 +1,10 @@
 import React from "react";
 import { useState, useEffect, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from "axios";
+import axios from 'axios';
+import QuotePreviewModal from '../components/UI/QuotePreviewModal';
+import QuotePreview from "../components/QuotePreview";
+import {Quote} from '../../../../Backend/src/models/quoteModel'
 
 //name of material and cost
 type MaterialTuple = [string, number];
@@ -276,9 +279,12 @@ const CreateQuote: React.FC = () => {
   const { quoteId } = useParams<{ quoteId: string }>();
   //variables
   //const [client, setClient] = useState(dummyClient);
-  const [quote, setQuote] = useState(""); //"" allows a loading state for transparency of data loading
-  const [editable, setEditable] = useState(quoteId == "new"); //allows default editing state when routed with no quote
+  const [quote, setQuote] = useState<Quote | null>(null); //"" allows a loading state for transparency of data loading
+  const [editable, setEditable] = useState(quoteId=="new"); //allows default editing state when routed with no quote
   const navigate = useNavigate();
+  const [isPreviewOpen, setPreviewOpen] = useState(false);
+  const [loading, setLoading] = useState(false); //can be attached to for adding loading Text to modal?
+  const [quoteHTML, setQuoteHTML] = useState('');
 
   const [itemList, setItemList] = useState<MaterialTuple[]>([]);
   const [laborList, setLaborList] = useState<LaborTuple[]>([]);
@@ -291,14 +297,36 @@ const CreateQuote: React.FC = () => {
     name: "",
     email: "",
     address: "",
-    preferredEndDate: "",
     images: [],
+    preferredEndDate: new Date(),
+    htmlContent: "",
   });
+
+  const handlePreview = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/quotes/${quoteId}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const quote = await response.json();
+      setQuoteHTML(quote.htmlContent);
+      setPreviewOpen(true);
+    } catch (error) {
+      console.error('Failed to fetch quote', error);
+      // TODO: ADD ERROR HANDLING HERE
+    } finally {
+      setLoading(false);
+
+    }
+  };
 
   useEffect(() => {
     const fetchQuote = async () => {
       try {
-        const quote = await axios.get(`/quotes/${quoteId}`);
+        const quote = await axios.get<Quote>(`/quotes/${quoteId}`);
         setQuote(quote.data);
         console.log("QUOTE DATA: ", quote.data);
         setFormData({
@@ -311,6 +339,7 @@ const CreateQuote: React.FC = () => {
           preferredEndDate:
             quote?.data?.project?.preferredEndDate || "Not specified",
           images: quote?.data?.images,
+          htmlContent: quote.data.htmlContent.toString() || "Failed to get htmlContent",
         });
       } catch (error) {
         console.error("Error fetching quote:", error);
@@ -362,7 +391,7 @@ const CreateQuote: React.FC = () => {
     setLaborList(updatedLaborList);
   };
 
-  //sums total cost of item list and labor (***still need to do this part***)
+  //sums total cost of item list and labor
   useEffect(() => {
     const totalCost = itemList.reduce((total, item) => total + item[1], 0);
     const laborCost = laborList.reduce(
@@ -397,29 +426,38 @@ const CreateQuote: React.FC = () => {
   return (
     <div className="bg-gray-100 pt-4">
       <form onSubmit={handleSubmit}>
-        <div className="flex justify-between items-center bg-white p-4">
-          <div className="flex justify-start items-center">
-            <h1 className="text-3xl font-bold pr-2">Create a Quote</h1>
-            <p className="bg-blue-500 text-xs text-white font-bold py-1 px-2 rounded-full">
-              ID: {formData.id}
-            </p>
-          </div>
-          <div className="flex justify-end">
-            <button
-              className="bg-white text-black border border-black hover:bg-red-500 font-bold px-4 rounded-full mr-4"
-              type="button"
-              //Route back to client profile
+      <div className="flex justify-between items-center bg-white p-4">
+        <div className="flex justify-start items-center">
+          <h1 className="text-3xl font-bold pr-2">Create a Quote</h1>
+          <p className="bg-blue-500 text-xs text-white font-bold py-1 px-2 rounded-full">
+            ID: {formData.id}
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <button
+            className="bg-white text-black border border-black hover:bg-red-500 font-bold px-4 rounded-full mr-4"
+            type="button"
+            //Route back to client profile
+          >
+            Cancel
+          </button>
+          <div className="px-2 border mr-4 rounded-full">
+            {quote && (
+            <QuotePreviewModal
+              quote={quote}
+              isOpen={isPreviewOpen}
+              onRequestClose={() => setPreviewOpen(false)}
             >
-              Cancel
-            </button>
-            <button
-              className="bg-green-500 hover:bg-green-700 text-center text-white font-bold px-4 rounded-full pr-4"
-              type="submit"
-              //submit to DB
-            >
-              Save
-            </button>
+            </QuotePreviewModal>
+            )}
           </div>
+          <button
+            className="bg-green-500 hover:bg-green-700 text-center text-white font-bold px-4 rounded-full pr-4"
+            type="submit"
+            //submit to DB
+          >
+            Save
+          </button>
         </div>
         <div className="pt-4">
           <div className="pb-4 px-4">
@@ -532,7 +570,7 @@ const CreateQuote: React.FC = () => {
                       <input
                         id="prefDate"
                         type="date"
-                        value={formData.preferredEndDate}
+                        value={formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : ''}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
@@ -546,7 +584,7 @@ const CreateQuote: React.FC = () => {
                   ) : (
                     <div>
                       <p className="text-gray-400">Preferred End Date:</p>
-                      <p>{formData.preferredEndDate}</p>
+                      <p>{formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : ''}</p>
                     </div>
                   )}
                 </div>

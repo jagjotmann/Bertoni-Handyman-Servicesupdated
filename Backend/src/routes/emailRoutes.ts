@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import path from "path";
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 
 dotenv.config();
 
@@ -38,7 +39,7 @@ async function sendMail(userEmail: string, message: string) {
 module.exports.sendMail = sendMail;
 
 // Replace the existing POST route logic with a call to sendMail
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", adminRateLimit, async (req: Request, res: Response) => {
   const { message, userEmail } = req.body;
 
   if (!userEmail || !message) {

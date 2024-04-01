@@ -4,12 +4,12 @@ import Quote from "../models/quoteModel.js";
 import { Request, Response } from "express";
 import mongoose, { FilterQuery } from "mongoose";
 const { sendMail } = require("./emailRoutes");
-import bodyParser from "body-parser";
 
-const jsonParser = bodyParser.json({ limit: "50mb" });
 
+const rateLimit = require("../../dist/middlewares/ratelimit.js");
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 //Route to create a new quote
-router.post("/create", jsonParser, async (req: Request, res: Response) => {
+router.post("/create", rateLimit, async (req: Request, res: Response) => {
   let quoteData = req.body;
   console.log("QUOTE DATA: ", quoteData);
   quoteData.quoteDate = new Date();
@@ -25,9 +25,45 @@ router.post("/create", jsonParser, async (req: Request, res: Response) => {
 });
 
 //Route to get all quotes
-router.get("/all", async (req: Request, res: Response) => {
+router.get("/all", adminRateLimit,  async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 0;
+  const limit = parseInt(req.query.limit as string) || 0;
+  const skip = (page - 1) * limit;
+  
   try {
-    const quotes = await Quote.find().sort({ quoteDate: -1 });
+    let query = Quote.find().sort({ quoteDate: -1 });
+    let quotes;
+    let total = await Quote.countDocuments();
+
+    if (page > 0 && limit > 0) {
+      quotes = await query.skip(skip).limit(limit);
+      res.status(200).json({
+        quotes,
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        limit,
+      });
+    } else {
+      quotes = await query;
+      res.status(200).json(quotes);
+    }
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/byStatus", async (req: Request, res: Response) => {
+  const { status } = req.query;
+
+  if (!status) {
+    return res.status(400).json({ message: "quoteStatus is required" });
+  }
+  try {
+    // Use the Quote model to find quotes with status 'Pending'
+    const quotes = await Quote.find({ quoteStatus: status }).sort({
+      quoteDate: -1,
+    });
     res.status(200).json(quotes);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -35,7 +71,8 @@ router.get("/all", async (req: Request, res: Response) => {
 });
 
 //Route to get all quotes with search/status filter
-router.get("/allWithFiler", async (req: Request, res: Response) => {
+router.get("/allWithFilter", adminRateLimit, async (req: Request, res: Response) => {
+
   const { search, status } = req.query;
   let queryConditions: FilterQuery<typeof Quote> = {};
   if (search) {
@@ -53,10 +90,10 @@ router.get("/allWithFiler", async (req: Request, res: Response) => {
       res.status(500).json({ error: error.message });
     }
   }
-});
+);
 
 // Route to get a specific quote by ID
-router.get("/:quoteId", async (req: Request, res: Response) => {
+router.get("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
   const { quoteId } = req.params;
 
   try {
@@ -77,7 +114,7 @@ router.get("/:quoteId", async (req: Request, res: Response) => {
 console.log({ sendMailFunction: sendMail });
 
 // Route to update a specific quote by ID
-router.put("/:quoteId", async (req: Request, res: Response) => {
+router.put("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
   const { quoteId } = req.params;
   const updatedQuoteData = req.body;
 
@@ -111,10 +148,8 @@ router.put("/:quoteId", async (req: Request, res: Response) => {
     // Generate email content based on the changes
     let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
     // Example: Check if the status changed
-    if (
-      (originalQuote.quoteStatus?.toString() ?? "") !==
-      (updatedQuote.quoteStatus?.toString() ?? "")
-    ) {
+
+    if ((originalQuote.quoteStatus?.toString() ?? '') !== (updatedQuote.quoteStatus?.toString() ?? '')) {
       emailMessage += `Status changed from ${originalQuote.quoteStatus} to ${updatedQuote.quoteStatus}.\n`;
     }
     // Add more fields as needed
@@ -140,24 +175,28 @@ router.put("/:quoteId", async (req: Request, res: Response) => {
 });
 
 // Route to delete a specific quote by ID
-router.delete("/:quoteId", async (req: Request, res: Response) => {
-  const { quoteId } = req.params;
+router.delete(
+  "/:quoteId",
+  adminRateLimit,
+  async (req: Request, res: Response) => {
+    const { quoteId } = req.params;
 
-  try {
-    if (!mongoose.Types.ObjectId.isValid(quoteId)) {
-      return res.status(400).json({ message: "Invalid quote ID" });
-    }
+    try {
+      if (!mongoose.Types.ObjectId.isValid(quoteId)) {
+        return res.status(400).json({ message: "Invalid quote ID" });
+      }
 
-    const deletedQuote = await Quote.findByIdAndRemove(quoteId);
-    if (!deletedQuote) {
-      return res.status(404).json({ message: "Quote not found" });
+      const deletedQuote = await Quote.findByIdAndRemove(quoteId);
+      if (!deletedQuote) {
+        return res.status(404).json({ message: "Quote not found" });
+      }
+      res
+        .status(200)
+        .json({ message: "Quote deleted successfully", quote: deletedQuote });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
-    res
-      .status(200)
-      .json({ message: "Quote deleted successfully", quote: deletedQuote });
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
   }
-});
+);
 
 module.exports = router;
