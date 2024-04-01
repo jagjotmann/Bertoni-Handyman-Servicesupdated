@@ -8,11 +8,31 @@ const QuoteForm = () => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState([]);
   const [preferredFinishDate, setPreferredFinishDate] = useState(null);
   const [errors, setErrors] = useState({});
   const [specifications, setSpecifications] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  }
+
+  const handleFileChange = async (event) => {
+    const files = Array.from(event.target.files);
+    const base64Files = await Promise.all(
+      files.map((file) => fileToBase64(file))
+    );
+
+    console.log("B64 Files: ", base64Files);
+    setSelectedFiles(base64Files);
+  };
 
   const CustomInput = forwardRef(({ value, onClick, placeholder }, ref) => (
     <button
@@ -45,26 +65,27 @@ const QuoteForm = () => {
 
     if (Object.keys(formErrors).length === 0) {
       setIsSubmitting(true);
-      let quoteRequestObject = {};
-      quoteRequestObject.contactPerson = {};
-      // @ts-ignore
-      quoteRequestObject.contactPerson.name = `${firstName} ${lastName}`;
-      // @ts-ignore
-      quoteRequestObject.contactPerson.email = email;
-      // @ts-ignore
-      if (phoneNumber) quoteRequestObject.contactPerson.phone = phoneNumber;
-      // @ts-ignore
-      quoteRequestObject.notes = specifications;
+      let quoteRequestObject = {
+        contactPerson: {
+          name: `${firstName} ${lastName}`,
+          email: email,
+          phone: phoneNumber || undefined,
+        },
+        notes: specifications,
+        images: selectedFiles || undefined,
+      };
+
       try {
+        console.log("QR OBJECT: ", quoteRequestObject);
         const quoteResponse = await sendFormDataToServer(quoteRequestObject);
-        if (quoteResponse?.data?.quote?._id) {
-          const newEmail = {
-            message: `Thank you for submitting a quote request. To check the status of your request, please visit the quote status page and enter your quote number: ${quoteResponse.data.quote._id}`,
-            userEmail: email,
-          };
-          const emailResponse = await axios.post(`email`, newEmail);
-          console.log(emailResponse);
-        }
+        // if (quoteResponse?.data?.quote?._id) {
+        //   const newEmail = {
+        //     message: `Thank you for submitting a quote request. To check the status of your request, please visit the quote status page and enter your quote number: ${quoteResponse.data.quote._id}`,
+        //     userEmail: email,
+        //   };
+        //   const emailResponse = await axios.post(`email`, newEmail);
+        //   console.log(emailResponse);
+        // }
 
         resetFormFields();
         setIsSubmitted(true);
@@ -268,6 +289,21 @@ const QuoteForm = () => {
               })
             }
           ></textarea>
+          <div className="image-upload">
+            <label
+              htmlFor="image-upload"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Upload images
+            </label>
+            <input
+              id="image-upload"
+              name="image-upload"
+              type="file"
+              onChange={handleFileChange}
+              multiple
+            />
+          </div>
         </div>
         <div style={{ height: "20px" }}></div>
         <div>

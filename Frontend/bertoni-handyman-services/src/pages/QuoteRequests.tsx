@@ -197,7 +197,10 @@ function QuoteRequests() {
                 const quoteNum =
                   quote._id.length > 9 ? quote._id.slice(-9) : quote._id;
                 return (
-                  <tr key={quote._id}>
+                  <tr
+                    key={quote._id}
+                    className="hover:bg-yellow-50 transition ease-in-out"
+                  >
                     <td className="px-4 py-2 border-b border-gray-300">
                       {quoteNum} {/* Displaying _id as quoteNum */}
                     </td>
@@ -230,7 +233,7 @@ function QuoteRequests() {
                     </td>
                     <td className="border-b border-gray-300">
                       <button
-                        className="flex items-center text-black rounded-lg hover:text-red-500"
+                        className="flex items-center text-red-500 rounded-lg hover:text-red-700"
                         onClick={() => handleDeleteQuote(quote._id)}
                       >
                         <IoCloseCircle size="1.25em" />

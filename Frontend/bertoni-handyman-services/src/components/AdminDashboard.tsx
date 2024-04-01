@@ -65,7 +65,7 @@ const AdminDashboard = () => {
       <p className="text-2xl text-black-600 mt-2 font-bold p-5">Dashboard</p>
       <div className="flex gap-4 p-6">
         <div
-          className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 cursor-pointer"
+          className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 cursor-pointer hover:bg-neutral-300 transition ease-in-out"
           onClick={() => navigateToQuoteRequests("Completed")}
         >
           <IoBriefcaseOutline className="text-xl text-black-500" />
@@ -76,7 +76,7 @@ const AdminDashboard = () => {
         </div>
 
         <div
-          className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 cursor-pointer"
+          className="p-4 bg-neutral-200 rounded-lg shadow-lg flex-1 cursor-pointer hover:bg-neutral-300 transition ease-in-out"
           onClick={() => navigateToQuoteRequests("Pending")}
         >
           <LuClock className="text-xl text-black-500" />
@@ -131,7 +131,7 @@ const AdminDashboard = () => {
                 {pendingQuotes.map((quote) => (
                   <tr
                     key={quote._id}
-                    className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700"
+                    className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-yellow-50"
                   >
                     <td className="px-6 py-4">{quote.contactPerson.name}</td>
                     <td className="px-6 py-4">
