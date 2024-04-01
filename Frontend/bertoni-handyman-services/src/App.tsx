@@ -2,9 +2,7 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import PageLayout from "./layouts/PageLayout";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { ReactNode } from 'react';
-import { Navigate } from "react-router-dom";
 import { NextUIProvider } from "@nextui-org/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -28,6 +26,8 @@ import ForgotPassword from "./pages/forgotPassword";
 import NavbarWrapper from "./components/NavbarWrapper";
 import QuoteRequests from "./pages/QuoteRequests";
 import ScheduleAppointment from "./components/ScheduleAppointment";
+import { BrowserRouter as Router, Route, Routes, Navigate, Link } from 'react-router-dom';
+import PageNotFound from "./pages/PageNotFound";
 /*Root component*/
 
 function App() {
@@ -91,6 +91,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             />
             <Route path="/create-a-quote/:quoteId" element={<CreateQuote />} />
             <Route path="/add-testimonial" element={<AddTestimonial />} />
+            <Route path="*" element={<PageNotFound />} />
           </Routes>
           <Footer />
         </div>

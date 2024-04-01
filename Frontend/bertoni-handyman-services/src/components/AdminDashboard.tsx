@@ -19,7 +19,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("quotes/all");
+        const response = await fetch("quotes/byStatus?status=Pending");
         const data: Quote[] = await response.json();
 
         const now = new Date();
@@ -31,10 +31,6 @@ const AdminDashboard = () => {
             new Date(b.quoteDate).getTime() - new Date(a.quoteDate).getTime()
         );
 
-        const limitedPendingQuotes = sortedData
-          .filter((quote: Quote) => quote.quoteStatus === "Pending")
-          .slice(0, 8);
-
         const quotesFromLastWeek = sortedData.filter(
           (quote) => new Date(quote.quoteDate) >= oneWeekAgo
         );
@@ -45,7 +41,7 @@ const AdminDashboard = () => {
             new Date(quote.quoteDate) < oneWeekAgo
         );
 
-        setPendingQuotes(limitedPendingQuotes);
+        setPendingQuotes(data.slice(0, 8));
 
         setNewClientsThisWeek(quotesFromLastWeek.length);
         // For monthly count, ensure you're not double-counting this week's quotes

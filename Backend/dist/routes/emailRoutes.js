@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 dotenv_1.default.config();
 const router = express_1.default.Router();
 // Define the sendMail function to accept dynamic parameters
@@ -47,7 +48,7 @@ function sendMail(userEmail, message) {
 }
 module.exports.sendMail = sendMail;
 // Replace the existing POST route logic with a call to sendMail
-router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { message, userEmail } = req.body;
     if (!userEmail || !message) {
         return res.status(400).json({ message: "Missing required fields" });

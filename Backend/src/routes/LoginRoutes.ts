@@ -2,7 +2,7 @@ import axios from "axios";
 import bcrypt from "bcrypt";
 import express from "express";
 import User from "../models/userModel";
-
+const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 const jwt = require("jsonwebtoken");
 
 // Function to create Tokens
@@ -16,7 +16,7 @@ const createToken = (_id: any) => {
 const router = express.Router();
 
 // Route to handle user login
-router.post("/", async (req, res) => {
+router.post("/", adminRateLimit, async (req, res) => {
   const { email, password, recaptchaToken } = req.body;
 
   // First, verify the reCAPTCHA token
@@ -94,7 +94,7 @@ router.post("/", async (req, res) => {
 // ===========================================================================//
 
 // Route to handle password change requests
-router.post("/changePassword", async (req, res) => {
+router.post("/changePassword", adminRateLimit, async (req, res) => {
   const { email, oldPassword, newPassword } = req.body;
 
   try {
