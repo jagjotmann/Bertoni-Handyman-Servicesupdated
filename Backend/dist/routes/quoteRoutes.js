@@ -20,7 +20,9 @@ const { sendMail } = require("./emailRoutes");
 const rateLimit = require("../../dist/middlewares/ratelimit.js");
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 //Route to create a new quote
+
 router.post("/create", rateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+
     let quoteData = req.body;
     quoteData.quoteDate = new Date();
     try {
