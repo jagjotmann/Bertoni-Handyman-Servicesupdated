@@ -4,6 +4,7 @@ import Quote from "../models/quoteModel.js";
 import { Request, Response } from "express";
 import mongoose, { FilterQuery } from "mongoose";
 const { sendMail } = require("./emailRoutes");
+
 const rateLimit = require("../../dist/middlewares/ratelimit.js");
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 //Route to create a new quote
@@ -50,8 +51,26 @@ router.get("/all", adminRateLimit,  async (req: Request, res: Response) => {
   }
 });
 
+router.get("/byStatus", async (req: Request, res: Response) => {
+  const { status } = req.query;
+
+  if (!status) {
+    return res.status(400).json({ message: "quoteStatus is required" });
+  }
+  try {
+    // Use the Quote model to find quotes with status 'Pending'
+    const quotes = await Quote.find({ quoteStatus: status }).sort({
+      quoteDate: -1,
+    });
+    res.status(200).json(quotes);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 //Route to get all quotes with search/status filter
 router.get("/allWithFilter", adminRateLimit, async (req: Request, res: Response) => {
+
   const { search, status } = req.query;
   let queryConditions: FilterQuery<typeof Quote> = {};
   if (search) {
