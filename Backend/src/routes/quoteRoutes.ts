@@ -22,36 +22,51 @@ router.post("/create", rateLimit, async (req: Request, res: Response) => {
 });
 
 //Route to get all quotes
-router.get("/all", adminRateLimit, async (req: Request, res: Response) => {
+router.get("/all", adminRateLimit,  async (req: Request, res: Response) => {
+  const page = parseInt(req.query.page as string) || 0;
+  const limit = parseInt(req.query.limit as string) || 0;
+  const skip = (page - 1) * limit;
+  
   try {
-    const quotes = await Quote.find().sort({ quoteDate: -1 });
-    res.status(200).json(quotes);
+    let query = Quote.find().sort({ quoteDate: -1 });
+    let quotes;
+    let total = await Quote.countDocuments();
+
+    if (page > 0 && limit > 0) {
+      quotes = await query.skip(skip).limit(limit);
+      res.status(200).json({
+        quotes,
+        total,
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        limit,
+      });
+    } else {
+      quotes = await query;
+      res.status(200).json(quotes);
+    }
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 });
 
 //Route to get all quotes with search/status filter
-router.get(
-  "/allWithFiler",
-  adminRateLimit,
-  async (req: Request, res: Response) => {
-    const { search, status } = req.query;
-    let queryConditions: FilterQuery<typeof Quote> = {};
-    if (search) {
-      queryConditions["$or"] = [
-        { clientName: new RegExp(search as string, "i") },
-        { quoteNumber: new RegExp(search as string, "i") },
-      ];
-      if (status) {
-        queryConditions["status"] = status;
-      }
-      try {
-        const quotes = await Quote.find(queryConditions);
-        res.status(200).json(quotes);
-      } catch (error: any) {
-        res.status(500).json({ error: error.message });
-      }
+router.get("/allWithFilter", adminRateLimit, async (req: Request, res: Response) => {
+  const { search, status } = req.query;
+  let queryConditions: FilterQuery<typeof Quote> = {};
+  if (search) {
+    queryConditions["$or"] = [
+      { clientName: new RegExp(search as string, "i") },
+      { quoteNumber: new RegExp(search as string, "i") },
+    ];
+    if (status) {
+      queryConditions["status"] = status;
+    }
+    try {
+      const quotes = await Quote.find(queryConditions);
+      res.status(200).json(quotes);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   }
 );
