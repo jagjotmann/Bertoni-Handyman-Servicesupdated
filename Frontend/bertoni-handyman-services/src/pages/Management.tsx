@@ -1,6 +1,8 @@
 //Management Page
 import React from "react";
 import FullSectionLayout from "../layouts/FullSectionLayout";
+import PopupButton from './PopupButton';
+import AddEmployeeModal from './AddEmployeeModal';
 
 const employees = [
   {
@@ -37,10 +39,7 @@ function Management() {
   return (
     <FullSectionLayout>
       <div className="px-6 pt-4">
-        <h1 className="text-2xl font-bold mb-4 w-243">Management</h1>
-        <button className="w-202 h-49 bg-white text-black border-black rounded-md px-4 py-2 bg-green-400 hover:bg-gray-400 focus:outline-none focus:ring focus:border-blue-300">
-          Add Employee
-        </button>
+      <h1 className="text-2xl font-bold mb-4 w-243">Management</h1>
 
         <table className="w-full border-collapse border border-gray-200 mt-2">
           <thead className="bg-gray-200">
@@ -73,6 +72,7 @@ function Management() {
           </tbody>
         </table>
       </div>
+      <AddEmployeeModal/>
     </FullSectionLayout>
   );
 }
