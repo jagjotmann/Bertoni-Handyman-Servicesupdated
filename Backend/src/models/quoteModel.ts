@@ -29,6 +29,7 @@ export interface Quote extends Document {
     };
     description?: string;
   };
+  images?: string[];
   quoteStatus: String;
   items?: Materials[];
   labor?: Labor[];
@@ -72,6 +73,10 @@ const QuoteSchema: Schema = new Schema<Quote>({
       },
     },
     description: String,
+  },
+  images: {
+    type: [String],
+    required: false,
   },
   quoteStatus: {
     type: String,
@@ -148,14 +153,6 @@ const QuoteSchema: Schema = new Schema<Quote>({
     type: String,
   },
 });
-
-// Custom validation to ensure either email or phone is provided
-// QuoteSchema.path('contactPerson').validate(function (value) {
-//   return value.email || value.phone; // Ensures at least one contact method is provided
-// }, 'Either an email or phone number must be provided.');
-
-// Placeholder for custom methods you might want to add
-// Example: QuoteSchema.methods.calculateTotalCost = function() { /* implementation */ };
 
 const QuoteModel = mongoose.model<Quote>("Quote", QuoteSchema);
 

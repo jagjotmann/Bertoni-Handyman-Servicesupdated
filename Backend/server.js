@@ -15,7 +15,7 @@ require("dotenv").config(); // Load environment variables
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
 app.use(cors()); // Enable CORS for all routes
 // app.use(rateLimitMiddleware); //use the reatelimit middleware for all routes (if we want to add this later)
 

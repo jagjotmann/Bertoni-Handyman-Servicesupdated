@@ -5,11 +5,13 @@ import { Request, Response } from "express";
 import mongoose, { FilterQuery } from "mongoose";
 const { sendMail } = require("./emailRoutes");
 
+
 const rateLimit = require("../../dist/middlewares/ratelimit.js");
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 //Route to create a new quote
 router.post("/create", rateLimit, async (req: Request, res: Response) => {
   let quoteData = req.body;
+  console.log("QUOTE DATA: ", quoteData);
   quoteData.quoteDate = new Date();
   try {
     const newQuote = new Quote(quoteData);
@@ -146,6 +148,7 @@ router.put("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
     // Generate email content based on the changes
     let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
     // Example: Check if the status changed
+
     if ((originalQuote.quoteStatus?.toString() ?? '') !== (updatedQuote.quoteStatus?.toString() ?? '')) {
       emailMessage += `Status changed from ${originalQuote.quoteStatus} to ${updatedQuote.quoteStatus}.\n`;
     }
