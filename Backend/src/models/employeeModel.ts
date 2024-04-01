@@ -1,5 +1,11 @@
 import mongoose, { Document, Schema } from "mongoose";
 
+interface Address {
+  streetAddress: string;
+  city: string;
+  state: string;
+  zipCode: string;
+}
 const addressSchema = new mongoose.Schema({
   streetAddress: String,
   city: String,
@@ -13,6 +19,10 @@ const availableSchema = new mongoose.Schema({
     //maybe manually keep track of availabilities from the employees schedule (not ideal)
 });
 */
+interface Job {
+  title: string;
+  rate: number;
+}
 
 const JobSchema = new mongoose.Schema({
     //This is for the type of job (ie. tiling, roofing, brickwork, plumbing, electrical)
@@ -20,7 +30,25 @@ const JobSchema = new mongoose.Schema({
     rate: Number, //optional for default rates for certain job types
   });
 
-const EmployeeSchema = new mongoose.Schema({
+  interface Employee extends Document {
+    name: {
+      firstName: string;
+      lastName: string;
+    };
+    contactInfo: {
+      phoneNumber: string;
+      email: string;
+    };
+    jobs: Array<{
+      address: Address;
+      completed: boolean;
+    }>;
+    googleCalendar: {
+      apiKey: string;
+    };
+    qualifications: Job[];
+  }
+  const EmployeeSchema = new mongoose.Schema({
   name: {
     firstName: {
       type: String,
