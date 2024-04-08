@@ -72,7 +72,6 @@ router.get("/byStatus", async (req: Request, res: Response) => {
 
 //Route to get all quotes with search/status filter
 router.get("/allWithFilter", adminRateLimit, async (req: Request, res: Response) => {
-
   const { search, status } = req.query;
   let queryConditions: FilterQuery<typeof Quote> = {};
   if (search) {
@@ -83,14 +82,15 @@ router.get("/allWithFilter", adminRateLimit, async (req: Request, res: Response)
     if (status) {
       queryConditions["status"] = status;
     }
-    try {
-      const quotes = await Quote.find(queryConditions);
-      res.status(200).json(quotes);
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
   }
-);
+  try {
+    const quotes = await Quote.find(queryConditions).exec(); // Ensuring proper execution with exec()
+    res.status(200).json(quotes);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+}); // Ensure this closes the router.get call properly.
+
 
 // Route to get a specific quote by ID
 router.get("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
