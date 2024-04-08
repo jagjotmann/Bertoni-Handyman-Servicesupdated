@@ -28,6 +28,9 @@ export interface User extends Document {
   name: Name;
   contactInfo: ContactInfo;
   properties: Property[];
+  // Add these fields for password reset
+resetPasswordToken: String,
+resetPasswordExpires: Date,
 }
 
 const UserSchema: Schema = new Schema({
@@ -41,6 +44,13 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true,
     minlength: 8,
+  },
+  // for password reset
+  resetPasswordToken: {
+  type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
   },
   // Keeping track of Login Attempts
   loginAttempts: {
