@@ -2,6 +2,9 @@ import axios from "axios";
 import bcrypt from "bcrypt";
 import express from "express";
 import User from "../models/userModel";
+import crypto from 'crypto';
+import { sendMail } from './emailRoutes';
+
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 const jwt = require("jsonwebtoken");
 
@@ -103,14 +106,14 @@ router.post('/forgot-password', async (req, res) => {
   }
   const token = crypto.randomBytes(20).toString('hex'); // Generate a token
   user.resetPasswordToken = token;
-  user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+  user.resetPasswordExpires = new Date(Date.now() + 300); // Expires 5 minutes from now
   await user.save();
 
   const resetUrl = `http://<your_frontend_reset_password_page>/?token=${token}`;
   const message = `You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link, or paste this into your browser to complete the process: ${resetUrl}`;
 
   try {
-    await sendMail(user.contactInfo.email, message);
+    await sendMail(user.contactInfo.email, "Your Subject Here", message, ""); 
     res.status(200).json({ message: "Email sent" });
   } catch (error) {
     console.log(error);
@@ -132,12 +135,24 @@ router.post('/reset-password', async (req, res) => {
     return res.status(400).json({ message: "Password reset token is invalid or has expired." });
   }
 
+  // validation for the new password:
+  if (newPassword.length < 8 || !newPassword.match(/[\d!@#$%^&*]/)) {
+  return res.status(400).json({ message: "Password does not meet complexity requirements." });
+  }
+
+
   // Hash the new password
   const hashedNewPassword = await bcrypt.hash(newPassword, 10);
   user.password = hashedNewPassword;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
+  user.resetPasswordToken = null;
+  user.resetPasswordExpires = null;
+
   await user.save();
+  
+  // Send confirmation email
+const htmlContent = `<p>Your password has been successfully reset. If you did not perform this action, please contact our support team immediately.</p>`;
+await sendMail(user.contactInfo.email, "Password Reset Successful", "", htmlContent);
+
 
   res.status(200).json({ message: "Password has been updated." });
 });

@@ -23,22 +23,25 @@ const ForgotPassword = () => {
     return re.test(email);
   };
 
-  const handleResetPassword = async () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Function to handle Forgot password
+  const handleForgotPassword = async () => {
+    setIsSubmitting(true); // Correct placement
     if (!email.trim()) {
       setEmailError("Email is required.");
+      setIsSubmitting(false);
     } else if (!validateEmail(email)) {
       setEmailError("Please enter a valid email.");
+      setIsSubmitting(false);
     } else {
       setEmailError("");
       try {
-        // Here you would put your logic to handle password reset
-        // For example, sending a reset link to the user's email
         await axios.post("http://localhost:3001/reset-password", {
           email,
         });
         setModal({
-          content:
-            "If there is an account associated with this email, we will send a password reset link.",
+          content: "If there is an account associated with this email, we will send a password reset link.",
         });
       } catch (error) {
         console.error("Password Reset Error", error);
@@ -46,8 +49,10 @@ const ForgotPassword = () => {
           content: "There was an error processing your request.",
         });
       }
+      setIsSubmitting(false); // Correctly placed at the end of the process
     }
   };
+
 
   const errorHandler = () => {
     setModal(null);
@@ -85,10 +90,11 @@ const ForgotPassword = () => {
               )}
               <button
                 type="submit"
-                onClick={handleResetPassword}
+                onClick={handleForgotPassword}
+                disabled={isSubmitting}
                 className="transform whitespace-nowrap rounded-md bg-orange-500 p-2 px-4 font-bold text-white transition-transform hover:scale-105"
               >
-                Send Reset Instructions
+                {isSubmitting ? 'Sending...' : 'Send Reset Instructions'}
               </button>
             </div>
           </section>

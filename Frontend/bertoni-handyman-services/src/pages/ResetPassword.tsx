@@ -11,10 +11,15 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const resetPassword = async () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // handle Reset Password Function
+  const handleResetPassword = async () => {
+    setIsSubmitting(true);
     const queryParams = new URLSearchParams(location.search);
     const token = queryParams.get('token');
-
+    
+    setIsSubmitting(false);
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -29,6 +34,7 @@ const ResetPassword = () => {
     } catch (error) {
       setError('Failed to reset password. Please try again.');
     }
+    setIsSubmitting(false); // Only need to set this once at the end of the try/catch block
   };
 
   return (
@@ -61,11 +67,14 @@ const ResetPassword = () => {
               />
               {error && <div className="text-sm text-red-500">{error}</div>}
               <button
-                onClick={resetPassword}
+                type="submit"
+                onClick={handleResetPassword}
+                disabled={isSubmitting}
                 className="rounded-xl bg-[#F69327] px-5 py-2 text-xs font-medium text-[#2D333A] shadow-md transition-transform hover:scale-105 md:text-lg"
               >
-                Reset Password
+                {isSubmitting ? 'Resetting...' : 'Reset Password'}
               </button>
+
             </div>
           </section>
         </PaddingSectionLayout>

@@ -29,8 +29,8 @@ export interface User extends Document {
   contactInfo: ContactInfo;
   properties: Property[];
   // Add these fields for password reset
-resetPasswordToken: String,
-resetPasswordExpires: Date,
+  resetPasswordToken: string | null; // Allow string or null
+  resetPasswordExpires: Date | null; // Allow Date or null
 }
 
 const UserSchema: Schema = new Schema({
@@ -44,13 +44,6 @@ const UserSchema: Schema = new Schema({
     type: String,
     required: true,
     minlength: 8,
-  },
-  // for password reset
-  resetPasswordToken: {
-  type: String,
-  },
-  resetPasswordExpires: {
-    type: Date,
   },
   // Keeping track of Login Attempts
   loginAttempts: {
@@ -73,6 +66,16 @@ const UserSchema: Schema = new Schema({
       maxlength: 100,
     },
   },
+  // for password reset
+  resetPasswordToken: {
+    type: String,
+    index: true,
+    default: null, // Explicitly allows null
+  },
+  resetPasswordExpires: {
+    type: Date,
+    default: null, // Explicitly allows null
+  },
   contactInfo: {
     phoneNumber: {
       type: String,
@@ -81,7 +84,9 @@ const UserSchema: Schema = new Schema({
       type: String,
       required: true,
       unique: true,
-    },
+      index: true, // Adds an index on the email field
+    }, 
+
   },
   properties: [
     {
