@@ -143,7 +143,8 @@ router.put("/:quoteId", adminRateLimit, (req, res) => __awaiter(void 0, void 0, 
         // Generate email content based on the changes
         let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
         // Example: Check if the status changed
-        if (((_b = (_a = originalQuote.quoteStatus) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '') !== ((_d = (_c = updatedQuote.quoteStatus) === null || _c === void 0 ? void 0 : _c.toString()) !== null && _d !== void 0 ? _d : '')) {
+        if (((_b = (_a = originalQuote.quoteStatus) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : "") !==
+            ((_d = (_c = updatedQuote.quoteStatus) === null || _c === void 0 ? void 0 : _c.toString()) !== null && _d !== void 0 ? _d : "")) {
             emailMessage += `Status changed from ${originalQuote.quoteStatus} to ${updatedQuote.quoteStatus}.\n`;
         }
         // Add more fields as needed
