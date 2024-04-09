@@ -20,10 +20,9 @@ const { sendMail } = require("./emailRoutes");
 const rateLimit = require("../../dist/middlewares/ratelimit.js");
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 //Route to create a new quote
-
 router.post("/create", rateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-
     let quoteData = req.body;
+    console.log("QUOTE DATA: ", quoteData);
     quoteData.quoteDate = new Date();
     try {
         const newQuote = new quoteModel_js_1.default(quoteData);
@@ -38,8 +37,42 @@ router.post("/create", rateLimit, (req, res) => __awaiter(void 0, void 0, void 0
 }));
 //Route to get all quotes
 router.get("/all", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const page = parseInt(req.query.page) || 0;
+    const limit = parseInt(req.query.limit) || 0;
+    const skip = (page - 1) * limit;
     try {
-        const quotes = yield quoteModel_js_1.default.find().sort({ quoteDate: -1 });
+        let query = quoteModel_js_1.default.find().sort({ quoteDate: -1 });
+        let quotes;
+        let total = yield quoteModel_js_1.default.countDocuments();
+        if (page > 0 && limit > 0) {
+            quotes = yield query.skip(skip).limit(limit);
+            res.status(200).json({
+                quotes,
+                total,
+                currentPage: page,
+                totalPages: Math.ceil(total / limit),
+                limit,
+            });
+        }
+        else {
+            quotes = yield query;
+            res.status(200).json(quotes);
+        }
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}));
+router.get("/byStatus", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { status } = req.query;
+    if (!status) {
+        return res.status(400).json({ message: "quoteStatus is required" });
+    }
+    try {
+        // Use the Quote model to find quotes with status 'Pending'
+        const quotes = yield quoteModel_js_1.default.find({ quoteStatus: status }).sort({
+            quoteDate: -1,
+        });
         res.status(200).json(quotes);
     }
     catch (error) {
@@ -47,7 +80,7 @@ router.get("/all", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 
     }
 }));
 //Route to get all quotes with search/status filter
-router.get("/allWithFiler", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/allWithFilter", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { search, status } = req.query;
     let queryConditions = {};
     if (search) {
@@ -110,8 +143,7 @@ router.put("/:quoteId", adminRateLimit, (req, res) => __awaiter(void 0, void 0, 
         // Generate email content based on the changes
         let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
         // Example: Check if the status changed
-        if (((_b = (_a = originalQuote.quoteStatus) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : "") !==
-            ((_d = (_c = updatedQuote.quoteStatus) === null || _c === void 0 ? void 0 : _c.toString()) !== null && _d !== void 0 ? _d : "")) {
+        if (((_b = (_a = originalQuote.quoteStatus) === null || _a === void 0 ? void 0 : _a.toString()) !== null && _b !== void 0 ? _b : '') !== ((_d = (_c = updatedQuote.quoteStatus) === null || _c === void 0 ? void 0 : _c.toString()) !== null && _d !== void 0 ? _d : '')) {
             emailMessage += `Status changed from ${originalQuote.quoteStatus} to ${updatedQuote.quoteStatus}.\n`;
         }
         // Add more fields as needed
