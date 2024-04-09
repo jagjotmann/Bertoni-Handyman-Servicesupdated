@@ -289,18 +289,28 @@ const CreateQuote: React.FC = () => {
   const [itemList, setItemList] = useState<MaterialTuple[]>([]);
   const [laborList, setLaborList] = useState<LaborTuple[]>([]);
   const [finalTotalCost, setFinalTotalCost] = useState(0);
-  const [formData, setFormData] = useState({
-    //form for quote client info
-    id: "",
-    phone: "",
-    description: "",
-    name: "",
-    email: "",
-    address: "",
-    images: [],
-    preferredEndDate: new Date(),
-    htmlContent: "",
-  });
+  const [formData, setFormData] = useState<{
+  id: string;
+  phone: string;
+  description: string;
+  name: string;
+  email: string;
+  address: string;
+  images: string[]; // Ensure this is typed as an array of strings
+  preferredEndDate: Date; // Can be string or Date, adjust based on your needs
+  htmlContent: string;
+}>({
+  id: "",
+  phone: "",
+  description: "",
+  name: "",
+  email: "",
+  address: "",
+  images: [],
+  preferredEndDate: new Date(), // Initialize as Date 
+  htmlContent: "",
+});
+
 
   const handlePreview = async () => {
     try {
@@ -331,16 +341,16 @@ const CreateQuote: React.FC = () => {
         console.log("QUOTE DATA: ", quote.data);
         setFormData({
           id: String(quoteId),
-          phone: quote?.data?.contactPerson?.phone,
-          description: quote?.data?.notes,
-          name: quote?.data?.contactPerson?.name,
-          email: quote?.data?.contactPerson?.email,
-          address: quote?.data?.project?.address?.streetAddress,
-          preferredEndDate:
-            quote?.data?.project?.preferredEndDate || "Not specified",
-          images: quote?.data?.images,
-          htmlContent: quote.data.htmlContent.toString() || "Failed to get htmlContent",
+          phone: quote?.data?.contactPerson?.phone ?? '',
+          description: quote?.data?.notes ?? '',
+          name: quote?.data?.contactPerson?.name ?? '',
+          email: quote?.data?.contactPerson?.email ?? '',
+          address: quote?.data?.project?.address?.streetAddress ?? '',
+          preferredEndDate: quote?.data?.preferredEndDate || "Not specified",
+          images: quote?.data?.images ?? [],
+          htmlContent: quote.data.htmlContent?.toString() ?? "Failed to get htmlContent",
         });
+
       } catch (error) {
         console.error("Error fetching quote:", error);
       }
@@ -574,7 +584,7 @@ const CreateQuote: React.FC = () => {
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            preferredEndDate: e.target.value,
+                            preferredEndDate: new Date(e.target.value) // Convert string to Date
                           })
                         }
                         className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-gray-400 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
@@ -646,6 +656,7 @@ const CreateQuote: React.FC = () => {
               </span>
             </div>
           </div>
+        </div>
         </div>
       </form>
       {modalType === "addItem" && (
