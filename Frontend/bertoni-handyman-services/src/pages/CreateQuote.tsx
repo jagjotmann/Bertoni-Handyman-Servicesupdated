@@ -289,8 +289,17 @@ const CreateQuote: React.FC = () => {
   const [itemList, setItemList] = useState<MaterialTuple[]>([]);
   const [laborList, setLaborList] = useState<LaborTuple[]>([]);
   const [finalTotalCost, setFinalTotalCost] = useState(0);
-  const [formData, setFormData] = useState({
-    //form for quote client info
+  const [formData, setFormData] = useState<{
+    id: string;
+    phone: string;
+    description: string;
+    name: string;
+    email: string;
+    address: string;
+    images: string[]; // Ensure this is typed as an array of strings
+    preferredEndDate: Date; // Can be string or Date, adjust based on your needs
+    htmlContent: string;
+  }>({
     id: "",
     phone: "",
     description: "",
@@ -298,7 +307,7 @@ const CreateQuote: React.FC = () => {
     email: "",
     address: "",
     images: [],
-    preferredEndDate: new Date(),
+    preferredEndDate: new Date(), // Initialize as Date
     htmlContent: "",
   });
 
@@ -330,16 +339,15 @@ const CreateQuote: React.FC = () => {
         console.log("QUOTE DATA: ", quote.data);
         setFormData({
           id: String(quoteId),
-          phone: quote?.data?.contactPerson?.phone || "",
-          description: quote?.data?.notes || "",
-          name: quote?.data?.contactPerson?.name,
-          email: quote?.data?.contactPerson?.email || "",
-          address: quote?.data?.project?.address?.streetAddress,
-          // preferredEndDate:
-          //   quote?.data?.project?.preferredEndDate || "Not specified",
-          images: quote?.data?.images,
+          phone: quote?.data?.contactPerson?.phone ?? "",
+          description: quote?.data?.notes ?? "",
+          name: quote?.data?.contactPerson?.name ?? "",
+          email: quote?.data?.contactPerson?.email ?? "",
+          address: quote?.data?.project?.address?.streetAddress ?? "",
+          preferredEndDate: quote?.data?.preferredEndDate || "Not specified",
+          images: quote?.data?.images ?? [],
           htmlContent:
-            quote.data.htmlContent.toString() || "Failed to get htmlContent",
+            quote.data.htmlContent?.toString() ?? "Failed to get htmlContent",
         });
       } catch (error) {
         console.error("Error fetching quote:", error);
@@ -582,7 +590,7 @@ const CreateQuote: React.FC = () => {
                           onChange={(e) =>
                             setFormData({
                               ...formData,
-                              preferredEndDate: e.target.value,
+                              preferredEndDate: new Date(e.target.value),
                             })
                           }
                           className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-gray-400 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
@@ -616,44 +624,115 @@ const CreateQuote: React.FC = () => {
                     ))}
                   </div>
                 </div>
-                <div className="">
-                  {/*Materials through labor section*/}
-                  <div className="py-6 flex justify-start items-center border-t-2 border-gray-800">
-                    {/*Materials Section*/}
-                    <label
-                      className="text-grey-darker text-lg font-bold pb-2 pr-6"
-                      htmlFor="materials"
-                    >
-                      Materials
-                    </label>
-                    <button
-                      className="bg-black hover:bg-blue-700 text-sm text-white font-bold py-2 px-6"
-                      type="button"
-                      onClick={() => toggleModal("addItem")}
-                    >
-                      Add item
-                    </button>
-                  </div>
-                  <div className="pd-4">
-                    <Materials items={itemList} deleteItem={handleDeleteItem} />
-                  </div>
-                  <div className="pb-6 flex justify-start items-center pt-2">
-                    {/*Labor Section*/}
-                    <label
-                      className="block text-grey-darker text-lg font-bold pb-2 pr-6"
-                      htmlFor="labor"
-                    >
-                      Labor
-                    </label>
-                    <button
-                      className="bg-black hover:bg-blue-700 text-sm text-white font-bold py-2 px-4"
-                      type="button"
-                      onClick={() => toggleModal("assignJob")}
-                    >
-                      Assign Job
-                    </button>
-                  </div>
-                  <Labor labor={laborList} deleteLabor={handleDeleteLabor} />
+                <div>
+                  {editable ? (
+                    <textarea
+                      value={formData.description}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          description: e.target.value,
+                        })
+                      }
+                      className="px-2 py-1 min-w-full min-h-8 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                      placeholder="Descripton"
+                    />
+                  ) : (
+                    <div>
+                      <p className="text-gray-400">Job Description:</p>
+                      <p>{formData.description}</p>
+                    </div>
+                  )}
+                </div>
+                <div className="pb-2">
+                  {editable ? (
+                    <div>
+                      <label className="text-gray-400" htmlFor="prefDate">
+                        Preferred End Date:{" "}
+                      </label>
+                      <input
+                        id="prefDate"
+                        type="date"
+                        value={
+                          formData.preferredEndDate
+                            ? formData.preferredEndDate
+                                .toISOString()
+                                .split("T")[0]
+                            : ""
+                        }
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            preferredEndDate: new Date(e.target.value), // Convert string to Date
+                          })
+                        }
+                        className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-gray-400 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                        placeholder="Preferred End Date"
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <p className="text-gray-400">Preferred End Date:</p>
+                      <p>
+                        {formData.preferredEndDate
+                          ? formData.preferredEndDate
+                              .toISOString()
+                              .split("T")[0]
+                          : ""}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                <div className="pb-2">
+                  <p className="text-gray-400">Images Provided:</p>
+                  {formData.images.map((image, index) => (
+                    <div>
+                      <h1>{`Image ${index + 1}: `}</h1>
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`Quote Image ${index + 1}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="">
+                {/*Materials through labor section*/}
+                <div className="py-6 flex justify-start items-center border-t-2 border-gray-800">
+                  {/*Materials Section*/}
+                  <label
+                    className="text-grey-darker text-lg font-bold pb-2 pr-6"
+                    htmlFor="materials"
+                  >
+                    Materials
+                  </label>
+                  <button
+                    className="bg-black hover:bg-blue-700 text-sm text-white font-bold py-2 px-6"
+                    type="button"
+                    onClick={() => toggleModal("addItem")}
+                  >
+                    Add item
+                  </button>
+                </div>
+                <div className="pd-4">
+                  <Materials items={itemList} deleteItem={handleDeleteItem} />
+                </div>
+                <div className="pb-6 flex justify-start items-center pt-2">
+                  {/*Labor Section*/}
+                  <label
+                    className="block text-grey-darker text-lg font-bold pb-2 pr-6"
+                    htmlFor="labor"
+                  >
+                    Labor
+                  </label>
+                  <button
+                    className="bg-black hover:bg-blue-700 text-sm text-white font-bold py-2 px-4"
+                    type="button"
+                    onClick={() => toggleModal("assignJob")}
+                  >
+                    Assign Job
+                  </button>
                 </div>
                 <span className="font-semibold text-4xl text-right pb-4">
                   Total: ${finalTotalCost}

@@ -84,15 +84,15 @@ router.get(
       if (status) {
         queryConditions["status"] = status;
       }
-      try {
-        const quotes = await Quote.find(queryConditions);
-        res.status(200).json(quotes);
-      } catch (error: any) {
-        res.status(500).json({ error: error.message });
-      }
+    }
+    try {
+      const quotes = await Quote.find(queryConditions).exec(); // Ensuring proper execution with exec()
+      res.status(200).json(quotes);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   }
-);
+); // Ensure this closes the router.get call properly.
 
 // Route to get a specific quote by ID
 router.get("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
