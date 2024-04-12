@@ -21,7 +21,7 @@ export async function sendMail(userEmail: string, subject: string, message: stri
   });
 
   const mailOptions = {
-    from: process.env.FROM_EMAIL || "no-reply@example.com",
+    from: process.env.FROM_EMAIL,
     to: userEmail,
     subject: subject,
     text: message, // Plain text message > use the dynamically provided message 

@@ -32,7 +32,7 @@ function sendMail(userEmail, subject, message, html) {
             },
         });
         const mailOptions = {
-            from: process.env.FROM_EMAIL || "no-reply@example.com",
+            from: process.env.FROM_EMAIL,
             to: userEmail,
             subject: subject,
             text: message, // Plain text message > use the dynamically provided message 

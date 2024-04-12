@@ -37,7 +37,8 @@ const ForgotPassword = () => {
     } else {
       setEmailError("");
       try {
-        await axios.post("http://localhost:3001/reset-password", {
+        console.log("email: " + email);
+        await axios.post("http://localhost:3001/login/forgot-password", {  // 
           email,
         });
         setModal({

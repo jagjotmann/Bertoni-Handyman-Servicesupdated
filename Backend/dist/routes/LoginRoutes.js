@@ -17,7 +17,9 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const express_1 = __importDefault(require("express"));
 const userModel_1 = __importDefault(require("../models/userModel"));
 const crypto_1 = __importDefault(require("crypto"));
-const emailRoutes_1 = require("./emailRoutes");
+// import { sendMail } from './emailRoutes';
+const sendMail = require('./emailRoutes').sendMail;
+console.log(sendMail);
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 const jwt = require("jsonwebtoken");
 // Function to create Tokens
@@ -101,10 +103,11 @@ router.post('/forgot-password', (req, res) => __awaiter(void 0, void 0, void 0, 
     user.resetPasswordToken = token;
     user.resetPasswordExpires = new Date(Date.now() + 300); // Expires 5 minutes from now
     yield user.save();
+    // const resetUrl = `http://localhost:3000/login/Reset-password/?token=${token}`; 
     const resetUrl = `http://localhost:3000/Reset-password/?token=${token}`;
     const message = `You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link, or paste this into your browser to complete the process: ${resetUrl}`;
     try {
-        yield (0, emailRoutes_1.sendMail)(user.contactInfo.email, "Password Change Request", message, "");
+        yield sendMail("", "Password Change Request", message, "");
         res.status(200).json({ message: "Email sent" });
     }
     catch (error) {
@@ -135,7 +138,7 @@ router.post('/reset-password', (req, res) => __awaiter(void 0, void 0, void 0, f
     yield user.save();
     // Send confirmation email
     const htmlContent = `<p>Your password has been successfully reset. If you did not perform this action, please contact our support team immediately.</p>`;
-    yield (0, emailRoutes_1.sendMail)(user.contactInfo.email, "Password Reset Successful", "", htmlContent);
+    yield sendMail(user.contactInfo.email, "Password Reset Successful", "", htmlContent);
     res.status(200).json({ message: "Password has been updated." });
 }));
 module.exports = router;
