@@ -110,4 +110,4 @@ router.post('/reset-confirmation', adminRateLimit, (req, res) => __awaiter(void 
         res.status(500).json({ message: "Failed to send confirmation email." });
     }
 }));
-exports.default = router;
+module.exports = router;

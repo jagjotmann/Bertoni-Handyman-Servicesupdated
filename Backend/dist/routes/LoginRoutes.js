@@ -101,10 +101,10 @@ router.post('/forgot-password', (req, res) => __awaiter(void 0, void 0, void 0, 
     user.resetPasswordToken = token;
     user.resetPasswordExpires = new Date(Date.now() + 300); // Expires 5 minutes from now
     yield user.save();
-    const resetUrl = `http://<your_frontend_reset_password_page>/?token=${token}`;
+    const resetUrl = `http://localhost:3000/Reset-password/?token=${token}`;
     const message = `You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link, or paste this into your browser to complete the process: ${resetUrl}`;
     try {
-        yield (0, emailRoutes_1.sendMail)(user.contactInfo.email, "Your Subject Here", message, "");
+        yield (0, emailRoutes_1.sendMail)(user.contactInfo.email, "Password Change Request", message, "");
         res.status(200).json({ message: "Email sent" });
     }
     catch (error) {

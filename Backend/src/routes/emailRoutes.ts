@@ -116,5 +116,5 @@ router.post('/reset-confirmation', adminRateLimit, async (req: Request, res: Res
 });
 
 
-export default router;
+module.exports = router;
 
