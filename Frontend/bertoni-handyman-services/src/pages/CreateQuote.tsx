@@ -346,10 +346,16 @@ const CreateQuote: React.FC = () => {
           name: quote?.data?.contactPerson?.name ?? '',
           email: quote?.data?.contactPerson?.email ?? '',
           address: quote?.data?.project?.address?.streetAddress ?? '',
-          preferredEndDate: quote?.data?.preferredEndDate || "Not specified",
+          preferredEndDate: quote?.data?.preferredEndDate,// || "Not specified",
           images: quote?.data?.images ?? [],
           htmlContent: quote.data.htmlContent?.toString() ?? "Failed to get htmlContent",
         });
+
+        const mappedMaterials = quote.data.items?.map(material => [material.name, material.unitPrice]) as MaterialTuple[];
+        setItemList(mappedMaterials || []);
+  
+        const mappedLabor = quote.data.labor?.map(labor => [labor.hourlyRate, labor.numHours]) as LaborTuple[];
+        setLaborList(mappedLabor || []);
 
       } catch (error) {
         console.error("Error fetching quote:", error);
@@ -464,7 +470,6 @@ const CreateQuote: React.FC = () => {
           <button
             className="bg-green-500 hover:bg-green-700 text-center text-white font-bold px-4 rounded-full pr-4"
             type="submit"
-            //submit to DB
           >
             Save
           </button>
@@ -580,7 +585,7 @@ const CreateQuote: React.FC = () => {
                       <input
                         id="prefDate"
                         type="date"
-                        value={formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : ''}
+                        value={formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : 'Not specified'} //preferredEndDate can either be a date object or the string "Not specified" here
                         onChange={(e) =>
                           setFormData({
                             ...formData,
@@ -594,7 +599,7 @@ const CreateQuote: React.FC = () => {
                   ) : (
                     <div>
                       <p className="text-gray-400">Preferred End Date:</p>
-                      <p>{formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : ''}</p>
+                      <p>{formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : 'Not Specified'}</p>
                     </div>
                   )}
                 </div>
