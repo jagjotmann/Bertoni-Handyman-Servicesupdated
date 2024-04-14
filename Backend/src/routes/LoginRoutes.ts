@@ -4,7 +4,9 @@ import express from "express";
 import User from "../models/userModel";
 import crypto from 'crypto';
 // import { sendMail } from './emailRoutes';
-const sendMail = require('./emailRoutes').sendMail;
+const { sendMail } = require('./emailRoutes');
+
+// const sendMail = require('./emailRoutes').sendMail;
 console.log(sendMail);
 
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
@@ -116,9 +118,9 @@ router.post('/forgot-password', async (req, res) => {
   const message = `You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link, or paste this into your browser to complete the process: ${resetUrl}`;
 
   try {
-    // await sendMail(user.contactInfo.email, "Password Change Request", message, ""); 
+    await sendMail(user.contactInfo.email, "Password Change Request", message, ""); 
 
-    await sendMail("", "Password Change Request", message, ""); 
+    // await sendMail("", "Password Change Request", message, ""); 
     res.status(200).json({ message: "Email sent" });
   } catch (error) {
     console.log(error);

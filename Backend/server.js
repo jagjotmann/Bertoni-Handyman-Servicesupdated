@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const userRoutes = require("./dist/routes/userRoutes.js");
 const quoteRoutes = require("./dist/routes/quoteRoutes.js");
 const testimonialRoutes = require("./dist/routes/testimonialRoutes.js");
-const emailRoutes = require("./dist/routes/emailRoutes.js");
+const emailRoutes = require("./dist/routes/emailRoutes.js").router;
 const LoginRoutes = require("./dist/routes/LoginRoutes.js");
 const schedulingRoutes = require("./dist/routes/schedulingRoutes.js");
 // const rateLimitMiddleware = require("./dist/middlewares/ratelimit.js");
@@ -24,7 +24,11 @@ app.use("/users", userRoutes);
 app.use("/quotes", quoteRoutes);
 app.use("/testimonials", testimonialRoutes);
 app.use("/login", LoginRoutes);
+app.use(express.json({ limit: "50mb" })); // Add this line before emailRoutes
 app.use("/email", emailRoutes);
+
+console.log(LoginRoutes); // 
+
 app.use("/scheduling", schedulingRoutes);
 
 // Set MongoDB URI based on the environment

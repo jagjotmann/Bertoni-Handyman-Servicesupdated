@@ -50,7 +50,7 @@ function sendMail(userEmail, subject, message, html) {
     });
 }
 exports.sendMail = sendMail;
-module.exports.sendMail = sendMail;
+// module.exports.sendMail = sendMail;
 // Replace the existing POST route logic with a call to sendMail
 router.post("/", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { message, userEmail } = req.body;
@@ -110,4 +110,4 @@ router.post('/reset-confirmation', adminRateLimit, (req, res) => __awaiter(void 
         res.status(500).json({ message: "Failed to send confirmation email." });
     }
 }));
-module.exports = router;
+module.exports.sendMail = sendMail;

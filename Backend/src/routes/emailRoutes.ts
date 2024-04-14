@@ -39,7 +39,7 @@ export async function sendMail(userEmail: string, subject: string, message: stri
 }
 
 
-module.exports.sendMail = sendMail;
+// module.exports.sendMail = sendMail;
 
 // Replace the existing POST route logic with a call to sendMail
 router.post("/", adminRateLimit, async (req: Request, res: Response) => {
@@ -116,5 +116,5 @@ router.post('/reset-confirmation', adminRateLimit, async (req: Request, res: Res
 });
 
 
-module.exports = router;
+module.exports.sendMail = sendMail;
 
