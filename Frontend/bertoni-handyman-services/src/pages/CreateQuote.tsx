@@ -1,10 +1,10 @@
 import React from "react";
 import { useState, useEffect, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from 'axios';
-import QuotePreviewModal from '../components/UI/QuotePreviewModal';
+import axios from "axios";
+import QuotePreviewModal from "../components/UI/QuotePreviewModal";
 import QuotePreview from "../components/QuotePreview";
-import {Quote} from '../../../../Backend/src/models/quoteModel'
+import { Quote } from "../../../../Backend/src/models/quoteModel";
 
 //name of material and cost
 type MaterialTuple = [string, number];
@@ -280,77 +280,77 @@ const CreateQuote: React.FC = () => {
   //variables
   //const [client, setClient] = useState(dummyClient);
   const [quote, setQuote] = useState<Quote | null>(null); //"" allows a loading state for transparency of data loading
-  const [editable, setEditable] = useState(quoteId=="new"); //allows default editing state when routed with no quote
+  const [editable, setEditable] = useState(quoteId == "new"); //allows default editing state when routed with no quote
   const navigate = useNavigate();
   const [isPreviewOpen, setPreviewOpen] = useState(false);
   const [loading, setLoading] = useState(false); //can be attached to for adding loading Text to modal?
-  const [quoteHTML, setQuoteHTML] = useState('');
+  const [quoteHTML, setQuoteHTML] = useState("");
 
   const [itemList, setItemList] = useState<MaterialTuple[]>([]);
   const [laborList, setLaborList] = useState<LaborTuple[]>([]);
   const [finalTotalCost, setFinalTotalCost] = useState(0);
   const [formData, setFormData] = useState<{
-  id: string;
-  phone: string;
-  description: string;
-  name: string;
-  email: string;
-  address: string;
-  images: string[]; // Ensure this is typed as an array of strings
-  preferredEndDate: Date; // Can be string or Date, adjust based on your needs
-  htmlContent: string;
-}>({
-  id: "",
-  phone: "",
-  description: "",
-  name: "",
-  email: "",
-  address: "",
-  images: [],
-  preferredEndDate: new Date(), // Initialize as Date 
-  htmlContent: "",
-});
-
+    id: string;
+    phone: string;
+    description: string;
+    name: string;
+    email: string;
+    address: string;
+    images: string[]; // Ensure this is typed as an array of strings
+    preferredEndDate: Date; // Can be string or Date, adjust based on your needs
+    htmlContent: string;
+  }>({
+    id: "",
+    phone: "",
+    description: "",
+    name: "",
+    email: "",
+    address: "",
+    images: [],
+    preferredEndDate: new Date(), // Initialize as Date
+    htmlContent: "",
+  });
 
   const handlePreview = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/quotes/${quoteId}`);
-      
+      const response = await fetch(`http://localhost:3000/quotes/${quoteId}`);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const quote = await response.json();
       setQuoteHTML(quote.htmlContent);
       setPreviewOpen(true);
     } catch (error) {
-      console.error('Failed to fetch quote', error);
+      console.error("Failed to fetch quote", error);
       // TODO: ADD ERROR HANDLING HERE
     } finally {
       setLoading(false);
-
     }
   };
 
   useEffect(() => {
     const fetchQuote = async () => {
       try {
-        const quote = await axios.get<Quote>(`/quotes/${quoteId}`);
+        const quote = await axios.get<Quote>(
+          `http://localhost:3000/quotes/${quoteId}`
+        );
         setQuote(quote.data);
         console.log("QUOTE DATA: ", quote.data);
         setFormData({
           id: String(quoteId),
-          phone: quote?.data?.contactPerson?.phone ?? '',
-          description: quote?.data?.notes ?? '',
-          name: quote?.data?.contactPerson?.name ?? '',
-          email: quote?.data?.contactPerson?.email ?? '',
-          address: quote?.data?.project?.address?.streetAddress ?? '',
+          phone: quote?.data?.contactPerson?.phone ?? "",
+          description: quote?.data?.notes ?? "",
+          name: quote?.data?.contactPerson?.name ?? "",
+          email: quote?.data?.contactPerson?.email ?? "",
+          address: quote?.data?.project?.address?.streetAddress ?? "",
           preferredEndDate: quote?.data?.preferredEndDate || "Not specified",
           images: quote?.data?.images ?? [],
-          htmlContent: quote.data.htmlContent?.toString() ?? "Failed to get htmlContent",
+          htmlContent:
+            quote.data.htmlContent?.toString() ?? "Failed to get htmlContent",
         });
-
       } catch (error) {
         console.error("Error fetching quote:", error);
       }
@@ -366,9 +366,9 @@ const CreateQuote: React.FC = () => {
     console.log("handleSubmit function called"); // Debugging
     try {
       if (quoteId != "new") {
-        await axios.put(`/quote/${quoteId}`, formData);
+        await axios.put(`http://localhost:3000/quote/${quoteId}`, formData);
       } else {
-        await axios.post(`/quote/create`, formData);
+        await axios.post(`http://localhost:3000/quote/create`, formData);
       }
       // redirect to CreateQuote @ quoteId
     } catch (error) {
@@ -436,227 +436,241 @@ const CreateQuote: React.FC = () => {
   return (
     <div className="bg-gray-100 pt-4">
       <form onSubmit={handleSubmit}>
-      <div className="flex justify-between items-center bg-white p-4">
-        <div className="flex justify-start items-center">
-          <h1 className="text-3xl font-bold pr-2">Create a Quote</h1>
-          <p className="bg-blue-500 text-xs text-white font-bold py-1 px-2 rounded-full">
-            ID: {formData.id}
-          </p>
-        </div>
-        <div className="flex justify-end">
-          <button
-            className="bg-white text-black border border-black hover:bg-red-500 font-bold px-4 rounded-full mr-4"
-            type="button"
-            //Route back to client profile
-          >
-            Cancel
-          </button>
-          <div className="px-2 border mr-4 rounded-full">
-            {quote && (
-            <QuotePreviewModal
-              quote={quote}
-              isOpen={isPreviewOpen}
-              onRequestClose={() => setPreviewOpen(false)}
-            >
-            </QuotePreviewModal>
-            )}
+        <div className="flex justify-between items-center bg-white p-4">
+          <div className="flex justify-start items-center">
+            <h1 className="text-3xl font-bold pr-2">Create a Quote</h1>
+            <p className="bg-blue-500 text-xs text-white font-bold py-1 px-2 rounded-full">
+              ID: {formData.id}
+            </p>
           </div>
-          <button
-            className="bg-green-500 hover:bg-green-700 text-center text-white font-bold px-4 rounded-full pr-4"
-            type="submit"
-            //submit to DB
-          >
-            Save
-          </button>
-        </div>
-        <div className="pt-4">
-          <div className="pb-4 px-4">
-            {/* Big box on page*/}
-            <div className="bg-gray-700 w-full h-[40px]">
-              <button
-                className="text-gray-300 hover:text-gray-500 rounded-t-2xl text-left py-2 px-2 transition ease-in-out click:bg-gray-900"
-                onClick={() => navigate("/admin")} //Change to client link
-              >
-                &lt; Back to Admin Dashboard
-              </button>
+          <div className="flex justify-end">
+            <button
+              className="bg-white text-black border border-black hover:bg-red-500 font-bold px-4 rounded-full mr-4"
+              type="button"
+              //Route back to client profile
+            >
+              Cancel
+            </button>
+            <div className="px-2 border mr-4 rounded-full">
+              {quote && (
+                <QuotePreviewModal
+                  quote={quote}
+                  isOpen={isPreviewOpen}
+                  onRequestClose={() => setPreviewOpen(false)}
+                ></QuotePreviewModal>
+              )}
             </div>
-
-            <div className="bg-white px-8 flex flex-col shadow-xl rounded-b-2xl">
-              {/*White portion of box below client profile link*/}
-              <div>
-                <label
-                  className=" block text-grey-darker text-lg font-bold py-4"
-                  htmlFor="client-info"
+            <button
+              className="bg-green-500 hover:bg-green-700 text-center text-white font-bold px-4 rounded-full pr-4"
+              type="submit"
+              //submit to DB
+            >
+              Save
+            </button>
+          </div>
+          <div className="pt-4">
+            <div className="pb-4 px-4">
+              {/* Big box on page*/}
+              <div className="bg-gray-700 w-full h-[40px]">
+                <button
+                  className="text-gray-300 hover:text-gray-500 rounded-t-2xl text-left py-2 px-2 transition ease-in-out click:bg-gray-900"
+                  onClick={() => navigate("/admin")} //Change to client link
                 >
-                  Client Info
-                </label>
-                <div className="flex flex-row justify-between py-2 font-bold">
-                  {/*Horizontal flexbox for name, phone address*/}
-                  <div>
-                    {editable ? (
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
-                        className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
-                        placeholder="Email"
-                      />
-                    ) : (
-                      <div>
-                        <p className="text-gray-400">Email:</p>
-                        <a
-                          href={`mailto:${formData.email}`}
-                          className="text-blue-500 hover:text-blue-300"
-                        ></a>
-                        {formData.email}
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    {editable ? (
-                      <input
-                        type="phone"
-                        value={formData.phone}
-                        onChange={(e) =>
-                          setFormData({ ...formData, phone: e.target.value })
-                        }
-                        className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
-                        placeholder="Phone Number"
-                      />
-                    ) : (
-                      <div>
-                        <p className="text-gray-400">Phone:</p>
-                        <p>{formData.phone}</p>
-                      </div>
-                    )}
-                  </div>
-                  <div>
-                    {editable ? (
-                      <input
-                        type="address"
-                        value={formData.address}
-                        onChange={(e) =>
-                          setFormData({ ...formData, address: e.target.value })
-                        }
-                        className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
-                        placeholder="Address"
-                      />
-                    ) : (
-                      <div>
-                        <p className="text-gray-400">Address:</p>
-                        <p>{formData.address}</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                  &lt; Back to Admin Dashboard
+                </button>
+              </div>
+
+              <div className="bg-white px-8 flex flex-col shadow-xl rounded-b-2xl">
+                {/*White portion of box below client profile link*/}
                 <div>
-                  {editable ? (
-                    <textarea
-                      value={formData.description}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          description: e.target.value,
-                        })
-                      }
-                      className="px-2 py-1 min-w-full min-h-8 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
-                      placeholder="Descripton"
-                    />
-                  ) : (
+                  <label
+                    className=" block text-grey-darker text-lg font-bold py-4"
+                    htmlFor="client-info"
+                  >
+                    Client Info
+                  </label>
+                  <div className="flex flex-row justify-between py-2 font-bold">
+                    {/*Horizontal flexbox for name, phone address*/}
                     <div>
-                      <p className="text-gray-400">Job Description:</p>
-                      <p>{formData.description}</p>
+                      {editable ? (
+                        <input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) =>
+                            setFormData({ ...formData, email: e.target.value })
+                          }
+                          className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                          placeholder="Email"
+                        />
+                      ) : (
+                        <div>
+                          <p className="text-gray-400">Email:</p>
+                          <a
+                            href={`mailto:${formData.email}`}
+                            className="text-blue-500 hover:text-blue-300"
+                          ></a>
+                          {formData.email}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-                <div className="pb-2">
-                  {editable ? (
                     <div>
-                      <label className="text-gray-400" htmlFor="prefDate">
-                        Preferred End Date:{" "}
-                      </label>
-                      <input
-                        id="prefDate"
-                        type="date"
-                        value={formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : ''}
+                      {editable ? (
+                        <input
+                          type="phone"
+                          value={formData.phone}
+                          onChange={(e) =>
+                            setFormData({ ...formData, phone: e.target.value })
+                          }
+                          className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                          placeholder="Phone Number"
+                        />
+                      ) : (
+                        <div>
+                          <p className="text-gray-400">Phone:</p>
+                          <p>{formData.phone}</p>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      {editable ? (
+                        <input
+                          type="address"
+                          value={formData.address}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              address: e.target.value,
+                            })
+                          }
+                          className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                          placeholder="Address"
+                        />
+                      ) : (
+                        <div>
+                          <p className="text-gray-400">Address:</p>
+                          <p>{formData.address}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  <div>
+                    {editable ? (
+                      <textarea
+                        value={formData.description}
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            preferredEndDate: new Date(e.target.value) // Convert string to Date
+                            description: e.target.value,
                           })
                         }
-                        className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-gray-400 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
-                        placeholder="Preferred End Date"
+                        className="px-2 py-1 min-w-full min-h-8 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                        placeholder="Descripton"
                       />
-                    </div>
-                  ) : (
-                    <div>
-                      <p className="text-gray-400">Preferred End Date:</p>
-                      <p>{formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : ''}</p>
-                    </div>
-                  )}
+                    ) : (
+                      <div>
+                        <p className="text-gray-400">Job Description:</p>
+                        <p>{formData.description}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pb-2">
+                    {editable ? (
+                      <div>
+                        <label className="text-gray-400" htmlFor="prefDate">
+                          Preferred End Date:{" "}
+                        </label>
+                        <input
+                          id="prefDate"
+                          type="date"
+                          value={
+                            formData.preferredEndDate
+                              ? formData.preferredEndDate
+                                  .toISOString()
+                                  .split("T")[0]
+                              : ""
+                          }
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              preferredEndDate: new Date(e.target.value), // Convert string to Date
+                            })
+                          }
+                          className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-gray-400 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                          placeholder="Preferred End Date"
+                        />
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-gray-400">Preferred End Date:</p>
+                        <p>
+                          {formData.preferredEndDate
+                            ? formData.preferredEndDate
+                                .toISOString()
+                                .split("T")[0]
+                            : ""}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pb-2">
+                    <p className="text-gray-400">Images Provided:</p>
+                    {formData.images.map((image, index) => (
+                      <div>
+                        <h1>{`Image ${index + 1}: `}</h1>
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`Quote Image ${index + 1}`}
+                        />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="pb-2">
-                  <p className="text-gray-400">Images Provided:</p>
-                  {formData.images.map((image, index) => (
-                    <div>
-                      <h1>{`Image ${index + 1}: `}</h1>
-                      <img
-                        key={index}
-                        src={image}
-                        alt={`Quote Image ${index + 1}`}
-                      />
-                    </div>
-                  ))}
+                <div className="">
+                  {/*Materials through labor section*/}
+                  <div className="py-6 flex justify-start items-center border-t-2 border-gray-800">
+                    {/*Materials Section*/}
+                    <label
+                      className="text-grey-darker text-lg font-bold pb-2 pr-6"
+                      htmlFor="materials"
+                    >
+                      Materials
+                    </label>
+                    <button
+                      className="bg-black hover:bg-blue-700 text-sm text-white font-bold py-2 px-6"
+                      type="button"
+                      onClick={() => toggleModal("addItem")}
+                    >
+                      Add item
+                    </button>
+                  </div>
+                  <div className="pd-4">
+                    <Materials items={itemList} deleteItem={handleDeleteItem} />
+                  </div>
+                  <div className="pb-6 flex justify-start items-center pt-2">
+                    {/*Labor Section*/}
+                    <label
+                      className="block text-grey-darker text-lg font-bold pb-2 pr-6"
+                      htmlFor="labor"
+                    >
+                      Labor
+                    </label>
+                    <button
+                      className="bg-black hover:bg-blue-700 text-sm text-white font-bold py-2 px-4"
+                      type="button"
+                      onClick={() => toggleModal("assignJob")}
+                    >
+                      Assign Job
+                    </button>
+                  </div>
+                  <Labor labor={laborList} deleteLabor={handleDeleteLabor} />
                 </div>
+                <span className="font-semibold text-4xl text-right pb-4">
+                  Total: ${finalTotalCost}
+                </span>
               </div>
-              <div className="">
-                {/*Materials through labor section*/}
-                <div className="py-6 flex justify-start items-center border-t-2 border-gray-800">
-                  {/*Materials Section*/}
-                  <label
-                    className="text-grey-darker text-lg font-bold pb-2 pr-6"
-                    htmlFor="materials"
-                  >
-                    Materials
-                  </label>
-                  <button
-                    className="bg-black hover:bg-blue-700 text-sm text-white font-bold py-2 px-6"
-                    type="button"
-                    onClick={() => toggleModal("addItem")}
-                  >
-                    Add item
-                  </button>
-                </div>
-                <div className="pd-4">
-                  <Materials items={itemList} deleteItem={handleDeleteItem} />
-                </div>
-                <div className="pb-6 flex justify-start items-center pt-2">
-                  {/*Labor Section*/}
-                  <label
-                    className="block text-grey-darker text-lg font-bold pb-2 pr-6"
-                    htmlFor="labor"
-                  >
-                    Labor
-                  </label>
-                  <button
-                    className="bg-black hover:bg-blue-700 text-sm text-white font-bold py-2 px-4"
-                    type="button"
-                    onClick={() => toggleModal("assignJob")}
-                  >
-                    Assign Job
-                  </button>
-                </div>
-                <Labor labor={laborList} deleteLabor={handleDeleteLabor} />
-              </div>
-              <span className="font-semibold text-4xl text-right pb-4">
-                Total: ${finalTotalCost}
-              </span>
             </div>
           </div>
-        </div>
         </div>
       </form>
       {modalType === "addItem" && (

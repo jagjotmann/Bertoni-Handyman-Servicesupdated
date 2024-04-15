@@ -8,7 +8,7 @@ import type { Quote } from "../pages/QuoteRequests";
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const navigateToQuoteRequests = (filterStatus: string) => {
-    navigate("/quote-requests", { state: { filterStatus } });
+    navigate("/admin/quote-requests", { state: { filterStatus } });
   };
 
   const [pendingQuotes, setPendingQuotes] = useState<Quote[]>([]);
@@ -19,7 +19,9 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("quotes/byStatus?status=Pending");
+        const response = await fetch(
+          "http://localhost:3000/quotes/byStatus?status=Pending"
+        );
         const data: Quote[] = await response.json();
 
         const now = new Date();

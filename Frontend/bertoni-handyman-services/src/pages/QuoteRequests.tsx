@@ -55,7 +55,7 @@ function QuoteRequests() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("quotes/all");
+        const response = await fetch("http://localhost:3000/quotes/all");
         const data = await response.json();
         setAllQuotes(data);
         const filteredData = filterStatus
@@ -107,7 +107,9 @@ function QuoteRequests() {
 
   const handleDeleteQuote = async (quoteId: string) => {
     try {
-      await fetch(`quotes/${quoteId}`, { method: "DELETE" });
+      await fetch(`http://localhost:3000/quotes/${quoteId}`, {
+        method: "DELETE",
+      });
       const updatedQuotes = allQuotes.filter((quote) => quote._id !== quoteId);
       setFilteredQuotes(updatedQuotes);
       const updatedAllQuotes = allQuotes.filter(

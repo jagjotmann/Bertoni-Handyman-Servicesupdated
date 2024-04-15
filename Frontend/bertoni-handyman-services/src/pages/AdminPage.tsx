@@ -1,8 +1,14 @@
 // AdminPage.tsx
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import QuoteRequests from "./QuoteRequests";
 import Management from "./Management";
+import {
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Disclosure } from "@headlessui/react";
@@ -24,14 +30,15 @@ function AdminPage() {
   const [selectedTab, setSelectedTab] = useState<string>("Dashboard");
 
   const navigate = useNavigate(); // Hook for navigation
+  const location = useLocation();
 
   // Function to handle logout
- const handleLogout = () => {
-  console.log("Removing token...");
-  localStorage.removeItem("token"); // Remove the token from local storage
-  console.log("Token removed");
-  navigate("/login"); // Redirect to login page.
-};
+  const handleLogout = () => {
+    console.log("Removing token...");
+    localStorage.removeItem("token"); // Remove the token from local storage
+    console.log("Token removed");
+    navigate("/login"); // Redirect to login page.
+  };
 
   // Function to set the selected tab
   const handleTabClick = (tabName: string) => {
@@ -42,31 +49,9 @@ function AdminPage() {
   const embedUrl =
     "https://calendar.google.com/calendar/embed?src=wizardsweb42%40gmail.com&ctz=America%2FLos_Angeles";
 
-  // Function to render content based on the selected tab
-  const renderContent = (): JSX.Element | null => {
-    if (selectedTab === "Dashboard") {
-      return <AdminDashboard />;
-    } else if (selectedTab === "Clients") {
-      navigate("/create-a-quote/new");
-      return null;
-    } else if (selectedTab === "Calendar") {
-      return (
-        <GoogleCalendar embedUrl={embedUrl} width="800px" height="600px" />
-      );
-    } else if (selectedTab === "Quote Requests") {
-      return <QuoteRequests />;
-    } else if (selectedTab === "Settings") {
-      return <h1>Settings</h1>;
-    } else if (selectedTab === "Management") {
-      return <Management />;
-    } else {
-      return null;
-    }
-  };
-
   // Function to determine the style of a tab based on its current selection status
   const getTabStyle = (tabName: string) => {
-    if (selectedTab === tabName) {
+    if (location.pathname === tabName) {
       return {
         container: "text-gray-500",
         icon: "text-gray-500",
@@ -203,134 +188,147 @@ function AdminPage() {
                   {/* Each `div` here represents a navigation item with an icon and label */}
 
                   {/* Dashboard navigation item/Tab */}
-                  <div
-                    className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
-                      getTabStyle("Dashboard").container
-                    }`}
-                    onClick={() => handleTabClick("Dashboard")}
-                  >
-                    <FaChartBar
-                      className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
-                        getTabStyle("Dashboard").icon
+
+                  <Link to="/admin/dashboard">
+                    <div
+                      className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
+                        getTabStyle("/admin/dashboard").container
                       }`}
-                    />
-                    <h3
-                      className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
-                        getTabStyle("Dashboard").text
-                      }`}
+                      onClick={() => handleTabClick("Dashboard")}
                     >
-                      Dashboard
-                    </h3>
-                  </div>
+                      <FaChartBar
+                        className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
+                          getTabStyle("/admin/dashboard").icon
+                        }`}
+                      />
+                      <h3
+                        className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
+                          getTabStyle("/admin/dashboard").text
+                        }`}
+                      >
+                        Dashboard
+                      </h3>
+                    </div>
+                  </Link>
 
                   {/* Clients navigation item/Tab */}
-                  <div
-                    className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
-                      getTabStyle("Clients").container
-                    }`}
-                    onClick={() => handleTabClick("Clients")}
-                  >
-                    <FaUserFriends
-                      className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
-                        getTabStyle("Clients").icon
+                  <Link to="/admin/create-quote">
+                    <div
+                      className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
+                        getTabStyle("/admin/create-quote").container
                       }`}
-                    />
-                    <h3
-                      className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
-                        getTabStyle("Clients").text
-                      }`}
+                      onClick={() => handleTabClick("Clients")}
                     >
-                      Create A Quote
-                    </h3>
-                  </div>
+                      <FaUserFriends
+                        className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
+                          getTabStyle("/admin/create-quote").icon
+                        }`}
+                      />
+                      <h3
+                        className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
+                          getTabStyle("/admin/create-quote").text
+                        }`}
+                      >
+                        Create A Quote
+                      </h3>
+                    </div>
+                  </Link>
 
                   {/* Calendar navigation item/Tab */}
-                  <div
-                    className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
-                      getTabStyle("Calendar").container
-                    }`}
-                    onClick={() => handleTabClick("Calendar")}
-                  >
-                    <FaRegCalendar
-                      className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
-                        getTabStyle("Calendar").icon
+                  <Link to="calendar">
+                    <div
+                      className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
+                        getTabStyle("/admin/calendar").container
                       }`}
-                    />
-                    <h3
-                      className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
-                        getTabStyle("Calendar").text
-                      }`}
+                      onClick={() => handleTabClick("Calendar")}
                     >
-                      Calendar
-                    </h3>
-                  </div>
+                      <FaRegCalendar
+                        className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
+                          getTabStyle("/admin/calendar").icon
+                        }`}
+                      />
+                      <h3
+                        className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
+                          getTabStyle("/admin/calendar").text
+                        }`}
+                      >
+                        Calendar
+                      </h3>
+                    </div>
+                  </Link>
 
                   {/* Quote Requests navigation item/Tab */}
-                  <div
-                    className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
-                      getTabStyle("Quote Requests").container
-                    }`}
-                    onClick={() => handleTabClick("Quote Requests")}
-                  >
-                    <FaEnvelope
-                      className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
-                        getTabStyle("Quote Requests").icon
+                  <Link to="quote-requests">
+                    <div
+                      className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
+                        getTabStyle("/admin/quote-requests").container
                       }`}
-                    />
-                    <h3
-                      className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
-                        getTabStyle("Quote Requests").text
-                      }`}
+                      onClick={() => handleTabClick("Quote Requests")}
                     >
-                      Quote Requests
-                    </h3>
-                  </div>
+                      <FaEnvelope
+                        className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
+                          getTabStyle("/admin/quote-requests").icon
+                        }`}
+                      />
+                      <h3
+                        className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
+                          getTabStyle("/admin/quote-requests").text
+                        }`}
+                      >
+                        Quote Requests
+                      </h3>
+                    </div>
+                  </Link>
                 </section>
               </div>
 
               {/* Bottom section of the sidebar */}
               <section className="border-gray-100 pb-4">
                 {/* Settings navigation item/Tab */}
-                <div
-                  className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
-                    getTabStyle("Settings").container
-                  }`}
-                  onClick={() => handleTabClick("Settings")}
-                >
-                  <FaCog
-                    className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
-                      getTabStyle("Settings").icon
+                <Link to="settings">
+                  <div
+                    className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
+                      getTabStyle("/admin/settings").container
                     }`}
-                  />
-                  <h3
-                    className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
-                      getTabStyle("Settings").text
-                    }`}
+                    onClick={() => handleTabClick("Settings")}
                   >
-                    Settings
-                  </h3>
-                </div>
+                    <FaCog
+                      className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
+                        getTabStyle("/admin/settings").icon
+                      }`}
+                    />
+                    <h3
+                      className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
+                        getTabStyle("/admin/settings").text
+                      }`}
+                    >
+                      Settings
+                    </h3>
+                  </div>
+                </Link>
 
                 {/* Management navigation item/Tab */}
-                <div
-                  className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
-                    getTabStyle("Management").container
-                  }`}
-                  onClick={() => handleTabClick("Management")}
-                >
-                  <FaBuilding
-                    className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
-                      getTabStyle("Management").icon
+                <Link to="management">
+                  <div
+                    className={`group m-auto mb-2 flex cursor-pointer items-center justify-start gap-4 rounded-md p-2 ${
+                      getTabStyle("/admin/management").container
                     }`}
-                  />
-                  <h3
-                    className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
-                      getTabStyle("Management").text
-                    }`}
+                    onClick={() => handleTabClick("Management")}
                   >
-                    Management
-                  </h3>
-                </div>
+                    <FaBuilding
+                      className={`text-2xl text-gray-100 group-hover:text-gray-500 ${
+                        getTabStyle("/admin/management").icon
+                      }`}
+                    />
+                    <h3
+                      className={`text-base font-semibold text-gray-100 group-hover:text-gray-500 ${
+                        getTabStyle("/admin/management").text
+                      }`}
+                    >
+                      Management
+                    </h3>
+                  </div>
+                </Link>
               </section>
             </div>
           </div>
@@ -338,8 +336,23 @@ function AdminPage() {
       </aside>
       {/* Main content area */}
       <main className="w-full flex-1 overflow-x-hidden md:pl-60">
-        {/* Conditional rendering of components based on the selected tab */}
-        {renderContent()}
+        <Routes>
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="create-quote" element={<CreateQuote />} />
+          <Route
+            path="calendar"
+            element={
+              <GoogleCalendar
+                embedUrl={embedUrl}
+                width="800px"
+                height="600px"
+              />
+            }
+          />
+          <Route path="quote-requests" element={<QuoteRequests />} />
+          <Route path="settings" element={<h1>Settings</h1>} />
+          <Route path="management" element={<Management />} />
+        </Routes>
       </main>
     </div>
   );
