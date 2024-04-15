@@ -464,7 +464,7 @@ const CreateQuote: React.FC = () => {
   return (
     <div className="bg-gray-100 pt-4">
       <form onSubmit={handleSubmit}>
-        <div className="flex justify-between items-center bg-white p-4">
+        <div className="flex-col justify-between items-center bg-white p-4">
           <div className="flex justify-start items-center">
             <h1 className="text-3xl font-bold pr-2">Create a Quote</h1>
             <p className="bg-blue-500 text-xs text-white font-bold py-1 px-2 rounded-full">
