@@ -3,10 +3,13 @@ import PaddingSectionLayout from "../layouts/PaddingSectionLayout";
 
 // const validQuote = "65d801f3452ad8fd60537222";
 const validQuote = "65da41d696f6a43eb6bd56c5";
+let url = "/?id=" + validQuote;
 
 const ScheduleAppointment = () => {
-  const [completed, setCompleted] = useState(false);
+  const queryParameters = new URLSearchParams(window.location.search);
+  const quoteFromParam = queryParameters.get("id") || "";
 
+  const [completed, setCompleted] = useState(false);
   const [summary, setSummary] = useState("");
   const [description, setDescription] = useState("");
 
@@ -59,7 +62,7 @@ const ScheduleAppointment = () => {
     return quote.length > 5;
   }
 
-  const [quoteID, setQuoteID] = useState("");
+  const [quoteID, setQuoteID] = useState(quoteFromParam);
   const [quoteVerfied, setQuoteVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [failedSearch, setFailedSearch] = useState(false);
@@ -100,6 +103,14 @@ const ScheduleAppointment = () => {
 
       if (data.scheduled == true) {
         setErrorText("This quote has already been scheduled.");
+        return;
+      }
+
+      //quote statuses can be:
+      // ["Pending", "Accepted", "Declined", "Completed"]
+      //only allow sheduling if quote is in accepted state
+      if (data.quoteStatus != "Accepted") {
+        setErrorText("This quote has not been accepted yet.");
         return;
       }
 

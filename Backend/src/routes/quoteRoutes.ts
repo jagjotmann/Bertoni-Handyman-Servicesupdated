@@ -5,7 +5,6 @@ import { Request, Response } from "express";
 import mongoose, { FilterQuery } from "mongoose";
 const { sendMail } = require("./emailRoutes");
 
-
 const rateLimit = require("../../dist/middlewares/ratelimit.js");
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 //Route to create a new quote
@@ -25,11 +24,11 @@ router.post("/create", rateLimit, async (req: Request, res: Response) => {
 });
 
 //Route to get all quotes
-router.get("/all", adminRateLimit,  async (req: Request, res: Response) => {
+router.get("/all", adminRateLimit, async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string) || 0;
   const limit = parseInt(req.query.limit as string) || 0;
   const skip = (page - 1) * limit;
-  
+
   try {
     let query = Quote.find().sort({ quoteDate: -1 });
     let quotes;
@@ -71,26 +70,29 @@ router.get("/byStatus", async (req: Request, res: Response) => {
 });
 
 //Route to get all quotes with search/status filter
-router.get("/allWithFilter", adminRateLimit, async (req: Request, res: Response) => {
-  const { search, status } = req.query;
-  let queryConditions: FilterQuery<typeof Quote> = {};
-  if (search) {
-    queryConditions["$or"] = [
-      { clientName: new RegExp(search as string, "i") },
-      { quoteNumber: new RegExp(search as string, "i") },
-    ];
-    if (status) {
-      queryConditions["status"] = status;
+router.get(
+  "/allWithFilter",
+  adminRateLimit,
+  async (req: Request, res: Response) => {
+    const { search, status } = req.query;
+    let queryConditions: FilterQuery<typeof Quote> = {};
+    if (search) {
+      queryConditions["$or"] = [
+        { clientName: new RegExp(search as string, "i") },
+        { quoteNumber: new RegExp(search as string, "i") },
+      ];
+      if (status) {
+        queryConditions["status"] = status;
+      }
+    }
+    try {
+      const quotes = await Quote.find(queryConditions).exec(); // Ensuring proper execution with exec()
+      res.status(200).json(quotes);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   }
-  try {
-    const quotes = await Quote.find(queryConditions).exec(); // Ensuring proper execution with exec()
-    res.status(200).json(quotes);
-  } catch (error: any) {
-    res.status(500).json({ error: error.message });
-  }
-}); // Ensure this closes the router.get call properly.
-
+); // Ensure this closes the router.get call properly.
 
 // Route to get a specific quote by ID
 router.get("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
@@ -149,7 +151,10 @@ router.put("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
     let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
     // Example: Check if the status changed
 
-    if ((originalQuote.quoteStatus?.toString() ?? '') !== (updatedQuote.quoteStatus?.toString() ?? '')) {
+    if (
+      (originalQuote.quoteStatus?.toString() ?? "") !==
+      (updatedQuote.quoteStatus?.toString() ?? "")
+    ) {
       emailMessage += `Status changed from ${originalQuote.quoteStatus} to ${updatedQuote.quoteStatus}.\n`;
     }
     // Add more fields as needed
