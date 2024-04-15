@@ -16,6 +16,11 @@ const axios_1 = __importDefault(require("axios"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const express_1 = __importDefault(require("express"));
 const userModel_1 = __importDefault(require("../models/userModel"));
+const crypto_1 = __importDefault(require("crypto"));
+// import { sendMail } from './emailRoutes';
+const { sendMail } = require('./emailRoutes');
+// const sendMail = require('./emailRoutes').sendMail;
+// console.log(sendMail);
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 const jwt = require("jsonwebtoken");
 // Function to create Tokens
@@ -89,31 +94,54 @@ router.post("/", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0,
 }));
 // ===========================================================================//
 // Route to handle password change requests
-router.post("/changePassword", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, oldPassword, newPassword } = req.body;
+router.post('/forgot-password', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    const user = yield userModel_1.default.findOne({ "contactInfo.email": email });
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    const token = crypto_1.default.randomBytes(20).toString('hex'); // Generate a token
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = new Date(Date.now() + 3000); // Expires 5 minutes from now
+    yield user.save();
+    // const resetUrl = `http://localhost:3000/login/Reset-password/?token=${token}`; 
+    const resetUrl = `http://localhost:3000/Reset-password/?token=${token}`;
+    const message = `You are receiving this email because you (or someone else) have requested the reset of the password for your account. Please click on the following link, or paste this into your browser to complete the process: ${resetUrl}`;
     try {
-        // Find the user by email
-        const user = yield userModel_1.default.findOne({ "contactInfo.email": email });
-        if (!user) {
-            return res.status(404).json({ message: "User not found" });
-        }
-        // Verify if the old password is correct
-        const isMatch = yield bcrypt_1.default.compare(oldPassword, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: "Old password is incorrect" });
-        }
-        // Hash the new password before storing it
-        const saltRounds = 10;
-        const hashedNewPassword = yield bcrypt_1.default.hash(newPassword, saltRounds);
-        user.password = hashedNewPassword;
-        // Save the user's new password
-        yield user.save();
-        res.status(200).json({ message: "Password changed successfully" });
+        yield sendMail(user.contactInfo.email, "Password Change Request", message, "");
+        // await sendMail("", "Password Change Request", message, ""); 
+        res.status(200).json({ message: "Email sent" });
     }
     catch (error) {
-        // Handle any server errors
-        const errorMsg = error.message; // Type assertion for better error handling
-        res.status(500).json({ error: errorMsg });
+        console.log(error);
+        res.status(500).json({ message: "Email send failed" });
     }
+}));
+// ===========================================================================//
+// Route to handle password reset requests
+router.post('/reset-password', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token, newPassword } = req.body;
+    console.log("TOKEN: ", token);
+    const user = yield userModel_1.default.findOne({
+        resetPasswordToken: token,
+        // resetPasswordExpires: { $gt: Date.now() }
+    });
+    if (!user) {
+        return res.status(400).json({ message: "Password reset token is invalid or has expired." });
+    }
+    // validation for the new password:
+    if (newPassword.length < 8 || !newPassword.match(/[\d!@#$%^&*]/)) {
+        return res.status(400).json({ message: "Password does not meet complexity requirements." });
+    }
+    // Hash the new password
+    const hashedNewPassword = yield bcrypt_1.default.hash(newPassword, 10);
+    user.password = hashedNewPassword;
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
+    yield user.save();
+    // Send confirmation email
+    const htmlContent = `<p>Your password has been successfully reset. If you did not perform this action, please contact our support team immediately.</p>`;
+    yield sendMail(user.contactInfo.email, "Password Reset Successful", "", htmlContent);
+    res.status(200).json({ message: "Password has been updated." });
 }));
 module.exports = router;
