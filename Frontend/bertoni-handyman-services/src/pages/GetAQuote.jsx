@@ -78,15 +78,20 @@ const QuoteForm = () => {
       try {
         console.log("QR OBJECT: ", quoteRequestObject);
         const quoteResponse = await sendFormDataToServer(quoteRequestObject);
-        // if (quoteResponse?.data?.quote?._id) {
-        //   const newEmail = {
-        //     message: `Thank you for submitting a quote request. To check the status of your request, please visit the quote status page and enter your quote number: ${quoteResponse.data.quote._id}`,
-        //     userEmail: email,
-        //   };
-        //   const emailResponse = await axios.post(`email`, newEmail);
-        //   console.log(emailResponse);
-        // }
-
+        if (quoteResponse?.data?.quote?._id) {
+          const newEmail = {
+            message: `Thank you for submitting a quote request. To check the status of your request, please visit the quote status page and enter your quote number: ${quoteResponse.data.quote._id}`,
+            userEmail: email,
+          };
+          const emailResponse = await axios.post(`email`, newEmail);
+          const newAdminEmail = {
+            message: `You have received a new quote request, please check the dashboard`,
+            userEmail: 'webwizard122@gmail.com'
+          }
+          const adminEmailResponse = await axios.post(`email`, newAdminEmail);
+          console.log(emailResponse);
+        }
+        
         resetFormFields();
         setIsSubmitted(true);
       } catch (error) {
