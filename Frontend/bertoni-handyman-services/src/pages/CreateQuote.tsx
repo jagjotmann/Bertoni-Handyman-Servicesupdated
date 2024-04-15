@@ -348,7 +348,7 @@ const CreateQuote: React.FC = () => {
   const handlePreview = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/quotes/${quoteId}`);
+      const response = await fetch(`http://localhost:3000/quotes/${quoteId}`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -368,7 +368,9 @@ const CreateQuote: React.FC = () => {
   useEffect(() => {
     const fetchQuote = async () => {
       try {
-        const quote = await axios.get<Quote>(`/quotes/${quoteId}`);
+        const quote = await axios.get<Quote>(
+          `http://localhost:3000/quotes/${quoteId}`
+        );
         setQuote(quote.data);
         console.log("QUOTE DATA: ", quote.data);
         setFormData({
@@ -399,8 +401,8 @@ const CreateQuote: React.FC = () => {
     console.log("Submitting data:", formData);
     try {
       const response = quoteId !== "new" ?
-      await axios.put(`/quotes/${quoteId}`, formData) :
-      await axios.post(`/quotes/create`, formData);
+      await axios.put(`http://localhost:3000/quotes/${quoteId}`, formData) :
+      await axios.post(`http://localhost:3000/quotes/create`, formData);
 
       console.log("Response:", response.data)
       navigate(`/create-a-quote/${quoteId}`);

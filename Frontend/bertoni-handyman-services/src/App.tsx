@@ -2,7 +2,7 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import PageLayout from "./layouts/PageLayout";
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 import { NextUIProvider } from "@nextui-org/react";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -27,29 +27,34 @@ import ResetPassword from "./pages/ResetPassword";
 import NavbarWrapper from "./components/NavbarWrapper";
 import QuoteRequests from "./pages/QuoteRequests";
 import ScheduleAppointment from "./components/ScheduleAppointment";
-import { BrowserRouter as Router, Route, Routes, Navigate, Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+  Link,
+} from "react-router-dom";
 import PageNotFound from "./pages/PageNotFound";
 /*Root component*/
 
 function App() {
+  // Define a type for the props expected by ProtectedRoute
+  type ProtectedRouteProps = {
+    children: ReactNode;
+  };
 
-// Define a type for the props expected by ProtectedRoute
-type ProtectedRouteProps = {
-  children: ReactNode;
-};
+  const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+    // Check for token in localStorage
+    const token = localStorage.getItem("token");
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  // Check for token in localStorage
-  const token = localStorage.getItem('token');
-  
-  // If no token, redirect to login
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+    // If no token, redirect to login
+    if (!token) {
+      return <Navigate to="/login" replace />;
+    }
 
-  // If token exists, render the children components
-  return <>{children}</>;
-};
+    // If token exists, render the children components
+    return <>{children}</>;
+  };
 
   return (
     <NextUIProvider>
@@ -75,7 +80,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             />
             {/* <Route path="/admin" element={<AdminPage />} /> */}
             <Route
-              path="/admin"
+              path="/admin/*"
               element={
                 <ProtectedRoute>
                   <AdminPage />
@@ -83,14 +88,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
               }
             />
             <Route path="/quote-requests" element={<QuoteRequests />} />
-            <Route
-              path="/admin-client-profile"
-              element={<AdminClientProfile />}
-            />
-            <Route
-              path="/client-profile-Alternate-View"
-              element={<ClientProfileAlternateView />}
-            />
             <Route path="/create-a-quote/:quoteId" element={<CreateQuote />} />
             <Route path="/add-testimonial" element={<AddTestimonial />} />
             <Route path="*" element={<PageNotFound />} />
