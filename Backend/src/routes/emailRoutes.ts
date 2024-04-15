@@ -15,8 +15,10 @@ async function sendMail(userEmail: string, subject: string, message: string, htm
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.EMAIL_USERNAME, 
-      pass: process.env.EMAIL_PASSWORD, 
+      // user: process.env.EMAIL_USERNAME, 
+      user: "webwizard122@gmail.com",  
+      pass: "tnvk cpxs zewp tbvv"
+      // pass: process.env.EMAIL_PASSWORD, 
     },
   });
 
@@ -38,7 +40,7 @@ async function sendMail(userEmail: string, subject: string, message: string, htm
   }
 }
 
-module.exports = { sendMail }
+// module.exports = { sendMail }
 // module.exports.sendMail = sendMail;
 
 // Replace the existing POST route logic with a call to sendMail
@@ -115,6 +117,6 @@ router.post('/reset-confirmation', adminRateLimit, async (req: Request, res: Res
   }
 });
 
-
-module.exports = router;
+module.exports = { router, sendMail }
+// module.exports = router;
 
