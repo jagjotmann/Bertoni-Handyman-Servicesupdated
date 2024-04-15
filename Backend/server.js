@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const userRoutes = require("./dist/routes/userRoutes.js");
 const quoteRoutes = require("./dist/routes/quoteRoutes.js");
 const testimonialRoutes = require("./dist/routes/testimonialRoutes.js");
-const emailRoutes = require("./dist/routes/emailRoutes.js");
+const { router: emailRoutes } = require("./dist/routes/emailRoutes.js");
 const LoginRoutes = require("./dist/routes/LoginRoutes.js");
 const schedulingRoutes = require("./dist/routes/schedulingRoutes.js");
 // const rateLimitMiddleware = require("./dist/middlewares/ratelimit.js");
@@ -25,6 +25,8 @@ app.use("/quotes", quoteRoutes);
 app.use("/testimonials", testimonialRoutes);
 app.use("/login", LoginRoutes);
 app.use("/email", emailRoutes);
+
+
 app.use("/scheduling", schedulingRoutes);
 
 // Set MongoDB URI based on the environment
@@ -41,7 +43,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log("MongoDB Connected")) // Log on successful connection
-  .catch((err) => console.error("Error connectiong MongoDB: " + err)); // Log on connection error
+  .catch((err) => console.error("Error connecting MongoDB: " + err)); // Log on connection error
 
 app.get("/", (req, res) => {
   res.send("Hello, World!");

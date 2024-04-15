@@ -23,6 +23,7 @@ import QuoteForm from "./pages/CreateQuote";
 import AddTestimonial from "./pages/AddTestimonial";
 import QuoteStatus from "./pages/QuoteStatus";
 import ForgotPassword from "./pages/forgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NavbarWrapper from "./components/NavbarWrapper";
 import QuoteRequests from "./pages/QuoteRequests";
 import ScheduleAppointment from "./components/ScheduleAppointment";
@@ -72,6 +73,7 @@ function App() {
             <Route path="/quote-login/:quoteid" element={<QuoteLogin />} />
             <Route path="/create-account" element={<CreateAccount />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/Reset-Password" element={<ResetPassword />} />
             <Route
               path="/create-account-success"
               element={<CreateAccountSuccess />}
