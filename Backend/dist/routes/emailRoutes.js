@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendMail = void 0;
 const express_1 = __importDefault(require("express"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const userModel_1 = __importDefault(require("../models/userModel"));
@@ -49,7 +48,7 @@ function sendMail(userEmail, subject, message, html) {
         }
     });
 }
-exports.sendMail = sendMail;
+module.exports = { sendMail };
 // module.exports.sendMail = sendMail;
 // Replace the existing POST route logic with a call to sendMail
 router.post("/", adminRateLimit, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -110,4 +109,4 @@ router.post('/reset-confirmation', adminRateLimit, (req, res) => __awaiter(void 
         res.status(500).json({ message: "Failed to send confirmation email." });
     }
 }));
-module.exports.sendMail = sendMail;
+module.exports = router;

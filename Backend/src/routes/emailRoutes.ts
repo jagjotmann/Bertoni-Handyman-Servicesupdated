@@ -11,7 +11,7 @@ dotenv.config();
 const router = express.Router();
 
 // Define the sendMail function to accept dynamic parameters including HTML content
-export async function sendMail(userEmail: string, subject: string, message: string, html: string) {
+async function sendMail(userEmail: string, subject: string, message: string, html: string) {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -38,7 +38,7 @@ export async function sendMail(userEmail: string, subject: string, message: stri
   }
 }
 
-
+module.exports = { sendMail }
 // module.exports.sendMail = sendMail;
 
 // Replace the existing POST route logic with a call to sendMail
@@ -116,5 +116,5 @@ router.post('/reset-confirmation', adminRateLimit, async (req: Request, res: Res
 });
 
 
-module.exports.sendMail = sendMail;
+module.exports = router;
 

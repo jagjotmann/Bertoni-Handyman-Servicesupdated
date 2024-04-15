@@ -20,7 +20,7 @@ const crypto_1 = __importDefault(require("crypto"));
 // import { sendMail } from './emailRoutes';
 const { sendMail } = require('./emailRoutes');
 // const sendMail = require('./emailRoutes').sendMail;
-console.log(sendMail);
+// console.log(sendMail);
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
 const jwt = require("jsonwebtoken");
 // Function to create Tokens
