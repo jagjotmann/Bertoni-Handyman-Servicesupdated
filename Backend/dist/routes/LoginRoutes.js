@@ -102,7 +102,7 @@ router.post('/forgot-password', (req, res) => __awaiter(void 0, void 0, void 0, 
     }
     const token = crypto_1.default.randomBytes(20).toString('hex'); // Generate a token
     user.resetPasswordToken = token;
-    user.resetPasswordExpires = new Date(Date.now() + 300); // Expires 5 minutes from now
+    user.resetPasswordExpires = new Date(Date.now() + 3000); // Expires 5 minutes from now
     yield user.save();
     // const resetUrl = `http://localhost:3000/login/Reset-password/?token=${token}`; 
     const resetUrl = `http://localhost:3000/Reset-password/?token=${token}`;
@@ -121,9 +121,10 @@ router.post('/forgot-password', (req, res) => __awaiter(void 0, void 0, void 0, 
 // Route to handle password reset requests
 router.post('/reset-password', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { token, newPassword } = req.body;
+    console.log("TOKEN: ", token);
     const user = yield userModel_1.default.findOne({
         resetPasswordToken: token,
-        resetPasswordExpires: { $gt: Date.now() }
+        // resetPasswordExpires: { $gt: Date.now() }
     });
     if (!user) {
         return res.status(400).json({ message: "Password reset token is invalid or has expired." });

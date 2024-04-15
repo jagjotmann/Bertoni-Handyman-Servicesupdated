@@ -110,7 +110,7 @@ router.post('/forgot-password', async (req, res) => {
   }
   const token = crypto.randomBytes(20).toString('hex'); // Generate a token
   user.resetPasswordToken = token;
-  user.resetPasswordExpires = new Date(Date.now() + 300); // Expires 5 minutes from now
+  user.resetPasswordExpires = new Date(Date.now() + 3000); // Expires 5 minutes from now
   await user.save();
   
   // const resetUrl = `http://localhost:3000/login/Reset-password/?token=${token}`; 
@@ -133,9 +133,10 @@ router.post('/forgot-password', async (req, res) => {
 // Route to handle password reset requests
 router.post('/reset-password', async (req, res) => {
   const { token, newPassword } = req.body;
+  console.log("TOKEN: ", token);
   const user = await User.findOne({
     resetPasswordToken: token,
-    resetPasswordExpires: { $gt: Date.now() }
+    // resetPasswordExpires: { $gt: Date.now() }
   });
 
   if (!user) {

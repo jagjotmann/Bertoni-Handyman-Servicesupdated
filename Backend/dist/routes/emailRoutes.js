@@ -26,10 +26,8 @@ function sendMail(userEmail, subject, message, html) {
         const transporter = nodemailer_1.default.createTransport({
             service: "gmail",
             auth: {
-                // user: process.env.EMAIL_USERNAME, 
-                user: "webwizard122@gmail.com",
-                pass: "tnvk cpxs zewp tbvv"
-                // pass: process.env.EMAIL_PASSWORD, 
+                user: process.env.EMAIL_USERNAME,
+                pass: process.env.EMAIL_PASSWORD,
             },
         });
         const mailOptions = {
