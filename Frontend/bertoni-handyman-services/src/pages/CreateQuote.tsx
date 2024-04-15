@@ -1,30 +1,63 @@
 import React from "react";
 import { useState, useEffect, FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import axios from 'axios';
-import QuotePreviewModal from '../components/UI/QuotePreviewModal';
+import axios from "axios";
+import QuotePreviewModal from "../components/UI/QuotePreviewModal";
 import QuotePreview from "../components/QuotePreview";
-import {Quote} from '../../../../Backend/src/models/quoteModel'
+import { Quote } from "../../../../Backend/src/models/quoteModel";
 
-//name of material and cost
-type MaterialTuple = [string, number];
+interface Material {
+  name: string;
+  description?: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
 
-//hourly rate, and number of hours
-type LaborTuple = [number, number];
+interface Labor {
+  name: string;
+  description?: string;
+  numHours: number;
+  hourlyRate: number;
+  total: number;
+}
+
+interface QuoteFormData {
+  id: string;
+  phone: string;
+  description: string;
+  name: string;
+  email: string;
+  address: string;
+  images: string[];
+  preferredEndDate: Date;
+  htmlContent: string;
+  itemList: Material[];
+  laborList: Labor[];
+}
+interface MaterialProps {
+  items: Material[];
+  deleteItem: (indexToDelete: number) => void;
+}
+
+interface LaborProps {
+  labor: Labor[];
+  deleteLabor: (indexToDelete: number) => void;
+}
 
 //type for list of materials
 type MaterialList = {
-  items: MaterialTuple[];
+  items: Material[];
   deleteItem: (indexToDelete: number) => void;
 };
 
 type LaborList = {
-  labor: LaborTuple[];
+  labor: Labor[];
   deleteLabor: (indexToDelete: number) => void;
 };
 
 //this is the handler for conditional rendering for the materials table
-const Materials: React.FC<MaterialList> = ({ items, deleteItem }) => {
+const Materials: React.FC<MaterialProps> = ({ items, deleteItem }) => {
   if (items.length === 0) {
     return <div className="text-left text-gray-400">Add an item...</div>;
   }
@@ -47,8 +80,8 @@ const Materials: React.FC<MaterialList> = ({ items, deleteItem }) => {
         <tbody>
           {items.map((item, index) => (
             <tr key={index} className="border-b">
-              <td className="p-2 px-4 border-r-2">{item[0]}</td>
-              <td className="p-2 px-4 border-r-2">${item[1]}</td>
+              <td className="p-2 px-4 border-r-2">{item.name}</td>
+              <td className="p-2 px-4 border-r-2">${item.unitPrice}</td>
               <td className="p-2 px-4">
                 <button
                   type="button"
@@ -68,19 +101,24 @@ const Materials: React.FC<MaterialList> = ({ items, deleteItem }) => {
 
 //this is the modal when add Item is clicked
 const AddItemModal: React.FC<{
-  addItem: (item: MaterialTuple) => void;
+  addItem: (item: Material) => void;
   closeModal: () => void;
 }> = ({ addItem, closeModal }) => {
   const [itemName, setItemName] = useState("");
-  const [itemCost, setItemCost] = useState("");
+  const [itemDescription, setItemDescription] = useState("");
+  const [itemQuantity, setItemQuantity] = useState<number>(0);
+  const [itemUnitPrice, setItemUnitPrice] = useState<number>(0);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const costNumber = parseFloat(itemCost);
-    if (itemName && !isNaN(costNumber)) {
-      addItem([itemName, costNumber]);
-      closeModal();
-    }
+    addItem({
+      name: itemName,
+      description: itemDescription,
+      quantity: itemQuantity,
+      unitPrice: itemUnitPrice,
+      total: itemQuantity * itemUnitPrice
+    });
+    closeModal();
   };
 
   return (
@@ -106,8 +144,8 @@ const AddItemModal: React.FC<{
               <input
                 type="number"
                 id="itemCost"
-                value={itemCost}
-                onChange={(e) => setItemCost(e.target.value)}
+                value={itemUnitPrice}
+                onChange={(e) => setItemUnitPrice(e.target.valueAsNumber)}
                 required
                 className="border border-gray-800 rounded-md p-2 w-full"
                 placeholder="Cost"
@@ -136,7 +174,7 @@ const AddItemModal: React.FC<{
 };
 
 //this is the handler for conditional rendering for labor table
-const Labor: React.FC<LaborList> = ({ labor, deleteLabor }) => {
+const Labor: React.FC<LaborProps> = ({ labor, deleteLabor }) => {
   if (labor.length === 0) {
     return <div className="text-left text-gray-400">Add labor cost...</div>;
   }
@@ -160,9 +198,9 @@ const Labor: React.FC<LaborList> = ({ labor, deleteLabor }) => {
         <tbody>
           {labor.map((labor, index) => (
             <tr key={index} className="border-b">
-              <td className="p-2 px-4 border-r-2">${labor[0]}/hour</td>
-              <td className="p-2 px-4 border-r-2">{labor[1]}</td>
-              <td className="p-2 px-4 border-r-2">${labor[0] * labor[1]}</td>
+              <td className="p-2 px-4 border-r-2">${labor.hourlyRate}/hour</td>
+              <td className="p-2 px-4 border-r-2">{labor.numHours}</td>
+              <td className="p-2 px-4 border-r-2">${labor.hourlyRate * labor.numHours}</td>
               <td className="p-2 px-4">
                 <button
                   type="button"
@@ -182,18 +220,24 @@ const Labor: React.FC<LaborList> = ({ labor, deleteLabor }) => {
 
 //this is the modal for when assign job is clicked
 const AddLaborModal: React.FC<{
-  addLabor: (labor: LaborTuple) => void;
+  addLabor: (labor: Labor) => void;
   closeModal: () => void;
 }> = ({ addLabor, closeModal }) => {
-  const [hourlyRate, setHourlyRate] = useState<number>(0);
+  const [laborName, setLaborName] = useState("");
+  const [laborDescription, setLaborDescription] = useState("");
   const [numHours, setNumHours] = useState<number>(0);
+  const [hourlyRate, setHourlyRate] = useState<number>(0);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (hourlyRate > 0 && numHours > 0) {
-      addLabor([hourlyRate, numHours]);
-      closeModal();
-    }
+    addLabor({
+      name: laborName,
+      description: laborDescription,
+      numHours: numHours,
+      hourlyRate: hourlyRate,
+      total: numHours * hourlyRate
+    });
+    closeModal();
   };
 
   const handleHourlyRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -280,63 +324,53 @@ const CreateQuote: React.FC = () => {
   //variables
   //const [client, setClient] = useState(dummyClient);
   const [quote, setQuote] = useState<Quote | null>(null); //"" allows a loading state for transparency of data loading
-  const [editable, setEditable] = useState(quoteId=="new"); //allows default editing state when routed with no quote
+  const [editable, setEditable] = useState(quoteId == "new"); //allows default editing state when routed with no quote
   const navigate = useNavigate();
   const [isPreviewOpen, setPreviewOpen] = useState(false);
   const [loading, setLoading] = useState(false); //can be attached to for adding loading Text to modal?
-  const [quoteHTML, setQuoteHTML] = useState('');
+  const [quoteHTML, setQuoteHTML] = useState("");
 
-  const [itemList, setItemList] = useState<MaterialTuple[]>([]);
-  const [laborList, setLaborList] = useState<LaborTuple[]>([]);
   const [finalTotalCost, setFinalTotalCost] = useState(0);
-  const [formData, setFormData] = useState<{
-  id: string;
-  phone: string;
-  description: string;
-  name: string;
-  email: string;
-  address: string;
-  images: string[]; // Ensure this is typed as an array of strings
-  preferredEndDate: Date; // Can be string or Date, adjust based on your needs
-  htmlContent: string;
-}>({
-  id: "",
-  phone: "",
-  description: "",
-  name: "",
-  email: "",
-  address: "",
-  images: [],
-  preferredEndDate: new Date(), // Initialize as Date 
-  htmlContent: "",
-});
-
+  const [formData, setFormData] = useState<QuoteFormData>({
+    id: "",
+    phone: "",
+    description: "",
+    name: "",
+    email: "",
+    address: "",
+    images: [],
+    preferredEndDate: new Date(),
+    htmlContent: "",
+    itemList: [],
+    laborList: []
+  });
 
   const handlePreview = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/quotes/${quoteId}`);
-      
+      const response = await fetch(`http://localhost:3000/quotes/${quoteId}`);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
+
       const quote = await response.json();
       setQuoteHTML(quote.htmlContent);
       setPreviewOpen(true);
     } catch (error) {
-      console.error('Failed to fetch quote', error);
+      console.error("Failed to fetch quote", error);
       // TODO: ADD ERROR HANDLING HERE
     } finally {
       setLoading(false);
-
     }
   };
 
   useEffect(() => {
     const fetchQuote = async () => {
       try {
-        const quote = await axios.get<Quote>(`/quotes/${quoteId}`);
+        const quote = await axios.get<Quote>(
+          `http://localhost:3000/quotes/${quoteId}`
+        );
         setQuote(quote.data);
         console.log("QUOTE DATA: ", quote.data);
         setFormData({
@@ -346,11 +380,12 @@ const CreateQuote: React.FC = () => {
           name: quote?.data?.contactPerson?.name ?? '',
           email: quote?.data?.contactPerson?.email ?? '',
           address: quote?.data?.project?.address?.streetAddress ?? '',
-          preferredEndDate: quote?.data?.preferredEndDate || "Not specified",
+          preferredEndDate: quote?.data?.preferredEndDate,// || "Not specified",
           images: quote?.data?.images ?? [],
           htmlContent: quote.data.htmlContent?.toString() ?? "Failed to get htmlContent",
+          itemList: quote.data.items || [],
+          laborList: quote.data.labor || []
         });
-
       } catch (error) {
         console.error("Error fetching quote:", error);
       }
@@ -363,54 +398,47 @@ const CreateQuote: React.FC = () => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("handleSubmit function called"); // Debugging
+    console.log("Submitting data:", formData);
     try {
-      if (quoteId != "new") {
-        await axios.put(`/quote/${quoteId}`, formData);
-      } else {
-        await axios.post(`/quote/create`, formData);
-      }
-      // redirect to CreateQuote @ quoteId
+      const response = quoteId !== "new" ?
+      await axios.put(`http://localhost:3000/quotes/${quoteId}`, formData) :
+      await axios.post(`http://localhost:3000/quotes/create`, formData);
+
+      console.log("Response:", response.data)
+      navigate(`/create-a-quote/${quoteId}`);
     } catch (error) {
       console.error("Error submitting quote:", error);
     }
   };
 
   //add item to item list
-  const addItem = (item: MaterialTuple) => {
-    setItemList([...itemList, item]);
+  const addItem = (item: Material) => {
+    const newItemList = [...formData.itemList, item];
+    setFormData({...formData, itemList: newItemList});
   };
-
-  //add Labor
-  const addLabor = (labor: LaborTuple) => {
-    setLaborList([...laborList, labor]);
+  
+  const addLabor = (labor: Labor) => {
+    const newLaborList = [...formData.laborList, labor];
+    setFormData({...formData, laborList: newLaborList});
   };
 
   //handles deletion of item from list
   const handleDeleteItem = (indexToDelete: number) => {
-    const updatedItemList = itemList.filter(
-      (_, index) => index !== indexToDelete
-    );
-    setItemList(updatedItemList);
+    const updatedItemList = formData.itemList.filter((_, index) => index !== indexToDelete);
+    setFormData({...formData, itemList: updatedItemList});
   };
 
   const handleDeleteLabor = (indexToDelete: number) => {
-    const updatedLaborList = laborList.filter(
-      (_, index) => index !== indexToDelete
-    );
-    setLaborList(updatedLaborList);
+    const updatedLaborList = formData.laborList.filter((_, index) => index !== indexToDelete);
+    setFormData({...formData, laborList: updatedLaborList});
   };
 
   //sums total cost of item list and labor
   useEffect(() => {
-    const totalCost = itemList.reduce((total, item) => total + item[1], 0);
-    const laborCost = laborList.reduce(
-      (total, laborEntry) => total + laborEntry[0] * laborEntry[1],
-      0
-    );
-    const updatedTotalCost = totalCost + laborCost;
-    setFinalTotalCost(updatedTotalCost);
-  }, [itemList, laborList]);
+    const totalCost = formData.itemList.reduce((total, item) => total + item.unitPrice, 0);
+    const laborCost = formData.laborList.reduce((total, labor) => total + labor.hourlyRate * labor.numHours, 0);
+    setFinalTotalCost(totalCost + laborCost);
+  }, [formData.itemList, formData.laborList]);
 
   //Modal variables
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -436,119 +464,194 @@ const CreateQuote: React.FC = () => {
   return (
     <div className="bg-gray-100 pt-4">
       <form onSubmit={handleSubmit}>
-      <div className="flex justify-between items-center bg-white p-4">
-        <div className="flex justify-start items-center">
-          <h1 className="text-3xl font-bold pr-2">Create a Quote</h1>
-          <p className="bg-blue-500 text-xs text-white font-bold py-1 px-2 rounded-full">
-            ID: {formData.id}
-          </p>
-        </div>
-        <div className="flex justify-end">
-          <button
-            className="bg-white text-black border border-black hover:bg-red-500 font-bold px-4 rounded-full mr-4"
-            type="button"
-            //Route back to client profile
-          >
-            Cancel
-          </button>
-          <div className="px-2 border mr-4 rounded-full">
-            {quote && (
-            <QuotePreviewModal
-              quote={quote}
-              isOpen={isPreviewOpen}
-              onRequestClose={() => setPreviewOpen(false)}
-            >
-            </QuotePreviewModal>
-            )}
+        <div className="flex justify-between items-center bg-white p-4">
+          <div className="flex justify-start items-center">
+            <h1 className="text-3xl font-bold pr-2">Create a Quote</h1>
+            <p className="bg-blue-500 text-xs text-white font-bold py-1 px-2 rounded-full">
+              ID: {formData.id}
+            </p>
           </div>
-          <button
-            className="bg-green-500 hover:bg-green-700 text-center text-white font-bold px-4 rounded-full pr-4"
-            type="submit"
-            //submit to DB
-          >
-            Save
-          </button>
-        </div>
-        <div className="pt-4">
-          <div className="pb-4 px-4">
-            {/* Big box on page*/}
-            <div className="bg-gray-700 w-full h-[40px]">
-              <button
-                className="text-gray-300 hover:text-gray-500 rounded-t-2xl text-left py-2 px-2 transition ease-in-out click:bg-gray-900"
-                onClick={() => navigate("/admin")} //Change to client link
-              >
-                &lt; Back to Admin Dashboard
-              </button>
+          <div className="flex justify-end">
+            <button
+              className="bg-white text-black border border-black hover:bg-red-500 font-bold px-4 rounded-full mr-4"
+              type="button"
+              //Route back to client profile
+            >
+              Cancel
+            </button>
+            <div className="px-2 border mr-4 rounded-full">
+              {quote && (
+                <QuotePreviewModal
+                  quote={quote}
+                  isOpen={isPreviewOpen}
+                  onRequestClose={() => setPreviewOpen(false)}
+                ></QuotePreviewModal>
+              )}
             </div>
-
-            <div className="bg-white px-8 flex flex-col shadow-xl rounded-b-2xl">
-              {/*White portion of box below client profile link*/}
-              <div>
-                <label
-                  className=" block text-grey-darker text-lg font-bold py-4"
-                  htmlFor="client-info"
+            <button
+              className="bg-green-500 hover:bg-green-700 text-center text-white font-bold px-4 rounded-full pr-4"
+              type="submit"
+              //submit to DB
+            >
+              Save
+            </button>
+          </div>
+          <div className="pt-4">
+            <div className="pb-4 px-4">
+              {/* Big box on page*/}
+              <div className="bg-gray-700 w-full h-[40px]">
+                <button
+                  className="text-gray-300 hover:text-gray-500 rounded-t-2xl text-left py-2 px-2 transition ease-in-out click:bg-gray-900"
+                  onClick={() => navigate("/admin")} //Change to client link
                 >
-                  Client Info
-                </label>
-                <div className="flex flex-row justify-between py-2 font-bold">
-                  {/*Horizontal flexbox for name, phone address*/}
-                  <div>
-                    {editable ? (
-                      <input
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) =>
-                          setFormData({ ...formData, email: e.target.value })
-                        }
-                        className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
-                        placeholder="Email"
-                      />
-                    ) : (
-                      <div>
-                        <p className="text-gray-400">Email:</p>
-                        <a
-                          href={`mailto:${formData.email}`}
-                          className="text-blue-500 hover:text-blue-300"
-                        ></a>
-                        {formData.email}
-                      </div>
-                    )}
+                  &lt; Back to Admin Dashboard
+                </button>
+              </div>
+
+              <div className="bg-white px-8 flex flex-col shadow-xl rounded-b-2xl">
+                {/*White portion of box below client profile link*/}
+                <div>
+                  <label
+                    className=" block text-grey-darker text-lg font-bold py-4"
+                    htmlFor="client-info"
+                  >
+                    Client Info
+                  </label>
+                  <div className="flex flex-row justify-between py-2 font-bold">
+                    {/*Horizontal flexbox for name, phone address*/}
+                    <div>
+                      {editable ? (
+                        <input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) =>
+                            setFormData({ ...formData, email: e.target.value })
+                          }
+                          className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                          placeholder="Email"
+                        />
+                      ) : (
+                        <div>
+                          <p className="text-gray-400">Email:</p>
+                          <a
+                            href={`mailto:${formData.email}`}
+                            className="text-blue-500 hover:text-blue-300"
+                          ></a>
+                          {formData.email}
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      {editable ? (
+                        <input
+                          type="phone"
+                          value={formData.phone}
+                          onChange={(e) =>
+                            setFormData({ ...formData, phone: e.target.value })
+                          }
+                          className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                          placeholder="Phone Number"
+                        />
+                      ) : (
+                        <div>
+                          <p className="text-gray-400">Phone:</p>
+                          <p>{formData.phone}</p>
+                        </div>
+                      )}
+                    </div>
+                    <div>
+                      {editable ? (
+                        <input
+                          type="address"
+                          value={formData.address}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              address: e.target.value,
+                            })
+                          }
+                          className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                          placeholder="Address"
+                        />
+                      ) : (
+                        <div>
+                          <p className="text-gray-400">Address:</p>
+                          <p>{formData.address}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div>
                     {editable ? (
-                      <input
-                        type="phone"
-                        value={formData.phone}
+                      <textarea
+                        value={formData.description}
                         onChange={(e) =>
-                          setFormData({ ...formData, phone: e.target.value })
+                          setFormData({
+                            ...formData,
+                            description: e.target.value,
+                          })
                         }
-                        className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
-                        placeholder="Phone Number"
+                        className="px-2 py-1 min-w-full min-h-8 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                        placeholder="Descripton"
                       />
                     ) : (
                       <div>
-                        <p className="text-gray-400">Phone:</p>
-                        <p>{formData.phone}</p>
+                        <p className="text-gray-400">Job Description:</p>
+                        <p>{formData.description}</p>
                       </div>
                     )}
                   </div>
-                  <div>
+                  <div className="pb-2">
                     {editable ? (
-                      <input
-                        type="address"
-                        value={formData.address}
-                        onChange={(e) =>
-                          setFormData({ ...formData, address: e.target.value })
-                        }
-                        className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-blue-gray-700 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
-                        placeholder="Address"
-                      />
+                      <div>
+                        <label className="text-gray-400" htmlFor="prefDate">
+                          Preferred End Date:{" "}
+                        </label>
+                        <input
+                          id="prefDate"
+                          type="date"
+                          value={
+                            formData.preferredEndDate
+                              ? formData.preferredEndDate
+                                  .toISOString()
+                                  .split("T")[0]
+                              : ""
+                          }
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              preferredEndDate: new Date(e.target.value),
+                            })
+                          }
+                          className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-gray-400 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
+                          placeholder="Preferred End Date"
+                        />
+                      </div>
                     ) : (
                       <div>
-                        <p className="text-gray-400">Address:</p>
-                        <p>{formData.address}</p>
+                        <p className="text-gray-400">Preferred End Date:</p>
+                        <p>
+                          {formData.preferredEndDate
+                            ? formData.preferredEndDate
+                                .toISOString()
+                                .split("T")[0]
+                            : ""}
+                        </p>
                       </div>
                     )}
+                  </div>
+                  <div className="pb-2">
+                    <p className="text-gray-400">Images Provided:</p>
+                    {formData.images.map((image, index) => (
+                      <div>
+                        <h1>{`Image ${index + 1}: `}</h1>
+                        <img
+                          key={index}
+                          src={image}
+                          alt={`Quote Image ${index + 1}`}
+                        />
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <div>
@@ -580,11 +683,11 @@ const CreateQuote: React.FC = () => {
                       <input
                         id="prefDate"
                         type="date"
-                        value={formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : ''}
+                        value={formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : 'Not specified'} //preferredEndDate can either be a date object or the string "Not specified" here
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            preferredEndDate: new Date(e.target.value) // Convert string to Date
+                            preferredEndDate: new Date(e.target.value), // Convert string to Date
                           })
                         }
                         className="px-2 py-1 border border-blue-gray-200 text-sm font-normal text-gray-400 outline outline-0 placeholder-shown:border-blue-gray-200 focus:border-2 focus:border-gray-900"
@@ -594,7 +697,7 @@ const CreateQuote: React.FC = () => {
                   ) : (
                     <div>
                       <p className="text-gray-400">Preferred End Date:</p>
-                      <p>{formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : ''}</p>
+                      <p>{formData.preferredEndDate ? formData.preferredEndDate.toISOString().split('T')[0] : 'Not Specified'}</p>
                     </div>
                   )}
                 </div>
@@ -631,7 +734,7 @@ const CreateQuote: React.FC = () => {
                   </button>
                 </div>
                 <div className="pd-4">
-                  <Materials items={itemList} deleteItem={handleDeleteItem} />
+                  <Materials items={formData.itemList} deleteItem={handleDeleteItem} />
                 </div>
                 <div className="pb-6 flex justify-start items-center pt-2">
                   {/*Labor Section*/}
@@ -649,14 +752,13 @@ const CreateQuote: React.FC = () => {
                     Assign Job
                   </button>
                 </div>
-                <Labor labor={laborList} deleteLabor={handleDeleteLabor} />
+                <Labor labor={formData.laborList} deleteLabor={handleDeleteLabor} />
+                <span className="font-semibold text-4xl text-right pb-4">
+                  Total: ${finalTotalCost}
+                </span>
               </div>
-              <span className="font-semibold text-4xl text-right pb-4">
-                Total: ${finalTotalCost}
-              </span>
             </div>
           </div>
-        </div>
         </div>
       </form>
       {modalType === "addItem" && (

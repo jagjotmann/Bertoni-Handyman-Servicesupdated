@@ -6,7 +6,7 @@ function NavbarWrapper() {
   const location = useLocation();
 
   // Conditionally render Navbar based on the route
-  if (location.pathname !== "/admin") {
+  if (!location.pathname.includes("admin")) {
     return <Navbar />;
   }
 

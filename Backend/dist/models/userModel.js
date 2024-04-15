@@ -56,6 +56,16 @@ const UserSchema = new mongoose_1.Schema({
             maxlength: 100,
         },
     },
+    // for password reset
+    resetPasswordToken: {
+        type: String,
+        index: true,
+        default: null, // Explicitly allows null
+    },
+    resetPasswordExpires: {
+        type: Date,
+        default: null, // Explicitly allows null
+    },
     contactInfo: {
         phoneNumber: {
             type: String,
@@ -64,6 +74,7 @@ const UserSchema = new mongoose_1.Schema({
             type: String,
             required: true,
             unique: true,
+            index: true, // Adds an index on the email field
         },
     },
     properties: [
