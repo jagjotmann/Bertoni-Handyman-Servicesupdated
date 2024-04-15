@@ -753,7 +753,6 @@ const CreateQuote: React.FC = () => {
                   </button>
                 </div>
                 <Labor labor={formData.laborList} deleteLabor={handleDeleteLabor} />
-        </div>
                 <span className="font-semibold text-4xl text-right pb-4">
                   Total: ${finalTotalCost}
                 </span>
