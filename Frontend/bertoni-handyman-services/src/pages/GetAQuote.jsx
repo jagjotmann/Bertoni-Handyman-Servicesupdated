@@ -84,9 +84,14 @@ const QuoteForm = () => {
             userEmail: email,
           };
           const emailResponse = await axios.post(`email`, newEmail);
+          const newAdminEmail = {
+            message: `You have received a new quote request, please check the dashboard`,
+            userEmail: 'webwizard122@gmail.com'
+          }
+          const adminEmailResponse = await axios.post(`email`, newAdminEmail);
           console.log(emailResponse);
         }
-
+        
         resetFormFields();
         setIsSubmitted(true);
       } catch (error) {
