@@ -3,7 +3,7 @@ const router = express.Router();
 import Quote from "../models/quoteModel.js";
 import { Request, Response } from "express";
 import mongoose, { FilterQuery } from "mongoose";
-const { sendMail } = require("./emailRoutes");
+import { sendMail } from "./emailRoutes";
 
 const rateLimit = require("../../dist/middlewares/ratelimit.js");
 const adminRateLimit = require("../../dist/middlewares/adminRateLimit.js");
@@ -13,6 +13,7 @@ router.post("/create", rateLimit, async (req: Request, res: Response) => {
   console.log("QUOTE DATA: ", quoteData);
   quoteData.quoteDate = new Date();
   try {
+    console.log("Attempting to save quote");
     const newQuote = new Quote(quoteData);
     await newQuote.save();
     res
@@ -113,7 +114,7 @@ router.get("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
   }
 });
 
-console.log({ sendMailFunction: sendMail });
+//console.log({ sendMailFunction: sendMail });
 
 // Route to update a specific quote by ID
 router.put("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
@@ -145,8 +146,8 @@ router.put("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
       return res.status(404).json({ message: "Quote not found" });
     }
 
-    console.log(sendMail);
-
+    //console.log(sendMail);
+/*
     // Generate email content based on the changes
     let emailMessage = `Hey, your quote has been updated. Here is what changed:\n`;
     // Example: Check if the status changed
@@ -170,7 +171,7 @@ router.put("/:quoteId", adminRateLimit, async (req: Request, res: Response) => {
         console.log("Email notification send failed");
       }
     }
-
+    */
     res
       .status(200)
       .json({ message: "Quote updated successfully", quote: updatedQuote });
